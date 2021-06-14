@@ -8,7 +8,7 @@ bibliography: "assets/references.bib"
 output:
   xaringan::moon_reader:
     css: [default, "assets/styles.css"]
-    lib_dir: libs
+    lib_dir: docs/libs
     nature:
       highlightStyle: github
       highlightLines: true

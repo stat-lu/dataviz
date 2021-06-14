@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Categorical Data</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Johan Larsson" />
+    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/styles.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: middle, center, title-slide
+
+# Categorical Data
+## Data Visualization
+### Johan Larsson
+### The Department of Statistics, Lund University
+
+---
+
+
+
+
+## Visualizing Categorical Data
+
+visualizing categorical data usually comes down to visualizing **proportions**
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-1-1.png" alt="A 'scatter plot' of categorical data; not very appealing." width="2000" /&gt;
+&lt;p class="caption"&gt;A 'scatter plot' of categorical data; not very appealing.&lt;/p&gt;
+&lt;/div&gt;
+
+
+ggplot2 has **limited** capabilities for visualizing categorical data
+
+---
+
+## Barcharts
+
+simple and readable
+
+
+```r
+library(productplots) # for happy data set
+happy &lt;- drop_na(happy)
+
+ggplot(happy, aes(happy)) +
+* geom_bar()
+```
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-2-1.png" alt="Happiness ratings from the GSS in the US." width="432" /&gt;
+&lt;p class="caption"&gt;Happiness ratings from the GSS in the US.&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+## Grouped Barchart
+
+good when counts are what matters and group sizes are important, but hard to judge within
+categories
+
+
+```r
+ggplot(happy, aes(degree, fill = happy)) +
+* geom_bar(position = "dodge")
+```
+
+&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-3-1.png" width="720" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Stacked Barchart
+
+same use case as grouped barcharts, but easier to compare within categories whilst
+harder to compare between
+
+
+```r
+ggplot(happy, aes(degree, fill = happy)) +
+* geom_bar() # position = "stack" is the default
+```
+
+&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-4-1.png" width="720" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Proportional Stacked Barchart
+
+easy to compare both between and within categories but lose information on category size
+
+
+```r
+ggplot(happy, aes(degree, fill = happy)) +
+* geom_bar(position = "fill") +
+  ylab("Proportion")
+```
+
+&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-5-1.png" width="720" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Mosaic Plots
+
+a type of stacked barchart that maps category size to 
+the width of bars
+
+need to use another package for this: [productplots](https://CRAN.R-project.org/package=productplots) or [ggmosaic](https://CRAN.R-project.org/package=ggmosaic), or [vcd](https://CRAN.R-project.org/package=vcd)
+
+
+```r
+library(productplots)
+*prodplot(happy, ~ happy + degree) +
+  aes(fill = happy) +
+  theme(legend.position = "none") # remove legend
+```
+
+&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-6-1.png" width="720" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Mappings
+
+choice of mappings with categorical data is important
+
+
+```r
+*ggplot(happy, aes(happy, fill = degree)) +
+  geom_bar(position = "fill", col = 1) +
+  ylab("Proportion")
+```
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-7-1.png" alt="The proportional stacked bar chart with a different mapping." width="720" /&gt;
+&lt;p class="caption"&gt;The proportional stacked bar chart with a different mapping.&lt;/p&gt;
+&lt;/div&gt;
+
+pay attention to **which relationship it is you want to display**
+
+---
+
+## Waffle Plots
+
+suitable when there are large differences between categories
+
+again need to use a new package: [waffle](https://CRAN.R-project.org/package=waffle)
+
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-8-1.png" alt="A waffle plot of the happiness data. Every square represents 100 people. The code is quite complicated (see the source code)." width="720" /&gt;
+&lt;p class="caption"&gt;A waffle plot of the happiness data. Every square represents 100 people. The code is quite complicated (see the source code).&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+## Euler and Venn Diagrams
+
+useful when relationships between categorical variables is at interest
+
+**proportional** diagrams best but not always possible for more than two categories
+
+.pull-left[
+
+```r
+library(eulerr)
+
+combo &lt;- c(
+  "happy" = 100, 
+  "graduated" = 40,
+  "happy&amp;graduated" = 35
+)
+
+# fit and inspect
+r &lt;- euler(combo)
+
+# plot
+plot(r)
+```
+]
+
+.pull-right[
+&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-9-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+]
+
+
+.footnote[
+Disclaimer: Johan Larsson is the author of [eulerr](https://CRAN.R-project.org/package=eulerr).
+]
+
+---
+
+## More on Visualizing Categorical Data
+
+much more to learn on visualizations of categorical data
+
+packages [vcd](https://CRAN.R-project.org/package=vcd) and 
+[vcdExtra](https://CRAN.R-project.org/package=vcdExtra) offer lots of functionality
+
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-10-1.png" alt="A plot from the vcd package." width="338.4" /&gt;
+&lt;p class="caption"&gt;A plot from the vcd package.&lt;/p&gt;
+&lt;/div&gt;
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

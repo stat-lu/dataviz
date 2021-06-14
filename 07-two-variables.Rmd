@@ -1,0 +1,318 @@
+---
+title: "Two Variables"
+subtitle: "Data Visualization"
+author: "Johan Larsson"
+institute: "The Department of Statistics, Lund University"
+date: ""
+bibliography: "assets/references.bib"
+output:
+  xaringan::moon_reader:
+    css: [default, "assets/styles.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      titleSlideClass: [middle, center]
+      countIncrementalSlides: false
+---
+
+```{r setup, include = FALSE}
+knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  dev = "png",
+  fig.width = 5,
+  fig.height = 4.3,
+  fig.align = "center",
+  fig.retina = 3,
+  dev.args = list(pointsize = 16),
+  crop = TRUE
+)
+
+library(tidyverse)
+library(tactile)
+library(lattice)
+library(latticeExtra)
+library(kableExtra)
+
+kable <- function(x, ...) {
+  knitr::kable(x, escape = FALSE, linesep = "", booktabs = TRUE)
+}
+
+library(RefManageR)
+BibOptions(check.entries = FALSE, 
+           bib.style = "authoryear",
+           style = "markdown",
+           dashed = TRUE)
+bib <- ReadBib("assets/references.bib")
+
+if (!interactive()) {
+  theme_set(theme_grey(base_size = 16))
+}
+
+options(digits = 3)
+```
+
+## Associations
+
+.pull-left[
+How does $x$ relate to $y$?
+
+straightforward when both variables are continuous
+
+Scatter plots are the bread and butter of visualizations of
+two continuous variables.
+
+```{r, eval = FALSE}
+library(tidyverse)
+ggplot(swiss, 
+       aes(Examination, 
+           Fertility)) +
+  geom_point() #<<
+```
+
+]
+
+.pull-right[
+```{r, fig.cap = "Fertility and % of draftees receiving highest mark on army examination in French-speaking provinces in Switzerland.", echo = FALSE}
+library(tidyverse)
+ggplot(swiss, 
+       aes(Examination, 
+           Fertility)) +
+  geom_point()
+```
+]
+
+---
+
+## Patterns
+
+Understanding patterns is key to being able to visualize data effectively.
+
+```{r, fig.width = 8, fig.height = 6.5, echo = FALSE}
+set.seed(1453)
+
+n <- 100
+x <- runif(n, 1, 6)
+
+y_clust <- double(n)
+y_clust[x <= 3] <- rnorm(n, -4)
+y_clust[x > 3] <- rnorm(n, 4)
+
+d <- tibble(
+  x = x,
+  noise = runif(n),
+  linear = x + rnorm(n, 0, 1),
+  nonlinear = 2^x + 0.5*x*rnorm(n, 0, 5),
+  clusters = y_clust
+)
+
+d_long <- pivot_longer(d, -x) %>%
+  mutate(name = fct_relevel(name, "noise", "linear", "nonlinear", "clusters"))
+
+ggplot(d_long, aes(x, value, group = name)) +
+  geom_point() +
+  facet_wrap(~name, scales = "free") +
+  xlab(NULL)
+```
+
+---
+
+## Variation
+
+.pull-left-40[
+A good visualization should describe the variation in the data.
+]
+
+.pull-right-60[
+```{r, echo = FALSE, fig.height = 3.2, fig.width = 5.5}
+d <- tibble(x = 1:100,
+            low_variance = x + rnorm(100, 0, 4),
+            high_variance = x + rnorm(100, 0, 20))
+
+pivot_longer(d, -x) %>%
+  ggplot(aes(x, value, group = name)) +
+  geom_point() +
+  ylab("y") +
+  facet_wrap(~name)
+```
+]
+
+--
+
+.pull-left-60[
+```{r, echo = FALSE, fig.height = 3.5, fig.width = 5.5}
+d <- tibble(x = 1:100,
+            y = rnorm(100, 0, x))
+
+ggplot(d, aes(x, y)) +
+  geom_point()
+```
+]
+
+.pull-right-40[
+Sometimes there is a pattern to the variation.
+]
+
+---
+
+## Time
+
+Time has a specific order, which makes the line geom a natural choice.
+
+Always place time on the horizontal (x) axis.
+
+```{r, fig.cap = "Median unemployment duration in the US.", fig.width = 9, fig.height = 3}
+ggplot(economics, aes(date, uempmed)) +
+  geom_line() + #<<
+  xlab("Time") +
+  ylab("Unemployment duration")
+```
+
+---
+
+## Geoms and Time
+
+often useful to combine points and lines when measurements
+are taken at irregular intervals or seldom
+
+```{r, fig.cap = "Weight of a chick over time.", fig.width = 6, fig.height = 3.3}
+filter(ChickWeight, Chick == 5) %>%
+  ggplot(aes(Time, weight)) +
+  geom_point() + #<<
+  geom_line() #<<
+```
+
+
+---
+
+## Categorical Variables
+
+Categorical variables (factors) can be used
+as the second dimension.
+
+```{r, fig.cap = "Boxplot of total sleep duration for different mammals.", fig.width = 7}
+ggplot(msleep, aes(vore, sleep_total)) +
+  geom_boxplot()
+```
+
+---
+
+## Ordered Factors
+
+Pay attention to whether or not the factor is **ordered**.
+
+.pull-left[
+```{r, echo = FALSE, fig.height = 6}
+mutate(OrchardSprays, treatment = fct_shuffle(treatment)) %>%
+  ggplot(aes(treatment, decrease)) +
+  geom_boxplot()
+```
+]
+
+--
+
+.pull-right[
+```{r, echo = FALSE, fig.height = 6}
+ggplot(OrchardSprays, aes(treatment, decrease)) +
+  geom_boxplot()
+```
+]
+
+---
+
+## Discrete Data
+
+A problem when one (or both) variables are discrete (or categorical)
+is that they might **overlap**.
+
+simple solution: **opacity** (`alpha`)
+
+.pull-left[
+```{r}
+ggplot(mpg, aes(cty, hwy)) +
+  geom_point() 
+```
+]
+
+--
+
+.pull-right[
+```{r}
+ggplot(mpg, aes(cty, hwy)) +
+  geom_point(alpha = 0.2) #<<
+```
+]
+
+---
+
+## Scales
+
+For some variables, it is more natural to study them on a non-standard scale
+
+Other times it is simply **convenient** (more compact).
+
+.pull-left[
+```{r, fig.height = 3.5}
+ggplot(msleep, 
+       aes(brainwt, 
+           sleep_total)) +
+  geom_point() +
+  scale_y_continuous() #<<
+```
+]
+
+--
+
+.pull-right[
+```{r, fig.height = 3.5}
+ggplot(msleep, 
+       aes(brainwt, 
+           sleep_total)) +
+  geom_point() +
+  scale_x_log10() #<<
+```
+]
+
+---
+
+## Pairs Plots
+
+plots the pairwise associations of several variables
+
+complicated in ggplot2 (requires **pivoting** and **facets**)
+
+The [GGally](https://ggobi.github.io/ggally) package `r Citep(bib, "emerson2013")`
+presents a simpler approach.
+
+---
+
+```{r, echo = FALSE, eval = FALSE}
+library(GGally)
+ragg::agg_png("images/ggally.png", width = 1028, height = 900)
+theme_set(theme_grey(base_size = 16))
+ggpairs(mpg, columns = c("displ", "drv", "cty", "hwy"))
+dev.off()
+```
+
+```{r, eval = FALSE}
+library(GGally)
+ggpairs(mpg, columns = c("displ", "drv", "cty", "hwy"))
+```
+
+```{r, echo = FALSE, out.width = "85%"}
+knitr::include_graphics("images/ggally.png")
+```
+
+
+---
+
+## References
+
+```{r, results = "asis", echo=FALSE}
+PrintBibliography(bib)
+```

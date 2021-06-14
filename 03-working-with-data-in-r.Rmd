@@ -1,0 +1,392 @@
+---
+title: "Working with Data in R"
+subtitle: "Data Visualization"
+author: "Johan Larsson"
+institute: "The Department of Statistics, Lund University"
+date: ""
+bibliography: "assets/references.bib"
+output:
+  xaringan::moon_reader:
+    css: [default, "assets/styles.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      titleSlideClass: [middle, center]
+      countIncrementalSlides: false
+---
+
+```{r setup, include = FALSE}
+knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  dev = "png",
+  fig.width = 5,
+  fig.height = 4.3,
+  fig.align = "center",
+  fig.retina = 3,
+  dev.args = list(pointsize = 16),
+  crop = TRUE
+)
+
+library(tidyverse)
+library(tactile)
+library(lattice)
+library(latticeExtra)
+library(kableExtra)
+
+kable <- function(x, ...) {
+  knitr::kable(x, escape = FALSE, linesep = "", booktabs = TRUE)
+}
+
+library(RefManageR)
+BibOptions(check.entries = FALSE, 
+           bib.style = "authoryear",
+           style = "markdown",
+           dashed = TRUE)
+bib <- ReadBib("assets/references.bib")
+
+if (!interactive()) {
+  theme_set(theme_grey(base_size = 16))
+}
+
+options(digits = 3)
+```
+
+## Data in R
+
+- R has excellent facilities for handling data
+- roughly speaking, two approaches
+  * base R
+  * tidyverse
+- in this course we will use the tidyverse approach
+
+--
+
+.pull-left[
+### Tidyverse
+
+- a collection of packages built around a set of
+  principles and design choices. 
+- includes the package **ggplot2** that we will use for all our
+  visualizations in this course
+  
+]
+
+.pull-right[
+```{r, out.width="50%", echo = FALSE}
+knitr::include_graphics("images/tidyverse-logo.png")
+```
+]
+
+---
+
+class: middle
+  
+```{r, echo = FALSE}
+knitr::include_graphics("images/tidyverse-workflow.svg")
+```
+
+---
+
+## An Example
+
+```{r cars-code, eval = FALSE}
+library(tidyverse)
+
+# import
+read_csv("data/us_cars.csv") %>%
+  # wrangle
+  mutate(price = price*8.65) %>%
+  # visualize
+  ggplot(aes(mileage, y = price, color = title_status)) +
+  geom_point(alpha = 0.5) +
+  labs(x = "mileage (miles)", 
+       y = "price (sek)", 
+       color = "status") 
+```
+
+---
+
+class: center, middle
+
+```{r ref.label = "cars-code", echo = FALSE, fig.width = 9, fig.height = 6}
+
+```
+
+
+---
+
+## Importing Data
+
+data can be stored in a myriad of formats (`.csv.`, `.tsv`, `.dat`, `.sav`, etc)
+  
+--
+
+we will use the **readr** package, in which functions are named
+`read_*()` (or 
+
+```{r, echo = TRUE, eval = FALSE}
+data_tsv <- read_tsv("data.tsv") 
+data_csv <- read_csv("data.csv")
+# and so on
+```
+  
+--
+  
+always inspect the result; datasets are not always stored in a clean
+way
+
+in this course, however, you will generally be provided data
+that needs little preprocessing
+  
+--
+
+many datasets available from base R or from packages
+
+--
+
+---
+
+### Using RStudio to Import Data
+
+```{r echo = FALSE}
+knitr::include_graphics("videos/rstudio-data-import.gif")
+```
+
+---
+
+## Data Wrangling
+
+Many times, data is not in the format that we need it to be; it 
+needs to be **wrangled** with.
+
+Our workhorses: [dplyr](https://dplyr.tidyverse.org/)
+and [tidyr](https://tidyr.tidyverse.org/)
+
+--
+
+.pull-left[
+### dplyr
+
+used for data manipulation, such as
+
+* creating new variables,
+* modifying existing variables,
+* filtering, and
+* subsetting data.
+]
+
+--
+
+.pull-right[
+### tidyr
+
+used for reshaping data, such as
+
+* pivoting data,
+* merging and separating variables, and
+* extracting variables.
+]
+
+---
+
+## Data Semantics
+
+```{r echo = FALSE}
+d <- tibble(person = rep(c("James", "Julia", "Bixby"), times = 2),
+            intervention = rep(c("control", "treatment"), each = 3),
+            result = c(1, 3, 2, 5, 6, 3))
+```
+
+most data is made up of a rectangular table of **rows** and **columns**.
+
+the elements (cells) in this table are **values**
+
+each value corresponds to an **observation** and a **variable**
+
+there are usually multiple ways to format the same data
+
+<br>
+
+--
+
+.pull-left[
+```{r echo = FALSE}
+knitr::kable(pivot_wider(d, names_from = "intervention", values_from = "result"),
+             caption = "Version A")
+```
+]
+
+--
+
+.pull-right[
+```{r echo = FALSE}
+knitr::kable(pivot_wider(d, names_from = "person", values_from = "result"),
+             caption = "Version B")
+```
+]
+
+---
+
+.pull-left[
+
+## Tidy Data
+
+**tidy data**: each observation has its own row, each variable its own
+column, and each value its own cell
+
+tidy data makes visualization easy
+
+in our example, **person**, **intervention**, and **result** are the variables
+]
+
+.pull-right[
+<br>
+
+```{r echo = FALSE}
+knitr::kable(d, caption = "Tidy treament data")
+```
+]
+
+```{r echo = FALSE}
+knitr::include_graphics("images/tidy-data.png")
+```
+
+---
+
+## Reshaping Data with tidyr
+
+In `d`, we've stored the treatment data from before.
+
+```{r echo = FALSE}
+d_wide <- pivot_wider(d, names_from = "intervention", values_from = "result")
+```
+
+
+```{r, echo = TRUE}
+library(tidyverse) # loads tidyr, dplyr, tibble, etc
+d <- tibble(person = c("James", "Julia", "Bixby"), 
+            control = c(1, 3, 2), 
+            treatment = c(5, 6, 3))
+```
+
+--
+
+To reshape this into **tidy** data, we will use the function
+`pivot_longer()` (from **tidyr**).
+
+.pull-left[
+```{r, echo = TRUE}
+d_tidy <- pivot_longer(
+  data = d, 
+  cols = c("control", 
+           "treatment"), 
+  names_to = "intervention",
+  values_to = "result"
+)
+```
+]
+
+.pull-right[
+```{r echo = FALSE}
+d_tidy
+```
+]
+
+---
+
+## Manipulating Data with dplyr
+
+.pull-left[
+use `filter()` to filter rows (observations)
+
+```{r, echo = TRUE}
+filter(d_tidy, 
+       person != "Bixby")
+```
+]
+
+--
+
+.pull-right[
+use `select()` to select columns (variables)
+
+```{r, echo = TRUE}
+select(d_tidy, person, result)
+```
+]
+
+---
+
+use `mutate()` to modify or add new variables
+
+```{r, echo = TRUE}
+mutate(d_tidy, rel_result = result/max(result))
+```
+
+--
+
+use `group_by()` and `summarize()` to group and summarize data.
+
+```{r, echo = TRUE}
+group_by(d_tidy, intervention) %>%
+  summarize(mean_result = mean(result))
+```
+
+---
+
+## The Pipe Operator
+
+the `%>%` (pipe) operator is very useful when working with data
+
+takes the left-hand (or line above) and forwards it into
+the next function
+
+```{r, echo = TRUE}
+d_tidy %>% 
+  filter(person == "James") %>%
+  select(intervention, result)
+```
+
+--
+
+```{r, echo = TRUE}
+select(filter(d_tidy, person == "James"), intervention, result)
+```
+
+---
+
+## Missing Data
+
+normally, missing data should be approached with diligence (e.g. imputation), but in 
+this course we will usually simply disregard it (`drop_na()`)
+
+missing data is denoted by `NA` in R
+
+functions applied to missing data often return `NA` unless `na.rm = TRUE`
+is specified
+
+```{r echo = FALSE}
+msleep %>%
+  select(name, sleep_rem, sleep_cycle, brainwt, bodywt) %>%
+  head(5) %>%
+  knitr::kable()
+```
+
+---
+
+## Learning More
+
+In this course, we will only scrape the surface.
+
+Our scope is limited to **making data ready for visualizations**.
+
+If you want to learn more about data wrangling and tidy data, we recommend
+the chapter [Wrangle](https://r4ds.had.co.nz/wrangle-intro.html) in
+the free e-book *R for Data Science*.   
+

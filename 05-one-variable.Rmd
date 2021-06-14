@@ -1,0 +1,202 @@
+---
+title: "One Variable"
+subtitle: "Data Visualization"
+author: "Johan Larsson"
+institute: "The Department of Statistics, Lund University"
+date: ""
+bibliography: "assets/references.bib"
+output:
+  xaringan::moon_reader:
+    css: [default, "assets/styles.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      titleSlideClass: [middle, center]
+      countIncrementalSlides: false
+---
+
+```{r setup, include = FALSE}
+knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  dev = "png",
+  fig.width = 5,
+  fig.height = 4.3,
+  fig.align = "center",
+  fig.retina = 3,
+  dev.args = list(pointsize = 16),
+  crop = TRUE
+)
+
+library(tidyverse)
+library(tactile)
+library(lattice)
+library(latticeExtra)
+library(kableExtra)
+
+kable <- function(x, ...) {
+  knitr::kable(x, escape = FALSE, linesep = "", booktabs = TRUE)
+}
+
+library(RefManageR)
+BibOptions(check.entries = FALSE, 
+           bib.style = "authoryear",
+           style = "markdown",
+           dashed = TRUE)
+bib <- ReadBib("assets/references.bib")
+
+if (!interactive()) {
+  theme_set(theme_grey(base_size = 16))
+}
+
+options(digits = 3)
+```
+
+## Visualizing a Single Variable
+
+best place to start: continuous or discrete one-dimensional data
+
+often need **statistical transformation** or **position adjustment**
+
+--
+
+Dotplots are great for small and discrete data.
+
+```{r, fig.height = 2.5, fig.width = 7, fig.cap = "Duration between eruptions of the Old Faithful geyser."}
+library(tidyverse)
+
+ggplot(faithful, aes(waiting)) +
+  geom_dotplot(binwidth = 1) #<<
+```
+
+
+---
+
+## Histograms
+
+.pull-left[
+For larger datasets it is often better to
+use a statistical transformation.
+
+Histograms accomplish this by **binning** and **summarizing** (counting).
+
+**caution:** choice of bins may introduce bias
+]
+
+.pull-right[
+```{r, fig.cap = "Histogram of Old Faithful data."}
+faithful %>%
+  ggplot(aes(waiting)) +
+  geom_histogram(bins = 15) #<<
+```
+
+]
+
+---
+
+## Density Plots
+
+attractive for variables that are continuous
+
+but sensitive to settings (type of kernel, bandwidth, and more)
+
+.pull-left[
+```{r, fig.height = 3}
+faithful %>%
+  ggplot(aes(waiting)) +
+    # tighter bandwidth
+    geom_density(bw = 5) #<<
+```
+]
+
+.pull-right[
+```{r, fig.height = 3}
+faithful %>%
+  ggplot(aes(waiting)) +
+    # longer bandwidth
+    geom_density(bw = 10) #<<
+```
+]
+
+often good idea to add a **rug** layer (`geom_rug()`) to density plots
+
+---
+
+## Boxplots
+
+.pull-left[
+most common type:
+
+  - **median** as middle bar, 
+  - 1st and 3rd **quartiles** as edges of box,
+  - whiskers to last observation within 1.5 times the
+    inter-quartile range, and
+  - points (or stars) beyond whiskers
+
+useful when visualizing categories or many variables at once
+
+more abstraction than histogram or densityplot 
+
+not suitable for data with multiple modes
+]
+
+.pull-right[
+```{r, fig.height = 3, fig.cap = "Boxplot of the Old Faithful data, which fails completely in accurately describing the distribution."}
+faithful %>%
+  ggplot(aes(waiting)) +
+    geom_boxplot() #<<
+```
+]
+
+---
+
+## Violin Plots
+
+a type of density plot, often used instead of boxplot
+
+same pitfalls as with other density plots
+
+```{r, fig.height = 3, fig.width = 6.5, fig.cap = "geom_violin() does not work with a single variable, so we need to use the trick y = 1 here."}
+faithful %>%
+  ggplot(aes(waiting, y = 1)) +
+    geom_violin() #<<
+```
+
+---
+
+## Several Variables at Once
+
+boxplots and violin plots are useful for visualizing multiple
+variables at once
+
+need to first transform data into **long** format
+
+```{r}
+pivot_longer(mpg, c(displ, cty, hwy)) %>% #<<
+  ggplot(aes(name, value)) +
+    geom_boxplot()
+```
+
+---
+
+### Facets
+
+mostly used to visualize **small multiples** by splitting the plot into facets on a 
+categorical variable
+
+but can also be used to visualize multiple variables at once
+
+for this use case, it is normally good to set `scales = "free_x"` (or sometimes `"free"`)
+
+```{r fig.width = 9, fig.height = 3}
+pivot_longer(mpg, c(displ, cty, hwy)) %>%
+  ggplot(aes(value)) +
+    geom_histogram(bins = 10) +
+    facet_wrap("name", scales = "free_x") #<<
+```
+

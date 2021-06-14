@@ -1,0 +1,339 @@
+---
+title: "Introduction"
+subtitle: "Data Visualization"
+author: "Johan Larsson"
+institute: "The Department of Statistics, Lund University"
+date: ""
+bibliography: "assets/references.bib"
+output:
+  xaringan::moon_reader:
+    css: [default, "assets/styles.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      titleSlideClass: [middle, center]
+      countIncrementalSlides: false
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  dev = "svg",
+  fig.width = 7,
+  fig.height = 5,
+  fig.align = "center"
+)
+
+library(tidyverse)
+library(kableExtra)
+
+kable <- function(x, ...) {
+  knitr::kable(x, escape = FALSE, linesep = "", booktabs = TRUE)
+}
+
+library(RefManageR)
+
+BibOptions(
+  check.entries = FALSE,
+  bib.style = "authoryear",
+  style = "markdown",
+  dashed = TRUE
+)
+
+bib <- ReadBib("assets/references.bib")
+
+if (!interactive()) {
+  theme_set(theme_grey(base_size = 14))
+}
+
+options(digits = 3)
+```
+
+class: section-title
+
+# Why visualize?
+
+---
+class: middle, center
+
+```{r, fig.height = 5}
+d <- tibble(x = c(2010:2018, 2018:2025),
+            y = c(2, 5, 6.5, 9, 12.5, 15.5, 18, 26, 33,
+                  33, 41, 50.5, 64.5, 79.5, 101, 129.5, 175),
+            type = as.factor(rep(c("true", "projected"), c(9, 8)))) %>%
+  mutate(type = relevel(type, "true"))
+
+ggplot(d, aes(x = x, y = y, lty = type)) +
+  geom_line() +
+  geom_point() +
+  ylab("size of datasphere (zettabytes)") +
+  xlab("year") +
+  theme(legend.title = element_blank())
+```
+
+.footnote[
+`r Citet(bib, "reinsel2018")`
+]
+
+---
+class: center, middle
+
+```{r, fig.cap = "Interest in data visualization as a fraction of the maximum interest recorderd (using Google Trends). The blue line represents a moving average.", fig.height = 5}
+d <- read_csv("data/dataviz-trends.csv") %>%
+  mutate(date = as.Date(paste0(date, "-01")))
+ggplot(d, aes(x = date, y = interest)) +
+  geom_line(col = "grey50") +
+  geom_smooth(se = FALSE) +
+  ylim(0, 100) +
+  xlab("year") +
+  ylab("interest in data visualization")
+```
+
+---
+
+## Visualization as communication
+
+* main goal is to **communicate** patterns in data
+* we are wired to learn from **seeing**
+
+--
+
+```{r, fig.cap = "Charles Minard's visualization of Napoleon's Russian campaign of 1812.", out.height = "30%"}
+knitr::include_graphics("images/napoleon.png")
+```
+
+---
+class: center, middle
+
+.pull-left[
+```{r}
+swe_employment <- readRDS("data/swe_employment.rds")
+
+tmp <- select(swe_employment, region, employment)
+tmp[!duplicated(tmp), ] %>%
+  as_tibble() %>%
+  arrange(desc(employment)) %>%
+  rename("employment (%)" = employment) %>%
+  kable() %>%
+  kable_styling(font_size = 13)
+```
+]
+
+--
+class: center, middle
+
+.pull-right[
+```{r, fig.width = 4, fig.height = 6}
+ggplot(swe_employment, aes(long, lat, group = region, fill = employment)) +
+  geom_polygon() +
+  scale_fill_continuous(name = "employment (%)") +
+  coord_equal() +
+  theme_void()
+```
+]
+
+---
+class: section-title
+
+# An example
+
+## GDP per capita and life expectancy across time
+
+---
+
+## First attempt
+
+```{r}
+library(gapminder)
+
+gapminder %>%
+  pivot_longer(c("lifeExp", "gdpPercap")) %>%
+  ggplot(aes(year, value, colour = country)) +
+    geom_line(show.legend = FALSE) +
+    scale_colour_manual(values = country_colors) +
+    labs(x = "year", y = "value") +
+  facet_wrap(vars(name), scales = "free_y")
+```
+
+---
+
+## Transforming the axis
+
+```{r}
+gapminder %>%
+  pivot_longer(c("lifeExp", "gdpPercap")) %>%
+  ggplot(aes(year, value, colour = country)) +
+  geom_line(show.legend = FALSE) +
+  scale_y_log10() +
+  scale_colour_manual(values = country_colors) +
+  facet_wrap(vars(name), scales = "free_y")
+```
+
+
+---
+
+## Grouping time, adding population
+
+```{r}
+gapminder %>%
+  mutate(year = cut(year, 9)) %>%
+  ggplot(aes(gdpPercap,
+             lifeExp,
+             colour = country,
+             group = country,
+             size = pop)) +
+  stat_summary(fun = "mean", geom = "point", show.legend = FALSE,
+               alpha = 0.5) +
+  scale_x_log10() +
+  scale_colour_manual(values = country_colors) +
+  facet_wrap(vars(year)) +
+  xlab("median life expectancy") +
+  ylab("mean GDP per capita")
+```
+
+---
+
+## Animated plots (using **gganimate**)
+
+```{r, dev = "png", fig.height = 7, fig.width = 9, res = 296, pointsize =10}
+library(gganimate)
+
+ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, color = continent)) +
+  ylim(20, 90) +
+  geom_point(alpha = 0.6) +
+  scale_size("population", limits = range(gapminder$pop)) +
+  scale_x_log10(limits = range(gapminder$gdpPercap)) +
+  labs(title = 'Year: {frame_time}',
+       x = 'GDP per capita',
+       y = 'life expectancy') +
+  theme_classic() +
+  transition_time(year) +
+  ease_aes()
+```
+
+---
+
+class: section-title
+# Learning outcomes
+
+---
+
+## Knowledge and understanding
+
+* demonstrate knowledge of the theoretical and practical construction of
+  visualisations, and
+* demonstrate understanding of how the type of data impacts the visualisation
+  and what components are appropriate.
+
+--
+
+## Competence and skills
+
+* demonstrate the skill to independently, using software, visualise various
+  types of data,
+* demonstrate the ability to make appropriate choices in designing
+  visualisations, and
+* demonstrate the ability to in writing present and discuss visualisations
+  in dialogue with others.
+
+
+---
+
+## Judgement and approach
+
+* demonstrate the ability to assess visualisations with respect to
+  clarity, accessibility and ethics, and
+* demonstrate insight into the importance of the design of visualisations
+  with respect to communicative properties, accessibility and ethics.
+
+---
+
+class: section-title
+
+# Course structure
+
+---
+
+## Topics
+
+* introduction to R and R Studio
+* introduction to ggplot2
+* basics of data visualizations
+* visualizations with one variable
+* visualizations with several variables
+* maps
+* interactive and animated visualizations
+
+---
+
+## Learning activities
+
+* lectures
+* text
+* worked examples
+
+---
+
+## Examination
+
+### Assessment
+
+* quizzes
+* assignments
+* project
+
+.pull-left[
+### Peer feedback
+
+the assignment and project will be reviewed through peer-feedback
+]
+
+.pull-right[
+```{r, fig.align = "center"}
+knitr::include_graphics("images/feedback.jpg")
+```
+]
+
+---
+
+.pull-left[
+## Course literature
+
+* Data visualization: Charts, Maps, and Interactive Graphics
+  `r Citep(bib, "grant2018")`. Available through LUBsearch.
+* A Layered Grammar of Graphics `r Citep(bib, "wickham2010")`. Available
+  online for free.
+]
+
+.pull-right[
+```{r, out.width = "70%"}
+knitr::include_graphics("images/grant-book.jpg")
+```
+]
+
+--
+
+## Other resources
+
+* [stackoverflow.com](https://stackoverflow.com/) (tag: ggplot2)
+* R Graphics Cookbook `r Citep(bib, "chang2013")`. Abbreviated version
+  available online at <http://www.cookbook-r.com/Graphs/>, but
+  it might be somewhat outdated.
+
+---
+
+class: section-title
+
+# Good luck!
+
+---
+
+## References
+
+```{r, results = "asis", echo=FALSE}
+PrintBibliography(bib)
+```

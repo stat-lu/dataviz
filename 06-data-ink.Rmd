@@ -1,0 +1,199 @@
+---
+title: "Data-Ink"
+subtitle: "Data Visualization"
+author: "Johan Larsson"
+institute: "The Department of Statistics, Lund University"
+date: ""
+bibliography: "assets/references.bib"
+output:
+  xaringan::moon_reader:
+    css: [default, "assets/styles.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      titleSlideClass: [middle, center]
+      countIncrementalSlides: false
+---
+
+```{r setup, include = FALSE}
+knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  dev = "png",
+  fig.width = 5,
+  fig.height = 4.3,
+  fig.align = "center",
+  fig.retina = 3,
+  dev.args = list(pointsize = 16),
+  crop = TRUE
+)
+
+library(tidyverse)
+library(tactile)
+library(lattice)
+library(latticeExtra)
+library(kableExtra)
+
+kable <- function(x, ...) {
+  knitr::kable(x, escape = FALSE, linesep = "", booktabs = TRUE)
+}
+
+library(RefManageR)
+BibOptions(check.entries = FALSE, 
+           bib.style = "authoryear",
+           style = "markdown",
+           dashed = TRUE)
+bib <- ReadBib("assets/references.bib")
+
+if (!interactive()) {
+  theme_set(theme_grey(base_size = 16))
+}
+
+options(digits = 3)
+```
+
+## Data-Ink
+
+Consider how you are spending the **ink** in a visualization.
+
+data-ink `r Citep(bib, "tufte2001")`: the ink used to draw data
+
+$$
+\begin{aligned}
+\text{data-ink ratio} 
+&= \frac{\text{data-ink}}{\text{total ink used in visualization}}\\ 
+&= 1 - \text{proportion of a graphic that can be erased}
+\end{aligned}
+$$
+
+--
+
+### Tufte's Principles
+
+.pull-left[
+* Above all else show the data.
+* Maximize the data-ink ratio.
+* Erase non-data ink.
+* Erase redundant data-ink.
+* Revise and edit.
+]
+
+.pull-right[
+```{r, out.width = "80%", echo = FALSE}
+knitr::include_graphics("images/tufte.png")
+```
+
+]
+
+---
+
+## Above All Else Show the Data
+
+```{r, echo = FALSE, fig.cap = "William Playfair, The Commercial and Political Atlas (1786). Public domain.", out.width = "80%"}
+knitr::include_graphics("images/playfair-england-usa.jpg")
+```
+
+---
+
+## Above All Else Show the Data
+
+```{r, echo = FALSE, fig.cap = "William Playfair, The Commercial and Political Atlas (1786). Public domain.", out.width = "80%"}
+knitr::include_graphics("images/playfair-nordic-england.jpg")
+```
+
+---
+
+## Maximize the Data-Ink Ratio
+
+Non-data-ink may distract your audience from what really matters: the data.
+
+Maximizing the data-ink (within reason) is a good rule-of-thumb.
+
+.pull-left[
+```{r, echo = FALSE, fig.cap = "low data-ink ratio", fig.height = 4.5}
+mpg2 <- mutate(mpg, cyl = factor(cyl))
+ticks <- pretty(1:80)
+
+ggplot(mpg2, aes(cyl)) +
+  geom_bar()
+```
+]
+
+--
+
+.pull-right[
+```{r, echo = FALSE, fig.cap = "high data-ink ratio", fig.height = 4.5}
+ggplot(mpg2, aes(cyl)) +
+  theme_minimal(base_size = 14) +
+  theme(panel.grid = element_blank()) +
+  geom_bar(width = 0.5) +
+  geom_hline(yintercept = ticks, col = "white", lwd = 1)
+```
+]
+
+---
+
+## Redundant Data-Ink
+
+**redundant** data-ink: ink displaying information already shown by other ink
+
+.pull-left[
+```{r, fig.cap = "lots of redundant ink", echo = FALSE, fig.height = 4.5}
+ggplot(mpg2, aes(cyl, fill = cyl)) +
+  geom_bar() +
+  geom_text(aes(label = after_stat(count)), 
+            stat = "count", 
+            vjust = -1) +
+  ylim(0, 90)
+```
+]
+
+--
+
+.pull-right[
+```{r, fig.cap = "no redundancy", echo = FALSE, fig.height = 4.5}
+ggplot(mpg2, aes(cyl)) +
+  geom_point(stat = "count") +
+  lims(y = c(0, 83))
+```
+]
+
+**note:** redundancy is not always bad
+
+---
+
+## ggthemes
+
+**ggthemes** `r Citep(bib, "arnold2019")` provides a theme and some custom
+plots for ggplot2
+
+.pull-left[
+```{r, fig.height = 3.5}
+library(ggthemes)
+ggplot(mpg, aes(drv, cty)) +
+  geom_tufteboxplot() + #<<
+  theme_tufte(base_size = 16) #<<
+```
+]
+
+.pull-right[
+```{r, fig.height = 4.3}
+ggplot(mpg, aes(drv, cty)) +
+  geom_boxplot(
+    stat = "fivenumber"
+  )
+```
+]
+
+---
+
+## References
+
+```{r, results = "asis", echo = FALSE}
+PrintBibliography(bib)
+```

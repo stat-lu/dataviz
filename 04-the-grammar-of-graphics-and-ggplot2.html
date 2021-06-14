@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>The Grammar of Graphics and ggplot2</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Johan Larsson" />
+    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/styles.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: middle, center, title-slide
+
+# The Grammar of Graphics and ggplot2
+## Data Visualization
+### Johan Larsson
+### The Department of Statistics, Lund University
+
+---
+
+
+
+
+## The Grammar of Graphics
+
+.pull-left[
+  visualizations can be complicated and difficult to describe 
+  
+  Leland Wilkinson &lt;a name=cite-wilkinson2005&gt;&lt;/a&gt;([Wilkinson, 2005](#bib-wilkinson2005)) 
+  **The Grammar of Graphics**: an attempt to formalize the basic principles
+  of visualizations
+  
+  we will use Hadley Wickham's *Layered Grammar of Graphics* &lt;a name=cite-wickham2010&gt;&lt;/a&gt;([Wickham, 2010](http://www.tandfonline.com/doi/abs/10.1198/jcgs.2009.07098))
+]
+
+.pull-right[
+&lt;img src="images/wilkinson.jpg" width="200px" style="display: block; margin: auto;" /&gt;
+
+&lt;img src="images/wickham.jpg" width="200px" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## The Layered Grammar of Graphics
+
+The layered grammar of graphics defines the components of a plot as
+  
+  * layers,
+  * scales,
+  * a coordinate system, and
+  * facets.
+  
+It also includes a **hierarchy of defaults**.
+
+.pull-left-60[
+### ggplot2
+
+The grammar of graphics is central to
+the R package ggplot2 (part of tidyverse), which is the
+focus of this course.
+]
+
+.pull-right-40[
+&lt;img src="images/ggplot2.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Layers
+
+.pull-left[
+A layer consists of
+
+* data and aesthetic mapping,
+* a statistical transformation (stat),
+* a geometric object (geom), and
+* a position adjustment.
+
+The plot to the right uses two layers: a density estimate and points.
+
+```r
+mpg %&gt;%
+  ggplot(aes(cty, displ)) +
+  geom_point() +
+  geom_density_2d()
+```
+]
+
+.pull-right[.vcenter[
+&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-4-1.png" width="360" style="display: block; margin: auto;" /&gt;
+]]
+
+---
+
+## Layers: Data and Mappings
+
+.pull-left[
+Any visualization needs a dataset (here `mpg` from ggplot2).
+
+We **map** variables (in the dataset) to aesthetics (in the plot), such as
+
+* city miles per gallon (cty) to the x axis
+* engine displacement (displ) to the y axis
+* car class to color
+
+
+```r
+library(tidyverse)
+mpg %&gt;%
+  ggplot(aes(x = cty, 
+             y = displ, 
+             color = class)) +
+  geom_point()
+```
+]
+
+.pull-right[.vcenter[
+&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-5-1.png" width="360" style="display: block; margin: auto;" /&gt;
+]]
+
+---
+
+## Layers: Stats
+
+.pull-left-40[
+Statistical transformations modify or summarize data.
+
+can be used to smooth, summarize, or modify
+
+A stat can add **new** variables.
+
+Stats have names of the form `stat_*`.
+
+can also be specified directly in `geom_*` functions
+]
+
+.pull-right-60[
+
+```r
+ggplot(faithful, 
+       aes(waiting, eruptions)) +
+  geom_point() +
+  stat_density_2d()
+```
+
+&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-6-1.png" width="360" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+## Layers: Geoms
+
+.pull-left[
+**Geoms** decide what geometrical objects are used when plotting.
+
+Geoms have names of the form `geom_*`.
+
+
+```r
+# construct base plot
+p &lt;- 
+  economics %&gt;%
+  head(25) %&gt;%
+  ggplot(aes(date, pce))
+
+# three different geoms
+p + geom_line()
+p + geom_point()
+p + geom_area()
+```
+]
+
+.pull-right[
+&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-7-1.png" width="360" style="display: block; margin: auto;" /&gt;&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-7-2.png" width="360" style="display: block; margin: auto;" /&gt;&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-7-3.png" width="360" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+## Layers: Position Adjustments
+
+sometimes need to modify positions of geoms, such as stacking bar geoms side-by-side
+or jittering points that overlap
+
+.pull-left[
+
+
+```r
+# points overlap
+ggplot(mpg, aes(hwy, drv)) +
+  geom_point()
+```
+
+&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-8-1.png" width="360" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+
+```r
+# jitter to avoid overlap
+ggplot(mpg, aes(hwy, drv)) +
+  geom_point(
+*   position = position_jitter(
+*     width = 0,
+*     height = 0.2)
+  )
+```
+
+&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-9-1.png" width="360" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Scales
+
+controls **how** variables are mapped to aesthetics
+
+**Guides** is the inverse of a scale, showing how to read the scale.
+
+
+```r
+p &lt;- ggplot(msleep, aes(brainwt, sleep_total)) +
+  geom_point()
+```
+
+.pull-left[
+
+```r
+p # + scale_x_continuous()
+```
+
+&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-11-1.png" width="316.8" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+
+```r
+p + scale_x_log10()
+```
+
+&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-12-1.png" width="316.8" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Coordinate Systems (coord)
+
+.pull-left-60[
+coordinate systems controls the position of objects on the plot
+
+
+```r
+# cartesian coordinates (bar chart)
+mutate(mpg, cyl = factor(cyl)) %&gt;%
+  ggplot(aes(x = cyl, fill = cyl)) +
+  geom_bar(show.legend = FALSE) +
+* coord_cartesian() +
+  ggtitle("cartesian")
+```
+
+
+```r
+# polar coordinates (pie chart)
+mutate(mpg, cyl = factor(cyl)) %&gt;%
+  ggplot(aes(x = "1", fill = cyl)) +
+  geom_bar(width = 1) +
+* coord_polar(theta = "y") +
+  ggtitle("polar")
+```
+
+
+]
+
+.pull-right-40[
+&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-15-1.png" width="252" style="display: block; margin: auto;" /&gt;
+
+&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-16-1.png" width="252" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Faceting
+
+powerful tool that divide visualizations into small multiples
+
+ggplot2 provides `facet_grid()` and `facet_wrap()`
+
+
+```r
+d &lt;- as_tibble(Titanic) %&gt;%
+  pivot_wider(names_from = Survived, values_from = n) %&gt;%
+  group_by(Class, Sex) %&gt;%
+  summarise(survival_rate = sum(Yes)/sum(Yes + No))
+```
+
+.pull-left[
+
+```r
+ggplot(
+  d, 
+  aes(x = Class, 
+      y = survival_rate)
+) +
+  geom_col() +
+* facet_wrap(vars(Sex))
+```
+]
+
+.pull-right[
+&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-18-1.png" width="360" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## A Hierarchy of Defaults
+
+.pull-left[
+having to supply all the 
+parts of the grammar with each plot would be **very** tiresome
+
+thankfully, the grammar of graphics (and ggplot2) comes with a **hierarchy of defaults**
+
+&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-19-1.png" width="360" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+
+```r
+ggplot(diamonds, 
+       aes(carat, price)) +
+  geom_point()
+```
+
+is equivalent to
+
+
+```r
+ggplot(diamonds, 
+       aes(carat, price)) +
+  layer(
+    data = diamonds, 
+    mapping = aes(x = carat, 
+                  y = price),
+    geom = "point", 
+    stat = "identity", 
+    position = "identity"
+  ) +
+  scale_y_continuous() +
+  scale_x_continuous() +
+  coord_cartesian()
+```
+]
+
+---
+
+## Using the Grammar
+
+Understanding the grammar of graphics is the key to understanding ggplot2.
+
+Avoid thinking about visualizations as a bag of tricks.
+
+makes it easy to make large changes to the plot
+
+--
+
+### Taking a Step Back
+
+.pull-left[
+We have introduced many new concepts; dont panic!
+
+You are not expected to understand all of the code on these slides.
+
+In the next section, we will take a step back and begin
+visualizing data with a single variable.
+]
+
+.pull-right[
+&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-22-1.png" width="360" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## References
+
+&lt;a name=bib-wickham2010&gt;&lt;/a&gt;[Wickham, H.](#cite-wickham2010) (2010). "A
+Layered Grammar of Graphics". In: _Journal of computational and
+graphical statistics_ 19.1, pp. 3-28. ISSN: 1061-8600. DOI:
+[10.1198/jcgs.2009.07098](https://doi.org/10.1198%2Fjcgs.2009.07098).
+URL:
+[http://www.tandfonline.com/doi/abs/10.1198/jcgs.2009.07098](http://www.tandfonline.com/doi/abs/10.1198/jcgs.2009.07098)
+(visited on mar. 13, 2020).
+
+&lt;a name=bib-wilkinson2005&gt;&lt;/a&gt;[Wilkinson, L.](#cite-wilkinson2005)
+(2005). _The Grammar of Graphics_. 2nd edition. New York: Springer.
+ISBN: 978-0-387-24544-7.
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

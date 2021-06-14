@@ -1,0 +1,341 @@
+---
+title: "Multivariate Data"
+subtitle: "Data Visualization"
+author: "Johan Larsson"
+institute: "The Department of Statistics, Lund University"
+date: ""
+bibliography: "assets/references.bib"
+output:
+  xaringan::moon_reader:
+    css: [default, "assets/styles.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      titleSlideClass: [middle, center]
+      countIncrementalSlides: false
+---
+
+```{r setup, include = FALSE}
+knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  dev = "png",
+  fig.width = 4.8,
+  fig.height = 4.1,
+  fig.align = "center",
+  fig.retina = 3,
+  dev.args = list(pointsize = 16),
+  crop = TRUE
+)
+
+library(tidyverse)
+library(tactile)
+library(lattice)
+library(latticeExtra)
+library(kableExtra)
+
+kable <- function(x, ...) {
+  knitr::kable(x, escape = FALSE, linesep = "", booktabs = TRUE)
+}
+
+library(RefManageR)
+BibOptions(check.entries = FALSE, 
+           bib.style = "authoryear",
+           style = "markdown",
+           dashed = TRUE)
+bib <- ReadBib("assets/references.bib")
+
+if (!interactive()) {
+  theme_set(theme_grey(base_size = 16))
+}
+
+options(digits = 3)
+```
+
+## Visualizing Multivariate Data
+
+visualizations often most intriguing when they show multiple variables
+
+```{r, echo = FALSE, out.width = "78%", fig.cap = "The Emigrants of the World, Charles Joseph Minard, 1858."}
+knitr::include_graphics("images/minard-migration.jpg")
+```
+
+---
+
+## 3D
+
+.pull-left-40[
+seems like a logical choice for a third continuous variable
+
+unfortunately, 3D visualizations are notoriously hard to read
+
+as a thumb rule, **avoid 3D visualizations**
+]
+
+.pull-right-60[
+```{r, echo = FALSE, fig.width = 7, fig.height = 7, dev = "png", dev.args = list(pointsize = 12), crop = TRUE, fig.cap = "A 3D scatter plot."}
+library(plot3D)
+
+with(mtcars, scatter3D(disp, hp, mpg,
+                       ticktype = "detailed",
+                       pch = 16,
+                       col = "steelblue",
+                       xlab = "displacement",
+                       ylab = "horsepower",
+                       zlab = "fuel consumption"))
+```
+]
+
+---
+
+```{r, fig.cap = "A particularly bad example of a 3D plot. 3D bar charts are never a good idea. Data shows death rates in Virginia in 1940.", fig.width = 8, fig.height = 7, echo = FALSE}
+library(latticeExtra)
+
+vad <- VADeaths
+colnames(vad) <- c("RM", "RF", "UM", "UF")
+
+par.set <- list(axis.line = list(col = "transparent"),
+                clip = list(panel = "off"),
+                fontsize = list(text = 16, points = 10))
+cloud(vad, panel.3d.cloud = panel.3dbars,
+      xbase = 0.4, ybase = 0.4,
+      zlab = "deaths",
+      par.settings = par.set,
+      scales = list(distance = 1.5, arrows = FALSE), xlab = NULL, ylab = NULL,
+      screen = list(z = 20, x = -40))
+```
+
+
+---
+
+### 3D Visualizations Are Not All Bad!
+
+3D visualizations may be useful in a few situations:
+
+1. interactive or animated 3D plots
+2. multiple plots showing multiple perspectives
+3. only general pattern matters: reading individual points is not important
+4. data actually represents three-dimensional location data (topography)
+
+--
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 3, fig.cap = "The topography of the Maunga Whau Volcano through different perspectives."}
+p <- wireframe(volcano, panel.aspect = 0.7, zoom = 1, lwd = 0.3, col = 1,
+               xlab = "", ylab = "", zlab = "",
+               par.settings = list(axis.line = list(col = "transparent")))
+npanel <- 3
+rotz <- seq(-30, 30, length = npanel)
+roty <- seq(-30, 30, length = npanel)
+
+update(p[c(1, 1, 1)], 
+       layout = c(npanel, 1),
+       panel = function(..., screen) {
+           crow <- current.row()
+           ccol <- current.column()
+           panel.wireframe(..., screen = list(z = rotz[ccol], 
+                                              x = -60,
+                                              y = 3))
+       })
+```
+
+---
+
+## Color
+
+Color is often a good choice, especially with categorical variables.
+
+```{r, fig.height = 3.8}
+mtcars <- 
+  rownames_to_column(mtcars, "name") %>%
+  mutate_at(vars(cyl, gear), as.factor)
+
+ggplot(mtcars, aes(disp, hp, color = cyl)) + #<<
+  geom_point()
+```
+
+---
+
+### Color and Continuous Variables
+
+sometimes fine to map color to continuous variables, particularly when data is in
+a grid format
+
+```{r, echo = FALSE}
+volcano_long <- 
+  as_tibble(volcano) %>%
+  rename_all(~as.character(1:ncol(volcano))) %>%
+  rowid_to_column("longitude") %>%
+  gather("latitude", "height", -longitude) %>%
+  mutate(latitude = as.numeric(latitude))
+```
+
+
+```{r fig.width = 7.5, fig.height = 7}
+# see source code for dataset
+ggplot(volcano_long, aes(longitude, latitude, fill = height)) + 
+  geom_tile() +
+  coord_fixed() # makes sense for latitude, longitude
+```
+
+---
+
+### Scatter Plots
+
+Mapping a continuous variable to color in a scatter plot is less appealing.
+
+```{r, fig.width = 6, fig.height = 4.5}
+ggplot(mtcars, aes(disp, hp, color = mpg)) +
+  geom_point()
+```
+
+---
+
+## Size
+
+Mapping to size only makes sense for continuous variables!
+
+.pull-left-40[
+### Area
+
+most common use case: bubble plots
+
+caveat: comparing areas is **hard**
+]
+
+.pull-right-60[
+```{r, fig.width = 5.5}
+ggplot(mtcars, 
+       aes(disp, hp, size = mpg)) +
+  geom_point()
+```
+]
+
+
+---
+
+### Width
+
+mapping to width can be useful but has few use cases
+
+```{r, echo = FALSE}
+troops <- read.table("data/troops.txt",
+                     header = TRUE) %>%
+  mutate(direction = factor(direction),
+         group = factor(group))
+```
+
+```{r, fig.cap = "Basic reproduction of Minard's Napoleon chart.", fig.width = 10, fig.height = 3.5}
+# see source for dataset
+ggplot(troops, 
+       aes(long, lat, group = group, 
+           color = direction, size = survivors)) +
+  geom_path(lineend = "round")
+```
+
+---
+
+## Shape
+
+works OK for categorical variables, but usually not preferable over color
+
+mapping to line shapes is generally better than point shapes
+
+```{r, fig.width = 6}
+ggplot(mtcars, aes(disp, hp, shape = cyl)) + #<<
+  geom_point()
+```
+
+
+---
+
+## Text
+
+often makes sense when each observation has a meaningful identity
+
+[ggrepel](https://CRAN.R-project.org/package=ggrepel) is a useful package when mapping
+to text (`geom_text_repel()`)
+
+.pull-left[
+```{r sleep, eval = FALSE}
+library(ggrepel)
+
+head(msleep, 15) %>%
+  ggplot(aes(brainwt, 
+             sleep_total, 
+             label = name)) +
+    geom_point() +
+    geom_text_repel() + #<<
+    scale_x_log10()
+```
+]
+
+.pull-right[
+```{r, ref.label = "sleep", echo = FALSE}
+
+```
+
+]
+
+---
+
+## Facets
+
+splits and plots datasets in small multiples
+
+### Wrap
+
+use `facet_wrap()` when you have **one** variable to facet on.
+
+```{r, fig.width = 10, fig.height = 3.4}
+ggplot(mtcars, aes(disp, hp)) +
+  geom_point() +
+  facet_wrap(vars(cyl)) #<<
+```
+
+---
+
+### Grid
+
+Use `facet_grid()` when you have **two** variables to facet on.
+
+```{r, fig.width = 8, fig.height = 5.2}
+ggplot(mtcars, aes(disp, hp)) +
+  geom_point() +
+  facet_grid(vars(cyl), vars(gear)) #<<
+```
+
+---
+
+### Facets and Continuous Variables
+
+If sacrificing detail is OK, you can facet by transforming a continuous
+variable into an ordinal one.
+
+```{r, fig.width = 10, fig.height = 3.6}
+mtcars %>%
+  mutate(hp_cat = cut_interval(hp, 3)) %>% #<<
+  ggplot(aes(mpg, disp)) +
+    geom_point() +
+    facet_wrap(vars(hp_cat))
+```
+
+---
+
+## Combining Our Tools
+
+Putting together these building blocks allows us to create interesting and complex
+visualizations.
+
+```{r, fig.width = 10, fig.height = 4}
+tail(mtcars, 15) %>%
+  ggplot(aes(hp, wt, color = cyl, label = name)) +
+    geom_point() +
+    geom_text_repel() +
+    facet_wrap(vars(gear))
+```
+

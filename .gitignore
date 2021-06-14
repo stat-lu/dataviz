@@ -1,0 +1,7 @@
+.Rhistory
+.RData
+.Rproj.user
+*.ods
+*_cache
+*.tex
+*.pdfpc

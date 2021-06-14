@@ -1,0 +1,249 @@
+---
+title: "Big Data"
+subtitle: "Data Visualization"
+author: "Johan Larsson"
+institute: "The Department of Statistics, Lund University"
+date: ""
+bibliography: "assets/references.bib"
+output:
+  xaringan::moon_reader:
+    css: [default, "assets/styles.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      titleSlideClass: [middle, center]
+      countIncrementalSlides: false
+---
+
+```{r setup, include = FALSE}
+knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  dev = "png",
+  fig.width = 4.8,
+  fig.height = 4.1,
+  fig.align = "center",
+  fig.retina = 3,
+  dev.args = list(pointsize = 16),
+  crop = TRUE
+)
+
+library(tidyverse)
+library(kableExtra)
+
+kable <- function(x, ...) {
+  knitr::kable(x, escape = FALSE, linesep = "", booktabs = TRUE)
+}
+
+library(RefManageR)
+BibOptions(check.entries = FALSE, 
+           bib.style = "authoryear",
+           style = "markdown",
+           dashed = TRUE)
+bib <- ReadBib("assets/references.bib")
+
+if (!interactive()) {
+  theme_set(theme_grey(base_size = 16))
+}
+
+options(digits = 3)
+```
+
+## Big Data
+
+big data: many variables **and/or** observations
+
+here we consider the case of many observations
+
+the problem with many observations is usually **overlap**
+
+.pull-left[
+```{r diamonds1, eval = FALSE}
+ggplot(diamonds, 
+       aes(carat, price)) +
+  geom_point()
+```
+]
+
+.pull-right[
+```{r, ref.label = "diamonds1", echo = FALSE, fig.cap = "Carat and price of diamonds."}
+```
+]
+
+---
+
+## Aesthetics
+
+simple, but not always effective, solutions: modify aesthetics (size, opacity)
+
+.pull-left[
+```{r}
+ggplot(diamonds, 
+       aes(carat, price)) +
+  geom_point(alpha = 0.01)  #<<
+```
+]
+
+.pull-right[
+```{r}
+ggplot(diamonds, 
+       aes(carat, price)) +
+  geom_point(cex = 0.01)  #<<
+```
+]
+
+---
+
+## Facets
+
+sometimes enough to split data into facets
+
+```{r, fig.width = 10, fig.height = 5}
+ggplot(diamonds, aes(carat, price)) +
+  geom_point(alpha = 0.01) +
+  facet_wrap(~cut)
+```
+
+---
+
+## Bin-Summarize or Smooth
+
+The bin-summarize-smooth framework `r Citep(bib, "wickham2013a")` is a principled
+methodology to handle large data.
+
+**Binning** is the process of grouping values into *bins*; **summarizing** is the
+act of computing a summary statistics (count, mean) inside each bean.
+
+**Smoothing** smooths out noisy data, revealing hard-to-see patterns.
+
+already encountered binning for one variable: histograms
+
+---
+
+## Binning
+
+simple, but not very sophisticated, idea
+
+```{r, fig.width = 10, fig.height = 2}
+trees <- tsibble::as_tsibble(treering)
+ggplot(trees, aes(index, value)) + geom_line()
+```
+
+--
+
+```{r fig.width = 10, fig.height = 2}
+ggplot(trees, aes(index, value)) + geom_line(alpha = 0.2) +
+  geom_hline(yintercept = 1, lty = 2) +
+  stat_summary_bin(fun = mean, geom = "line", binwidth = 100) #<<
+```
+
+---
+
+### Two-Dimensional Binning
+
+a type of two-dimensional histogram, mapping counts to color instead of height
+and binning into a two-dimensional geometric shape
+
+```{r, fig.width = 7, fig.height = 4.8}
+ggplot(diamonds, aes(carat, price)) +
+  geom_bin2d(bins = 60) + #<<
+  scale_fill_distiller(palette = "Spectral")
+```
+
+---
+
+### Hexagonal Binning
+
+rectangles may obscure information for some data and it is therefore usually better
+to use hexagons instead, via `geom_hex()`
+
+```{r, fig.width = 7, fig.height = 4.8}
+ggplot(diamonds, aes(carat, price)) +
+  geom_hex(bins = 60) + #<<
+  scale_fill_distiller(palette = "Spectral")
+```
+
+---
+
+## Smoothing
+
+powerful transformation for noisy data
+
+equivalent to applying a statistical model to the data
+
+```{r, fig.width = 10, fig.height = 4}
+ggplot(trees, aes(index, value)) +
+  geom_line(alpha = 0.3, size = 0.3) +
+  geom_hline(yintercept = 1, lty = 2) +
+  geom_smooth() #<<
+```
+
+---
+
+### Smoothers are Sensitive
+
+thumb rule: stick with smoothers that you understand
+
+```{r, echo = FALSE}
+p <- tsibble::as_tsibble(Nile) %>%
+  ggplot(aes(index, value)) +
+    geom_line() +
+    labs(x = "year", y = "flow")
+```
+
+.pull-left[
+```{r}
+p + 
+  geom_smooth(method = "lm") #<<
+```
+]
+
+--
+
+.pull-right[
+```{r}
+p + geom_smooth(
+  method = "gam",
+  formula = y ~ poly(x, 6) #<<
+)
+```
+]
+
+---
+
+### 2D Density Plots
+
+Two-dimensional density plots is a type of two-dimensional **smoothing**.
+
+uses a density kernel, which is sensitive to parameters
+
+```{r, fig.width = 8, fig.height = 5}
+ggplot(diamonds, aes(carat, price)) +
+  geom_density_2d_filled() #<<
+```
+
+---
+
+for other data, a density plot may work well
+
+```{r, fig.width = 8, fig.height = 5}
+ggplot(faithful, aes(eruptions, waiting)) +
+  geom_density2d_filled() +
+  geom_point()
+```
+
+Hexagonal binning is in general a **safer bet**.
+
+---
+
+## References
+
+
+```{r, results = "asis", echo=FALSE}
+PrintBibliography(bib)
+```

@@ -1,0 +1,232 @@
+---
+title: "Animated and Interactive Visualizations"
+subtitle: "Data Visualization"
+author: "Johan Larsson"
+institute: "The Department of Statistics, Lund University"
+date: ""
+bibliography: "assets/references.bib"
+output:
+  xaringan::moon_reader:
+    css: [default, "assets/styles.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      titleSlideClass: [middle, center]
+      countIncrementalSlides: false
+---
+
+```{r setup, include = FALSE}
+knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  dev = "png",
+  fig.width = 4.8,
+  fig.height = 4.1,
+  fig.align = "center",
+  fig.retina = 3,
+  dev.args = list(pointsize = 16),
+  crop = TRUE
+)
+
+library(tidyverse)
+library(kableExtra)
+
+kable <- function(x, ...) {
+  knitr::kable(x, escape = FALSE, linesep = "", booktabs = TRUE)
+}
+
+library(RefManageR)
+BibOptions(check.entries = FALSE, 
+           bib.style = "authoryear",
+           style = "markdown",
+           dashed = TRUE)
+bib <- ReadBib("assets/references.bib")
+
+theme_set(theme_grey())
+
+if (!interactive()) {
+  theme_set(theme_grey(base_size = 16))
+}
+
+options(digits = 3)
+```
+
+## Animated Visualizations
+
+offers an extra aesthetic that we can map
+variables to
+
+very useful in **presentations**
+
+Animating works best when mapping to time or similar process.
+
+--
+
+### gganimate
+
+.pull-left-60[
+[gganimate](https://gganimate.com/) is a ggplot-based solution for producing
+animations in R.
+
+You may need to download and install a
+**renderer**; we recommend [gifski](https://gif.ski/).
+]
+
+.pull-right-40[
+```{r echo = FALSE, out.width = "50%"}
+knitr::include_graphics("images/gganimate.svg")
+```
+
+]
+
+
+---
+
+### Example: Housing Sales in Texas
+
+Start with some data.
+
+```{r}
+# aggregate over years
+tx <- select(txhousing, city, year, sales:inventory) %>%
+  group_by(city, year) %>%
+  summarize_all(mean, na.rm = TRUE)
+```
+
+.pull-left[
+Then build a basic ggplot.
+
+```{r houston, eval = FALSE}
+p <- tx %>%
+  ggplot(aes(median, 
+             listings)) +
+    geom_point(alpha = 0.5)
+p
+```
+]
+
+.pull-right[
+```{r ref.label = "houston", echo = FALSE, out.width = "100%", fig.cap = "Median sales price and numbers of listings."}
+```
+]
+
+
+---
+
+### Animating the Plot
+
+Adding `ease_aes()` and `transition_*()` to the plot sets up the animation.
+
+Calling the object invokes the `animate()` function,
+which does all the heavy-lifting.
+
+.pull-left[
+```{r anim1, eval = FALSE}
+library(gganimate)
+
+anim <- p +
+  transition_time(year) + #<<
+  ease_aes() #<<
+
+anim # same as animate(anim)
+```
+]
+
+.pull-right[
+```{r ref.label = "anim1", echo = FALSE, out.width = "100%"}
+```
+]
+
+
+---
+
+### Labeling
+
+uses special **glue** syntax inside `labs()`
+
+```{r, out.width = "60%"}
+anim2 <- anim +
+  labs(title = "Year: {frame_time}") #<<
+anim2
+```
+
+
+---
+
+### Fine-tuning
+
+Use `animate()` directly for more control over the animation.
+
+```{r, out.width = "60%"}
+animate(anim2, duration = 20, nframes = 150) #<<
+```
+
+---
+
+## Interactive Visualizations
+
+great for most datasets, particularly complicated datasets, but can
+only really be used on webpages
+
+often useful in tandem with carefully designed static visualizations
+
+.pull-left[
+### plotly
+
+Simple interactive visualizations can be achieved easily using [plotly](https://plotly.com/).
+
+two alternatives: 
+
+- call `plot_ly()` directly
+- use `ggplotly()` on a plot built in ggplot2
+
+We focus on the second alternative.
+]
+
+.pull-right[
+```{r, echo = FALSE}
+knitr::include_graphics("images/plotly.png")
+```
+]
+
+---
+
+```{r, fig.width = 8, fig.height = 5, eval = FALSE}
+library(plotly)
+p <- ggplot(msleep, aes(brainwt, sleep_total, color = vore, 
+                        genus = genus, 
+                        conservation = conservation)) +
+  geom_point() +
+  scale_x_log10()
+ggplotly(p) #<<
+```
+
+```{r, echo = FALSE, out.width = "83%"}
+knitr::include_graphics("videos/plotly-animation1.gif")
+```
+
+---
+
+### Shiny
+
+For more advanced interactive visualizations (beyond the scope of this course), 
+have a look at [shiny](https://shiny.rstudio.com/).
+
+```{r, echo = FALSE, out.width = "80%"}
+knitr::include_graphics("videos/shiny-animation1.gif")
+```
+
+
+<!-- --- -->
+
+<!-- ## References -->
+
+
+<!-- ```{r, results = "asis", echo=FALSE} -->
+<!-- PrintBibliography(bib) -->
+<!-- ``` -->

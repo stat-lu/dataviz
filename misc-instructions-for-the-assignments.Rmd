@@ -1,0 +1,210 @@
+---
+title: "Instructions for the Assignments"
+author: "Johan Larsson"
+#date: "9/4/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: united
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.width = 5,
+  fig.height = 4,
+  dev = "png"
+)
+options(scipen = 999)
+```
+
+For each assignment, as well as for the project, you need to hand in a `.pdf`
+report. This report should be a written
+response to the tasks given in the assignment. It should respond to all the
+questions in the assignment in a **clear** and **succinct** manner.
+
+## Workflow: Two Approaches
+
+There are two approaches you can take when you write your report. The first
+of these is to use R Markdown; the second is to write your report
+in a WYSIWYG (what you see is what you get) software such as
+Libre Office, Google Docs, or Microsoft Word.
+
+### R Markdown
+
+If you want to go down this road, start by downloading
+the submission template that we have provided for you by
+running the following code,
+
+```{r}
+download.file(
+  "https://raw.githubusercontent.com/stat-lu/dataviz/main/template.Rmd",
+  "template.Rmd", # replace this if you want to
+  mode = "wb"
+)
+```
+
+which will download and save the file to your working directory.
+
+The template also serves as an introduction to R Markdown. To get started,
+simply open the document in R Studio and read through the code and text.
+
+#### Pros
+
+* You don't need to bother with formatting details. R Markdown, pandoc, and
+  LaTeX takes care of it all for you.
+* It's very convenient to modify figures or change image sizes. (Simply
+  change `fig.width` and `fig.height` in the header).
+* Your document becomes reproducible by someone else if you just give them
+  the `.Rmd` file (and sometimes some other additional auxiliary files).
+* Code that you include is automatically formatted and receives pretty
+  syntax highlighting.
+
+#### Cons
+
+* You need to learn Markdown syntax and R Markdown code chunks, which will
+  require an initial time investment. If you don't expect
+  to write these kinds of reports or presentations in the future or will be
+  working with people who will not use R Markdown, this investment may not
+  pay off.
+* There are sometimes technical difficulties in getting R Markdown working,
+  especially for Windows machines^[This is typically not a problem since you
+  can export your document to a Word document instead of a PDF.].
+
+### WYSIWYG
+
+If you prefer to use a WYSIWYG editor, you will likely want to either
+use `ggplot2::ggsave()` or the built-in export utility in the plot pane of
+R Studio to save your plots to your hard drive and then input them manually
+into your document. Here is a simple example of how to do this:
+
+```{r, eval = FALSE}
+library(ggplot2)
+
+ggplot(mpg, aes(cty, hwy)) +
+  geom_point()
+
+ggsave("filename.png", width = 3, height = 2.3)
+```
+
+#### Pros
+
+* You probably already are familiar with Microsoft Word or Google Docs, so
+  you can get going quickly.
+
+#### Cons
+
+* Modifying figures is a little bit of a hassle since you need to re-import
+  the figure every time you modify the plot or make changes to its size.
+* When you want (or need) to include code, you need to format it yourself by
+  using a mono-spaced font (such as Courier or Consolas), and will not
+  get syntax highlighting.
+
+## Detailed Requirements
+
+### Writing
+
+Your report does not need to be verbose but it must be **clear** and
+**coherent**. Use full sentences and describe the steps you take and code you've
+included. Prefer a walk-through approach rather than a question: answer format.
+Someone who has not seen the assignment instructions should (reasonably well)
+be able to read your report.
+
+### Figures
+
+Any figures you include should have descriptive labels and captions. If you
+are using R Markdown, please use the `fig.cap` argument in the R Markdown
+chunk header to provide a caption. Also make use of `fig.width` and `fig.height`
+to control the size of the figures. A code chunk for a figure might look
+something like this:
+
+````
+```{r, fig.cap = "Engine displacement and number of cylinders for 38 popular models of cars from <https://fueleconomy.gov>.", fig.width = 4.2, fig.height = 3.7}`r ''`
+library(tidyverse)
+
+mpg %>%
+  ggplot(aes(cyl, displ)) +
+  geom_point() +
+  labs(x = "Number of Cylinders",
+       y = "Engine Displacement")
+```
+````
+
+```{r, fig.cap = "Engine displacement and number of cylinders for 38 popular models of cars from <https://fueleconomy.gov>.", echo = FALSE}
+library(tidyverse)
+
+mpg %>%
+  ggplot(aes(cyl, displ)) +
+  geom_point() +
+  labs(x = "Number of Cylinders",
+       y = "Engine Displacement")
+```
+
+If you use a WYSIWYG editor, you need to first import your images
+into the editor and then right-click on them and choose `Insert Caption` (or
+some similar command). **Don't use `ggtitle()`, `labs(title = ...)`!**
+
+See
+[The Anatomy of a Plot](https://stat-lu.github.io/dataviz/misc-the-anatomy-of-a-plot)
+for examples and more instruction on how to format your figures.
+
+### Code
+
+Only include code when you are **instructed** to do so. When you do include
+code, please
+avoid having it escape into the margin by using multiple lines to separate code.
+Good code style is not a requirement in this course but is nevertheless good
+practice. It might be a good idea to conform to a style guide such as
+[the tidyverse style guide](https://style.tidyverse.org/). R Studio
+can also format code for you if you select it and hit `Cmd/Ctrl + Alt + a`.
+
+## Peer Review and Examination
+
+For each assignment you will need to peer review **three other reports**. To
+complete these reviews, you need to fill out the **rubric** associated with the
+assignment and add a general comment on the submission. In addition, we also
+encourage you to provide **annotated feedback** using the integrated tools in
+Canvas. Please see
+[this page](https://community.canvaslms.com/t5/Student-Guide/How-do-I-submit-a-peer-review-to-an-assignment/ta-p/293)
+to read more about peer-reviewing in canvas.
+
+Finally, please remember to provide **constructive** feedback.
+
+### You have one week to complete your peer review!
+
+If you have not completed your peer review within one week past the deadline,
+you will **fail the assignment**.
+
+### Grading
+
+The assignments and project will be graded by an instructor or teaching
+assistant as **pass** or **fail**. To pass the course,
+**you need to pass each assignment**. If you fail any assignment (or the
+project), you will get an additional chance to hand in these after the
+conclusion of the course.
+
+## Hints
+
+- Functions in the tidyverse are well-documented. Students who are successful
+  at these assignments often make good use of the help files for the various
+  functions. (In RStudio simply place the cursor on the function name and hit
+  F1).
+- To run code in R Studio inside a R Markdown document, highlight the code and
+  hit `Ctrl/Cmd + Enter`. (There is no need to copy it directly into
+  the terminal.)
+- To create a code chunk in your R Markdown document, use the shortcut
+  `Ctrl/Cmd + Alt + i`.
+- If you want code in your R Markdown document to appear inside your final
+  report, use `echo = TRUE` in the header of the code chunk.
+- The size of figures can be controlled using the `fig.width` and `fig.height`
+  options in the code header (if you use R Markdown) and the `width` and
+  `height` arguments in `ggsave()` if you use a WYSIWYG editor. **Please don't
+  resize the images inside the editor**, which will risk making the annotation
+  in the visualization hard to read.

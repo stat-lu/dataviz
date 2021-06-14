@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Scales</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Johan Larsson" />
+    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/styles.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: middle, center, title-slide
+
+# Scales
+## Data Visualization
+### Johan Larsson
+### The Department of Statistics, Lund University
+
+---
+
+
+
+
+## Scales and Ranges
+
+Choosing appropriate scales can make or break a visualization!
+
+must be **knowledgeable** about what the data represent
+
+sometimes obvious choice, other times **tricky** to pick scales appropriately
+
+.pull-left[
+&lt;img src="08-scales_files/figure-html/unnamed-chunk-1-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="08-scales_files/figure-html/unnamed-chunk-2-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+]
+
+.center[*Number of reported crimes in Sweden (https://www.bra.se).*]
+
+---
+
+## Scales and Limits
+
+not always appropriate to include entire range, such as when
+
+- 0 is not a meaningful value for the variable,
+- only a small subset of the range is attained in practice, or
+- when even small differences matter a lot
+
+--
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="08-scales_files/figure-html/unnamed-chunk-3-1.png" alt="Change in reported crimes between 2019 and 2020 in Sweden (https://bra.se)." width="345.6" /&gt;&lt;img src="08-scales_files/figure-html/unnamed-chunk-3-2.png" alt="Change in reported crimes between 2019 and 2020 in Sweden (https://bra.se)." width="345.6" /&gt;
+&lt;p class="caption"&gt;Change in reported crimes between 2019 and 2020 in Sweden (https://bra.se).&lt;/p&gt;
+&lt;/div&gt;
+
+
+---
+
+## Scales and Limits when using Color
+
+Choosing limits for color-mapped variables can also be problematic!
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="08-scales_files/figure-html/unnamed-chunk-4-1.png" alt="Life expectancy in the US." width="720" /&gt;
+&lt;p class="caption"&gt;Life expectancy in the US.&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+## Scales and Limits when using Color
+
+Choosing limits for color-mapped variables can also be problematic!
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="08-scales_files/figure-html/unnamed-chunk-5-1.png" alt="Life expectancy in the US with other limits." width="720" /&gt;
+&lt;p class="caption"&gt;Life expectancy in the US with other limits.&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+## Size
+
+When mapping a variable to size, map it to **area** (not height or width).
+
+usually comes up with bubble charts
+
+
+```r
+p &lt;- ggplot(mtcars, aes(wt, mpg, size = hp)) + geom_point()
+```
+
+.pull-left[
+
+```r
+*p + scale_size_area()
+```
+
+&lt;img src="08-scales_files/figure-html/unnamed-chunk-7-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+```r
+*p + scale_radius()
+```
+
+&lt;img src="08-scales_files/figure-html/unnamed-chunk-8-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## The Lie Factor
+
+.pull-left[
+another concept introduced by Edward Tufte
+
+$$
+\text{lie factor} = \frac{\text{effect in visualization}}{\text{size of effect in data}}
+$$
+should strive for a lie factor of 1
+]
+
+.pull-right[
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="images/liefactor_doctor.jpg" alt="Data mapped to height and width of the doctor image, inducing a lie factor of 2.8." width="90%" /&gt;
+&lt;p class="caption"&gt;Data mapped to height and width of the doctor image, inducing a lie factor of 2.8.&lt;/p&gt;
+&lt;/div&gt;
+]
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

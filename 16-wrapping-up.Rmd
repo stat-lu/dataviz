@@ -1,0 +1,114 @@
+---
+title: "Wrapping Up"
+subtitle: "Data Visualization"
+author: "Johan Larsson"
+institute: "The Department of Statistics, Lund University"
+date: ""
+bibliography: "assets/references.bib"
+output:
+  xaringan::moon_reader:
+    css: [default, "assets/styles.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      titleSlideClass: [middle, center]
+      countIncrementalSlides: false
+---
+
+```{r setup, include = FALSE}
+knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  dev = "png",
+  fig.width = 5,
+  fig.height = 4,
+  fig.align = "center",
+  fig.retina = 3,
+  dev.args = list(pointsize = 16),
+  crop = TRUE
+)
+
+library(tidyverse)
+library(kableExtra)
+
+kable <- function(x, ...) {
+  knitr::kable(x, escape = FALSE, linesep = "", booktabs = TRUE)
+}
+
+library(RefManageR)
+BibOptions(check.entries = FALSE, 
+           bib.style = "authoryear",
+           style = "markdown",
+           dashed = TRUE)
+bib <- ReadBib("assets/references.bib")
+
+theme_set(theme_grey())
+
+if (!interactive()) {
+  theme_set(theme_grey(base_size = 15))
+}
+
+options(digits = 3)
+```
+
+## Congratulations!
+
+You've learnt a lot!
+
+- **powerful** and **modern** tools for visualization
+- multivariate, interactive, animated, and spatial visualizations
+- theoretical aspects (the grammar of graphics, color, data-ink)
+
+.pull-right[
+```{r, out.width = "100%", echo = FALSE}
+knitr::include_graphics("images/balloons.jpg")
+```
+]
+
+---
+
+## Next Steps
+
+### ggplot2 and R
+
+- Read the [ggplot2 book](https://ggplot2-book.org/).
+- Check out the [many extensions to ggplot2](https://exts.ggplot2.tidyverse.org/)
+- Take the red pill and read `r Citet(bib, "murrell2018")` to learn everything
+  there is to know about R graphics.
+
+### Data Wrangling
+
+- Datasets in the wild are seldom as well-organized; learn about wrangling with
+  data in [R for Data Science](https://r4ds.had.co.nz/).
+
+### Visualization
+
+- Learn more about Edward Tufte's seminal work `r Citep(bib, "tufte2001")`.
+
+---
+
+## Course Evaluation
+
+**Please** fill out the course evaluation!
+
+Your feedback helps us to develop and improve this course for future students like you.
+
+<br><br><br><br>
+```{r, echo = FALSE, fig.align = "right", out.width = "65%"}
+knitr::include_graphics("images/survey.jpg")
+```
+
+
+---
+
+## References
+
+
+```{r, results = "asis", echo=FALSE}
+PrintBibliography(bib)
+```

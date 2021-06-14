@@ -1,0 +1,50 @@
+---
+title: "Feedback and History of Changes"
+author: "Johan Larsson"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: united
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.width = 5,
+  fig.height = 4,
+  dev = "png"
+)
+options(scipen = 999)
+```
+
+# Spring 2021
+
+### Changes
+
+- Several new *Worked Examples* have been added to the course. The source
+  code for all of these worked examples has also been made available on the
+  GitHub repository for the course.
+- All of the reading assignments have been converted into
+  quizzes.
+- The initial "Post a Visualization" assignment has been removed.
+- The workshops have been made weekly (instead of bi-weekly), and
+  the duration has been shortened to one hour.
+- Prerequisites and requirements for the course modules have been removed so
+  that all the course content is now accessible right away.
+
+# Fall 2020
+
+### Feedback
+
+Feedback on the course was positive across all items in the course evaluation.
+We received one specific request, which was to make the workshops (help 
+sessions) weekly instead of bi-weekly.
+

@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&family=Source+Serif+Pro:wght@400;600;700&display=swap');
+
+/* Generic stuff */
+
+.remark-code, .remark-inline-code {
+  font-family: 'Source Code Pro', 'Inconsolata', 'Consolas', 'Lucida Console', Monaco, monospace;
+}
+
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+  padding-top: 0px;
+}
+
+.remark-slide-content h2 {
+  font-size: 1.8em;
+}
+
+.remark-slide-content h3 {
+  font-size: 1.3em;
+}
+
+.remark-slide-content {
+  font-size: 1.38em;
+}
+
+.remark-slide-content h1, h2, h3, h4, h5 {
+  font-family: 'Source Serif Pro', 'Droid Serif', serif;
+  margin-bottom: 0px;
+}
+
+/* title */
+.title-slide h1 {
+	margin-top: -200px;
+	font-weight: 700;
+  font-size: 2em;
+}
+
+/* subtitle */
+.title-slide h2 {
+  font-weight: 600;
+  font-size: 1.5em;
+  margin-top: 0px;
+  margin-bottom: 60px;
+}
+
+/* author, institute, and date */
+.title-slide h3 {
+  font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', sans-serif;
+  font-weight: 400;
+  font-size: 1.2em;
+}
+
+/* author */
+.title-slide h3:nth-of-type(1) {
+  font-weight: 600;
+}
+
+/* institute */
+.title-slide h3:nth-of-type(2) {
+  font-style: italic;
+  margin-top: 0px;
+}
+
+/* date */
+.title-slide h3:nth-of-type(3) {
+  margin-top: 30px;
+}
+
+.title-slide {
+	background-color: #fff;
+  background-image: url(lu.png);
+	background-position: center bottom 40px;
+	background-size: 15%;
+}
+
+.title-slide .remark-slide-number {
+  display: none;
+}
+
+/* section header */
+.section-title {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.section-title h1,
+.section-title h2,
+.section-title h3 {
+  margin-top: 10px;
+  margin-bottom:10px;
+}
+
+.section-title h2 {
+  margin-top: 0px;
+  font-size: 1.6em;
+  color: #333;
+}
+
+.caption {
+  font-style: italic;
+  color: #222;
+}
+
+.footnote {
+  font-size: 0.7em;
+}
+
+.vcenter {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.pull-left-60 {
+  float: left;
+  width: 57%;
+}
+
+.pull-right-40 {
+  float: right;
+  width: 37%;
+}
+
+.pull-left-40 {
+  float: left;
+  width: 37%;
+}
+
+.pull-right-60 {
+  float: right;
+  width: 57%;
+}
+
+.pull-right + * {
+  clear: both;
+}
+

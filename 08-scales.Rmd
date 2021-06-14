@@ -1,0 +1,228 @@
+---
+title: "Scales"
+subtitle: "Data Visualization"
+author: "Johan Larsson"
+institute: "The Department of Statistics, Lund University"
+date: ""
+bibliography: "assets/references.bib"
+output:
+  xaringan::moon_reader:
+    css: [default, "assets/styles.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      titleSlideClass: [middle, center]
+      countIncrementalSlides: false
+---
+
+```{r setup, include = FALSE}
+knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  dev = "png",
+  fig.width = 4.8,
+  fig.height = 4.1,
+  fig.align = "center",
+  fig.retina = 3,
+  dev.args = list(pointsize = 16),
+  crop = TRUE
+)
+
+library(tidyverse)
+library(tactile)
+library(lattice)
+library(latticeExtra)
+library(kableExtra)
+
+kable <- function(x, ...) {
+  knitr::kable(x, escape = FALSE, linesep = "", booktabs = TRUE)
+}
+
+library(RefManageR)
+BibOptions(check.entries = FALSE, 
+           bib.style = "authoryear",
+           style = "markdown",
+           dashed = TRUE)
+bib <- ReadBib("assets/references.bib")
+
+if (!interactive()) {
+  theme_set(theme_grey(base_size = 16))
+}
+
+options(digits = 3)
+```
+
+## Scales and Ranges
+
+Choosing appropriate scales can make or break a visualization!
+
+must be **knowledgeable** about what the data represent
+
+sometimes obvious choice, other times **tricky** to pick scales appropriately
+
+.pull-left[
+```{r, echo = FALSE}
+library(tidyverse)
+library(lubridate)
+
+bra <- tibble(
+  year = ymd(2010:2019, truncated = 2),
+  crime = c(1370399,
+            1416280, 
+            1402588, 
+            1401982,
+            1443753,
+            1503399,
+            1510197,
+            1514902,
+            1550626,
+            1548406)
+)
+
+ggplot(bra, aes(year, crime)) +
+  geom_line() +
+  geom_point()
+```
+]
+
+--
+
+.pull-right[
+```{r, echo = FALSE}
+ggplot(bra, aes(year, crime)) +
+  geom_line() +
+  geom_point() +
+  ylim(c(0, max(bra$crime)*1.05))
+```
+]
+
+.center[*Number of reported crimes in Sweden (https://www.bra.se).*]
+
+---
+
+## Scales and Limits
+
+not always appropriate to include entire range, such as when
+
+- 0 is not a meaningful value for the variable,
+- only a small subset of the range is attained in practice, or
+- when even small differences matter a lot
+
+--
+
+```{r, echo = FALSE, fig.cap = "Change in reported crimes between 2019 and 2020 in Sweden (https://bra.se).", fig.show = "hold", crop = NULL}
+bra2 <- tibble(
+  month = ymd(200001 + seq(100, 700, by = 100)),
+  crime_change = c(7, 10, -4, -5, -3, 3, 6)
+)
+
+ggplot(bra2, aes(month, crime_change)) +
+  geom_point() +
+  geom_linerange(aes(ymax = crime_change), ymin = 0) +
+  geom_hline(yintercept = 0)
+
+ggplot(bra2, aes(month, crime_change)) +
+  geom_point() +
+  geom_linerange(aes(ymax = crime_change), ymin = 0) +
+  geom_hline(yintercept = 0) +
+  ylim(-100, 100)
+```
+
+
+---
+
+## Scales and Limits when using Color
+
+Choosing limits for color-mapped variables can also be problematic!
+
+```{r, fig.cap = "Life expectancy in the US.", echo = FALSE, fig.width = 10, fig.height = 6}
+library(maps)
+library(mapproj)
+
+arrests <-
+  USArrests %>%
+  rownames_to_column("state") %>%
+  mutate(state = tolower(state))
+
+states_data <- 
+  as.data.frame(state.x77) %>%
+  rownames_to_column("State") %>%
+  as_tibble() %>%
+  mutate(State = tolower(State)) %>%
+  filter(State != "alaska" & State != "hawaii")
+
+states_map <- map_data("state") %>%
+  filter(region != "district of columbia")
+
+ggplot(states_data, aes(map_id = State)) +
+  geom_map(aes(fill = `Life Exp`), map = states_map) +
+  expand_limits(x = states_map$long, y = states_map$lat) +
+  coord_map("bonne", param = 45) +
+  theme_void()
+```
+
+---
+
+## Scales and Limits when using Color
+
+Choosing limits for color-mapped variables can also be problematic!
+
+```{r, fig.cap = "Life expectancy in the US with other limits.", echo = FALSE, fig.width = 10, fig.height = 6}
+ggplot(states_data, aes(map_id = State)) +
+  geom_map(aes(fill = `Life Exp`), map = states_map) +
+  expand_limits(x = states_map$long, y = states_map$lat) +
+  scale_fill_continuous(limits = c(66, 80)) +
+  coord_map("bonne", param = 45) +
+  theme_void()
+```
+
+---
+
+## Size
+
+When mapping a variable to size, map it to **area** (not height or width).
+
+usually comes up with bubble charts
+
+```{r}
+p <- ggplot(mtcars, aes(wt, mpg, size = hp)) + geom_point()
+```
+
+.pull-left[
+```{r, fig.height = 3.5}
+p + scale_size_area() #<<
+```
+]
+
+.pull-right[
+```{r, fig.height = 3.5}
+p + scale_radius() #<<
+```
+]
+
+
+---
+
+## The Lie Factor
+
+.pull-left[
+another concept introduced by Edward Tufte
+
+$$
+\text{lie factor} = \frac{\text{effect in visualization}}{\text{size of effect in data}}
+$$
+should strive for a lie factor of 1
+]
+
+.pull-right[
+```{r, echo = FALSE, fig.cap = "Data mapped to height and width of the doctor image, inducing a lie factor of 2.8.", out.width = "90%"}
+knitr::include_graphics("images/liefactor_doctor.jpg")
+```
+]
+
+

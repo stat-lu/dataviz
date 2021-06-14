@@ -1,0 +1,325 @@
+---
+title: "Statistical Models"
+subtitle: "Data Visualization"
+author: "Johan Larsson"
+institute: "The Department of Statistics, Lund University"
+date: ""
+bibliography: "assets/references.bib"
+output:
+  xaringan::moon_reader:
+    css: [default, "assets/styles.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      titleSlideClass: [middle, center]
+      countIncrementalSlides: false
+---
+
+```{r setup, include = FALSE}
+knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  dev = "png",
+  fig.width = 4.8,
+  fig.height = 4.1,
+  fig.align = "center",
+  fig.retina = 3,
+  dev.args = list(pointsize = 16),
+  crop = TRUE
+)
+
+library(tidyverse)
+library(kableExtra)
+
+kable <- function(x, ...) {
+  knitr::kable(x, escape = FALSE, linesep = "", booktabs = TRUE)
+}
+
+library(RefManageR)
+BibOptions(check.entries = FALSE, 
+           bib.style = "authoryear",
+           style = "markdown",
+           dashed = TRUE)
+bib <- ReadBib("assets/references.bib")
+
+if (!interactive()) {
+  theme_set(theme_grey(base_size = 16))
+}
+
+options(digits = 3)
+```
+
+## Statistical Models
+
+most of our work so far: **exploratory** analysis
+
+but for analysis we often also want **diagnostic**,
+**prediction**, and **estimate plots**
+
+--
+
+.pull-left[
+
+For very simple models, `geom_smooth()` may be sufficient.
+
+```{r cars, eval = FALSE}
+ggplot(cars, 
+       aes(speed, dist)) +
+  geom_point() +
+  geom_smooth(method = "lm") #<<
+```
+]
+
+.pull-right[
+```{r, ref.label = "cars", fig.cap = "Ordinary least squares regression visualized for speed and stopping distance of cars.", echo = FALSE}
+
+```
+]
+
+---
+
+## Broom
+
+More complicated models usually call for more control.
+
+[broom](https://broom.tidymodels.org/) is a great tool for generating **tidy** output
+from models.
+
+```{r, eval = FALSE}
+library(broom)
+
+fit <- lm(mpg ~ disp, data = mtcars)
+augment(fit) #<<
+```
+
+```{r, echo = FALSE}
+library(broom)
+
+fit <- lm(mpg ~ disp, data = mtcars)
+
+augment(fit) %>%
+  head(4) %>%
+  knitr::kable()
+```
+
+---
+
+## Case Study: Fertility in Switzerland
+
+```{r}
+# dichotomize the Catholic variable
+swiss2 <- 
+  mutate(
+    swiss,
+    Catholic = ifelse(Catholic > 50, "Catholic", "Protestant")
+  )
+
+# fit the linear model
+fit <- lm(Fertility ~ ., data = swiss2)
+```
+
+```{r, eval = FALSE}
+# get some summary statistics with broom::glance()
+glance(fit)
+```
+
+```{r, echo = FALSE}
+# possibly get some summary statistics with broom::glance()
+glance(fit) %>%
+  kbl() %>%
+  kable_styling(font_size = 16)
+```
+
+---
+
+### Diagnostic Plots
+
+Visualizations are great for diagnosing models!
+
+for `lm()` models usually need only standard `plot()` method
+
+.pull-left[
+#### Residual Plot
+
+useful standard diagnostic plot
+
+```{r residualplot, eval = FALSE}
+aug <- augment(fit)
+
+ggplot(aug, 
+       aes(.fitted, 
+           .std.resid)) +
+  geom_hline(yintercept = 0, 
+             lty = 2) +
+  geom_point()
+```
+]
+
+.pull-right[
+```{r ref.label = "residualplot", echo = FALSE, fig.height = 4.8}
+```
+]
+
+---
+
+### Coefficient Plots
+
+Models often estimate parameters: linear regression fits return **coefficients**.
+
+Use `broom::tidy()` to extract summary statistics from the fit.
+
+```{r, eval = FALSE}
+tidy(fit, conf.int = TRUE)
+```
+
+```{r, echo = FALSE}
+tidy(fit, conf.int = TRUE) %>%
+  kbl(caption = "Output from broom::tidy().") %>%
+  kable_styling(font_size = 20)
+```
+
+---
+
+easy to pipe the `broom::tidy()` output into ggplot2 to create coefficient
+plots
+
+```{r, fig.height = 3.8, fig.width = 7}
+tidy(fit, conf.int = TRUE) %>%
+  filter(term != "(Intercept)") %>%
+  ggplot(aes(estimate, term)) +
+    geom_vline(xintercept = 0, lty = 2) +
+    geom_point() +
+    geom_linerange(aes(xmin = conf.low, xmax = conf.high))
+```
+
+alternative: use `GGally::ggcoef()` directly on `fit`
+
+---
+
+### Prediction Plots
+
+first need to create a table of values to predict for
+
+`tidyr::expand()` generates combinations of variables in dataset.
+
+```{r}
+new_data <-
+  expand(
+    swiss2, 
+    Agriculture = median(Agriculture), 
+    Examination = median(Examination),
+    Education = full_seq(Education, 2, 1), #<<
+    Catholic, #<<
+    Infant.Mortality = median(Infant.Mortality)
+  )
+```
+
+```{r, echo = FALSE}
+head(new_data, 4) %>%
+  kbl() %>%
+  kable_styling(font_size = 20)
+```
+
+---
+
+Augment new data with predictions from the model using `broom::augment()`.
+
+```{r}
+aug <- augment(fit, newdata = new_data, se_fit = TRUE)
+```
+
+
+```{r, echo = FALSE}
+head(aug) %>%
+  kbl(caption = "Predicted values, standard errors") %>%
+  kable_styling(font_size = 20)
+```
+
+---
+
+then plot the predictions
+
+```{r, fig.width = 7, fig.height = 4.8}
+ggplot(aug, aes(Education, .fitted, 
+                fill = Catholic, color = Catholic)) +
+    geom_ribbon(aes(ymin = .fitted - .se.fit,
+                    ymax = .fitted + .se.fit),
+                color = "transparent",
+                alpha = 0.2) +
+    geom_line()
+```
+
+---
+
+### Predictions Across Two Numeric Variables
+
+Heatmaps (`geom_tile()`) allow us to vary one more variable.
+
+```{r}
+# create some new data to predict on
+new_data2 <-
+  expand(
+    swiss2, 
+    Agriculture = median(Agriculture), 
+    Examination = median(Examination),
+    Education = full_seq(Education, 2, 1), #<<
+    Catholic, #<<
+    Infant.Mortality = full_seq(Infant.Mortality, 1, 1) #<<
+  )
+
+# augment with predictions
+aug2 <- augment(fit, newdata = new_data2)
+```
+
+---
+
+```{r, fig.width = 10, fig.height = 5, fig.cap = "Prediction heatmaps for fertility across variables examination, agriculture, and religion."}
+ggplot(aug2, aes(Education, Infant.Mortality, fill = .fitted)) +
+  geom_tile() +
+  facet_wrap(vars(Catholic)) +
+  scale_fill_viridis_c() +
+  labs(fill = "Fertility")
+```
+
+
+---
+
+## Good Practices
+
+- Start by tyding your data.
+- Explore the data with visualizations (and other summaries)
+- Spend ample time visualizing model diagnostics and predictions.
+- Use graphics **liberally** when presenting models.
+- Visualizations are easier to read than tables, but sometimes 
+  the exact numbers are also important.
+  
+--
+
+## Tidymodels
+
+.pull-left-60[
+Check out [tidymodels](https://tidymodels.org/) if you want to
+learn more about statistical modeling inside the tidyverse.
+]
+
+.pull-right-40[
+```{r, echo = FALSE, out.width = "70%"}
+knitr::include_graphics("images/tidymodels.png")
+```
+
+]
+
+
+<!-- --- -->
+
+<!-- ## References -->
+
+
+<!-- ```{r, results = "asis", echo=FALSE} -->
+<!-- PrintBibliography(bib) -->
+<!-- ``` -->

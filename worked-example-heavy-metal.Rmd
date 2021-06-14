@@ -1,0 +1,252 @@
+---
+title: "Worked Example: Heavy Metal"
+author: "Johan Larsson"
+#date: "9/4/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: united
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.width = 5,
+  fig.height = 4,
+  dev = "png"
+)
+options(scipen = 999)
+```
+
+## Meuse River Data
+
+In this worked example, we'll take a look at the *Meuse river data set*
+from the [sp](https://CRAN.R-project.org/package=sp) package^[The sp package
+is a full-featured solution for visualization data, and can be used in its
+own right to create maps in R.]
+
+You of course need to download and install the package if you don't have
+it already. Then make the dataset available using `data(meuse)`.
+
+```{r}
+# install.packages("sp")
+library(sp)
+data(meuse)
+
+head(meuse)
+```
+
+The data consists of longitude (`x`) and latitude (`y`), as well as
+different measures related to heavy metals. Before we dig into this
+data set, let's set up the ggplot2 theme for mapping. This time, we use
+the `theme_map()` (instead of `theme_void()`, which we used
+previously) from the
+[ggthemes](https://CRAN.R-project.org/package=ggthemes) package.
+
+```{r}
+library(tidyverse)
+library(ggthemes) # install.packages("ggthemes")
+
+theme_set(theme_map(base_size = 11))
+```
+
+Let's start with a simple plot, looking at lead, creating a bubble plot by
+mapping the presence of lead to size of the points.
+
+```{r, fig.cap = "Concentration of lead around the river Meuse.", fig.width = 4, fig.height = 5}
+ggplot(meuse) +
+  aes(x, y, size = lead) +
+  geom_point() +
+  coord_equal() +
+  theme(legend.position = "right")
+```
+
+## Raster Charts
+
+Okay, that looks alright, but what we're missing is of course some geographical
+features. It's not even clear right now where the river is. To get some
+geographical data, we'll download a suitable raster map from stamen maps,
+using **ggmap**.
+
+```{r}
+library(ggmap) # install.packages("ggmap")
+```
+
+To download the map, we of course need to specify coordinates, which
+we can find from the `meuse` dataset. The problem is that the
+coordinates from the dataset are not standard latitude and longitude
+coordinates. Instead, by looking at the documentation for `meuse`, we see
+that they are in fact Rijksdriehoek (RDH) (Netherlands topographical) map
+coordinates. We need to convert these. Doing so is a little bit
+tricky. We first need to setup our original coordinates and define the
+coordinate system that they are tied to, then project the coordinates to a
+new coordinate system.
+
+This next bit requires the [rgdal](https://CRAN.R-project.org/package=rgdal)
+package, which you may need some external dependencies to install.^[Possibly
+<https://cran.r-project.org/bin/windows/Rtools/> if you are on Windows and
+the development tools if you are on Mac OS X
+<https://cran.r-project.org/bin/macosx/tools/>. If you use linux, you should
+receive a helpful error message when trying to install the package about
+what to do.] If you don't want to or have trouble downloading **rgdal**, we
+have provided the converted dataset at the course repository, and
+you can load it by calling the following lines.
+
+```{r, eval = FALSE}
+meuse2 <- read_csv(
+  "https://github.com/stat-lu/dataviz/raw/main/data/meuse2.csv")
+```
+
+Otherwise, we now proceed to convert our coordinates.
+
+```{r}
+# install.packages("rgdal")
+library(rgdal)
+
+rdh <- select(meuse, x, y)
+coordinates(rdh) <- ~ x + y
+proj4string(rdh) <- CRS("+init=epsg:28992")
+
+lonlat <- spTransform(rdh, CRS("+init=epsg:4326"))
+```
+
+Now we have our longitude and latitude coordinates, and simply
+need to replace our original coordinates with these.
+
+```{r}
+meuse2 <- as_tibble(lonlat) %>%
+  bind_cols(select(meuse, -x, -y))
+```
+
+Now we extract the boundaries of the data.
+
+```{r}
+rng <-
+  meuse2 %>%
+  summarize(x = extendrange(x), # extendrange() extends the range
+            y = extendrange(y))
+```
+
+Now we can simply retrieve the map from Stamen maps using **gmap** and
+`get_stamenmap()`.
+
+```{r}
+mp <- get_stamenmap(
+  c(left = rng$x[1],
+    right = rng$x[2],
+    top = rng$y[2],
+    bottom = rng$y[1]),
+  zoom = 14,
+  maptype = "terrain"
+)
+```
+
+To then build the map, we use the `ggmap()` function as we would use `ggplot()`,
+but make sure to use the `data` argument in our geom (here `geom_point()`)
+for our original data of heavy metal concentrations.
+
+```{r, fig.cap = "Concentration of lead around Meuse.", fig.height = 6}
+ggmap(mp) +
+  geom_point(aes(x, y, size = lead), data = meuse2) +
+  theme(legend.position = c(1, 0),
+        legend.justification = c("right", "bottom"))
+```
+
+## More Heavy Metal
+
+Let's make the plot slightly more interesting by including data on the
+other heavy metals too. First, we pivot our dataset to put it in a long
+format for ggplot2.
+
+```{r}
+meuse3 <-
+  meuse2 %>%
+  pivot_longer(cadmium:zinc, names_to = "metal", values_to = "concentration")
+```
+
+Then we plot as before, faceting on the type of metal.
+
+```{r, fig.cap = "Concentration of different heavy metals around the river Meuse in the Netherlands.", fig.width = 5, fig.height = 6}
+ggmap(mp) +
+  geom_point(aes(x, y, size = concentration),
+             alpha = 0.5,
+             data = meuse3) +
+  facet_wrap("metal") +
+  theme(legend.position = "right")
+```
+
+## Geocoding
+
+Purely for instructional reasons, let's assume that we were considering some
+kind of cleanup of this heavy metal waste, but wanted to see how this
+would affect affect the ruins of the nearby *Kasteel Stein* by
+displaying it on the map.
+
+We don't know the coordinates of the castle off-hand, so let's find them out
+by geocoding. In the lecture, we used the facilities of **ggmap** for
+geocoding, but unfortunately the only API that is currently supported
+in **ggmap** is Google's API, which is not free.
+
+Another alternative is to use
+[tidygeocoder](https://CRAN.R-project.org/package=tidygeocoder), which
+features a host of geocoding alternatives. A couple of these are free, for
+instance the [Nominatim](https://nominatim.org/) API.^[The API is free, but
+it is also rate-limited at one request per second and not as powerful as
+some of the other available APIs. If you have a project where you need more
+serious geocoding, you should probably get a key for one of the other APIs.]
+
+Start by installing the **tidygeocoder** package.
+
+```{r, eval = FALSE}
+install.packages("tidygeocoder")
+```
+
+Then generate a `tibble` (or `data.frame`) with the names
+and addresses that you want to geocode.
+
+```{r}
+library(tidygeocoder)
+
+addresses <- tribble(
+  ~ name,          ~ address,
+  "Kasteel Stein", "Kasteel Stein, Netherlands"
+)
+```
+
+Next, pipe these addresses on to `tidygeocoder::geocode()`.^[There is a
+namespace clash here with **ggmap**, which has its own `ggmap::geocode()`
+function, so we need to specify which function to use with `::` here.]
+
+```{r}
+kasteel_stein <-
+  addresses %>%
+  tidygeocoder::geocode(address,        # map to address column
+                        method = "osm") # for Nominatim API
+kasteel_stein
+```
+
+To finish our map, we complement our previous plot with two layers
+for our new, geocoded data, to show a label and a dot for the castle ruins.
+
+```{r, fig.cap = "Concentration of different heavy metals around the river Meuse in the Netherlands.", fig.width = 6, fig.height = 7}
+ggmap(mp) +
+  geom_point(aes(x, y, size = concentration),
+             alpha = 0.5,
+             data = meuse3) +
+  geom_point(aes(long, lat), col = "red", data = kasteel_stein) +
+  geom_label(aes(long, lat, label = name), data = kasteel_stein, vjust = -0.5) +
+  facet_wrap("metal") +
+  theme(legend.position = "right")
+```
+
+## Source Code
+
+The source code for this document is available at
+<https://github.com/stat-lu/dataviz/blob/main/worked-example-chile-plebiscite.Rmd>.

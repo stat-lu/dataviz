@@ -1,0 +1,237 @@
+---
+title: "Worked Example: D-Rex"
+author: "Johan Larsson"
+#date: "9/4/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: united
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.width = 5,
+  fig.height = 4,
+  dev = "png"
+)
+options(scipen = 999)
+```
+
+## Probing an Unknown Dataset
+
+Let's say that we have data from an unknown source, containing two
+variables, `x` and `y`. The data has been uploaded to the course website,
+and you can download and read it into your workspace with the following command.
+
+```{r}
+library(tidyverse)
+
+xy <- read_csv(
+  "https://raw.githubusercontent.com/stat-lu/dataviz/main/data/xy.csv")
+```
+
+### Boxplot
+
+Let's try to explore the univariate distributions of these two variables.
+We begin with a boxplot.
+
+```{r, fig.cap = "A boxplot of the x variable.", fig.height = 1.5}
+ggplot(xy, aes(x)) +
+  geom_boxplot()
+```
+
+As you see, our call to ggplot2 is quite simple. We use `ggplot()` with
+the data as the first argument and a call to `aes()` for our aesthetics
+specification as our second argument. The call to `aes()` is actually
+optional and if you want to you can provide your mappings inside
+the layers (geom functions) if you want to.
+
+The distribution seems to be reasonably symmetric but with a longer tail
+to the right and with a single outlier at
+around 100. The boxplot also indicates
+that the distribution is uni-modal, with a center around 55. But this is
+the problem with boxplots: they can never "discover" anything *but*
+a single mode, since boxplots are based on statistics only related to the
+quantiles of the distribution.
+
+### Dotplot
+
+When studying a distribution, it is usually better to start off with a plot
+that does less abstraction, such as a
+simple dotplot. The dots in a dotplot can represent more
+than one observation if you want to, but I think it works best when
+each dot is a single observation. Use `binwidth = 1` to request this.
+
+```{r, fig.cap = "A dotplot of the x variable.", fig.height = 1.3, fig.width = 5}
+ggplot(xy, aes(x)) +
+  geom_dotplot(binwidth = 1)
+```
+
+It's hard to summarize this distribution in a few words, but it does not
+quite seem to be uni-modal. There is also a slight indication that
+the values may be biased towards certain values here, which for instance is
+a common problem in questionnaires, where many will "round off" their answers
+to a whole number when they are uncertain about the answer.
+
+### Histogram
+
+Perhaps this is the case here, so let's use a *histogram* instead. With
+histograms we need to specify the number of bins or the bindwith manually.
+Given the number of observations here, and the dotplot we previously plotted,
+a value of five might be appropriate to remove the effect of possible round-off
+bias and elucidate the shape of the distribution better.
+
+```{r, fig.cap = "A histogram of the x variable.", fig.height = 2, fig.width = 4}
+ggplot(xy, aes(x)) +
+  geom_histogram(binwidth = 5)
+```
+
+Play around a little bit with the various settings of `bins` and/or `binwidth`
+to see how large the effects of these parameters can be.
+
+### Density Plot
+
+We could also try a density plot here. Density plots are best when you know
+that your data is measured on a continuous scale and can make strong
+assumptions about the distributions of your variables, since the choice
+of parameters for the density kernel have large effects on the result.
+
+Here we try a few different choices to highlight this.
+
+```{r, fig.cap = "Density plots with various density estimate choices."}
+ggplot(xy, aes(x)) +
+  geom_density() + # kernel = "gaussian", the default
+  geom_density(col = "navy", kernel = "rectangular") +
+  geom_density(col = "dark orange", bw = 10)
+```
+
+The default density layer uses Silverman's
+rule-of-thumb (see `?bw.nrd0`) for choosing bandwith but there are other
+choices that are probably better, such as `bw = "SJ"`.
+
+## Multiple Distributions in One Plot
+
+When you have several related variables from the same dataset, it
+often makes good sense to juxtapose them in a plot in order to make it
+easier for the reader to compare the distributions.
+We do so by first pivoting our dataset into a long format in order to have
+one column that denotes the name of the variable and one column that
+contains those variables' values.
+
+```{r}
+xy_long <- pivot_longer(xy, everything())
+
+xy_long
+```
+
+We've used the default settings for `names_to` and `values_to` here, which
+gives us the column names `name` and `value` and specified that we want
+to pivot all the variables by calling `everything()`.
+
+### Violin Plots
+
+Now we're ready to plot our distribution. Let's try a violin plot this time.
+
+```{r, fig.cap = "Violin plots of the x and y variables from our dataset."}
+ggplot(xy_long, aes(name, value)) +
+  geom_violin()
+```
+
+Violin plots are great for juxtaposing distributions of variables that are
+on roughly the same scale, which is the case here.
+
+The distribution for `y` seems to be substantially different from that of
+`x`. It is definitely more flat---almost uniform.
+
+### Faceted Histograms
+
+Another approach, which is particularly suitable when the variables are
+on different scales are histograms. To plot multiple histograms we
+need to use *facets*. To do so, we use `facet_wrap()`.
+
+```{r, fig.cap = "Faceted histograms of the distributions of x and y.", fig.width = 6, fig.height = 3.2}
+ggplot(xy_long, aes(value)) +
+    geom_histogram(binwidth = 10) +
+    facet_wrap("name", scales = "free_x")
+```
+
+The argument `scaled = "free_x"` is typically appropriate when plotting
+multiple variables like this. Notice that we've used a larger bindwidth
+this time around.
+
+### Patchwork
+
+Another approach when juxtaposing plots of distributions like this is to use
+the [patchwork](https://CRAN.R-project.org/package=patchwork) package, which
+can be used to *patch* together plots that you have created separately.
+This is very useful if you want to juxtapose plots that use different types of
+layers. Let's install the package first.
+
+```{r eval = FALSE}
+install.packages("patchwork")
+```
+
+The idea of **patchwork** is extremely simple. You simply add separate plots
+together using `+`. Say we wanted to juxtapose a density plot of
+variable `x` with a histogram of variably `y`---all we then need to do is
+create the plots separately and then add them together.
+
+```{r, fig.cap = "Density plot of x and histogram of y.", fig.width = 6, fig.height = 3}
+library(patchwork)
+
+p1 <- ggplot(xy, aes(x)) +
+  geom_density(bw = "SJ")
+
+p2 <- ggplot(xy, aes(y)) +
+  geom_histogram(bins = 12)
+
+p1 + p2
+```
+
+Simple, right? How plots are patched together can be controlled in detail,
+so make sure to check out the
+[documentation](https://patchwork.data-imaginist.com/index.html) if you're
+interested.
+
+## Rawr!
+
+We've now plotted several types of plots of the distributions of this
+dataset and might well feel comfortable about making a few conclusions about the
+data. Stopping here, however, would unfortunately be a severe mistake. Because
+what we've missed is to plot the *joint* distribution of these variables, which
+is very easy to do using a scatter plot (which we will tackle in much more
+detail during the next part of the course).
+
+```{r fig.cap = "The terrifying Datasaurus Rex."}
+ggplot(xy, aes(x, y)) +
+  geom_point()
+```
+
+What is the take-home message here? Well, it's twofold:
+
+1. When you visualize distributions of several variables one by one, you are
+   projecting these distributions from a multivariate space to a
+   univariate space. In so doing, you are effectively ignoring all of the
+   ways by which these two variables are related to one another. To be fair,
+   it isn't always easy (or even possible) to visualize many variables at once,
+   but in this case we would have been far better off if we had considered
+   a scatter plot right away.
+2. Knowing your data is critical. You should never throw yourself into a
+   dataset without at least a bit of understanding about what the variables
+   represent and preferably also how they were collected. Make it a habit
+   to read up on the dataset *before* you start visualizing it. For most of
+   the data that we'll tackle in this course, there is often documentation
+   that you can access by looking at the help file for the dataset.
+
+## Source Code
+
+The source code for this document is available at
+<https://github.com/stat-lu/dataviz/blob/main/worked-example-drex.Rmd>.

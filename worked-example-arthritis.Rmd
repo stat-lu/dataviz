@@ -1,0 +1,366 @@
+---
+title: "Worked Example: Arthritis"
+author: "Johan Larsson"
+#date: "9/4/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: united
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.width = 5,
+  fig.height = 4,
+  dev = "png"
+)
+options(scipen = 999)
+```
+
+
+## Arthrithis
+
+In this worked example we will be working with data from a treatment trial
+for Arthritis. The data comes from the
+[vcd package](https://CRAN.R-project.org/package=vcd). To begin, let's
+load the package and take a `glimpse()` at the data.
+
+```{r}
+# install.packages("vcd") # if you haven't installed it yet
+library(vcd)
+library(tidyverse)
+
+glimpse(Arthritis)
+```
+
+Notice that `Improved` is helpfully formatted as an ordinal (ordered)
+variable already, which is going to help ggplot to choose the correct
+color palettes for us.
+
+## Bar Charts
+
+Let's start with a simple bar chart to see how many people were allocated
+to the two treatment arms.
+
+```{r, fig.cap = "Treatment allocation for the arthritis study.", fig.width = 2.2, fig.height = 2.2}
+library(tidyverse)
+
+ggplot(Arthritis, aes(Treatment)) +
+  geom_bar()
+```
+
+### Was the Treatment Effective?
+
+Now for something more interesting. Let's try to look at how well the treatment
+seems to have worked. We start with a stacked bar chart.
+
+```{r, fig.cap = "Treatment effect in the arthritis study.", fig.height = 3}
+ggplot(Arthritis, aes(Treatment, fill = Improved)) +
+  geom_bar() +
+  labs(fill = "Improvement") # add a better legend title
+```
+
+It's immediately clear that the treatment has worked well! The count of people
+with a improvement is much higher in the treatment arm compared with the placebo
+arm. But how do the treatments compare when it comes to people who've made
+*some* improvement? This is difficult to say from our approach here. This
+is due to two reasons:
+
+1. The stacked bar chart makes it very hard to compare all but the
+   first category, since the other portions of the bars are not aligned.^[This
+   is not quite as severe a problem for this particular visualization since the
+   inner grouping variable is ordinal. For other problems, however, this can
+   be much more detrimental to the result.]
+2. The bars are not proportional.^[To be fair, the differences between the group
+   sizes are small here, but this also means that we don't lose any information
+   when using proportional bars instead.]
+
+Let's try a grouped proportional bar chart instead. To do this, we need
+to do a little more work since there is no direct option to do this
+in ggplot2. Our two choices are:
+
+1. use `group_by()` and `summarize()` to compute the proportions we need
+   directly, and then plot the bar chart with `geom_col()` or
+2. use `after_stat()`.
+
+We will try the second option here. We start with the code.
+
+```{r, fig.cap = "Grouped, proportional bar chart of the arthritis data.", fig.height = 3}
+Arthritis %>%
+  ggplot(aes(Treatment, group = Improved, fill = Improved)) +
+  geom_bar(aes(y = after_stat(prop)), position = "dodge") +
+  labs(fill = "Improvement",
+       y = "Proportion")
+```
+
+So how does this work? The key to this is that `geom_bar()` computes (and
+makes accessible) certain statistics. Among these are `prop`, which is
+the *group-wise* proportion. To access this statistic, we need to use the
+special `after_stat()` function, which acts as a wrapper that evaluates
+its arguments after the statistics in the enclosing function have been
+computed. To get this to work properly, we also need to map the `group`
+aesthetic, so that ggplot knows which category to compute proportions within.
+
+This strategy can be used with many other layer functions (`geom_*()` functions)
+in ggplot.
+
+## Mosaic Plots
+
+In the lecture we also encountered mosaic plots, which are proportional
+bar charts that map not only the height of the bars but also the
+width of the bars to group sizes.
+
+In the lecture, we used the
+[productplots](https://CRAN.R-project.org/package=productplots) package, but
+here we will try another solution offered by
+[ggmosaic](https://CRAN.R-project.org/package=ggmosaic).
+
+```{r}
+# install.packages("ggmosaic") # if don't already have the package
+
+library(ggmosaic)
+```
+
+Unlike **productplots**, **ggmosaic** works directly with a ggplot2 object,
+adding auxiliary functions (`geom_*()` functions) to extend its functionality.
+
+```{r}
+ggplot(Arthritis) +
+  geom_mosaic(aes(x = product(Treatment), fill = Improved))
+```
+
+The key features to notice about this call are
+
+1. that the `aes()` specification must reside *inside* the call to
+   `geom_mosaic()`, and not in the `ggplot()` function and
+2. the call to `product()`, which acts simply as a list of variables that
+   you want to use in the mosaic plot.
+
+The main benefit of the mosaic plot is that we get to see more of the data.
+With the bar charts we needed to separate visualizations to provide
+information on the overall size of the groups (treatment arms), whereas
+with the mosaic plot we can make do with only a single plot.^[But note that
+it is the *relative* size that we show. If we want the actual *counts* in
+the outer category, we still need to add additional plots or provide
+this information in text.]
+
+## Waffle Plots
+
+Waffle plots are easy-to-read visualizations that are actually quite uncommon
+in statistical visualizations but much more prevalent in media outlets such as
+newspapers. They are, as we mentioned in the lecture, at their best when some of
+the categories are so small that their sizes are hard to estimate in a
+barchart or mosaic plot.
+
+There is a great package for mosaic plots that interact well with
+ggplot2 called [waffle](https://CRAN.R-project.org/package=waffle).
+Unfortunately, the current version on CRAN is outdated^[Feel free to
+voice your support for a CRAN update at
+<https://github.com/hrbrmstr/waffle/issues/72>.] and much of the new
+functionality that makes it work well with ggplot is only available from the
+[development version at GitHub](https://github.com/hrbrmstr/waffle).
+
+For that reason, waffle plots are not compulsory material in this course and
+will instead serve as bonus material for those who are interested.
+
+To download development versions of R packages from GitHub, you need the
+the [remotes](https://CRAN.R-project.org/package=remotes) package or the
+[devtools](https://CRAN.R-project.org/package=devtools) package.
+
+```{r, eval = FALSE}
+# install remotes
+install.packages("remotes")
+
+# install waffle
+remotes::install_github("hrbrmstr/waffle") # or devtools::install_github()
+```
+
+The waffle package requires that our data contains counts of the
+categories, so before we can use it, we need to do a bit of wrangling. More
+precisely, you need to group the data by `Improved` and `Treatment` and
+then use `summarize()` together with either the `n()` function to get either
+counts or some other expression for proportions. We'll settle for counts in
+this example. Before looking at the following code, see if you can do this by
+yourself. The result should be a 6-row tibble with columns `Treatment`,
+`Improved` and `Count` (or whatever you want to call it). Save the result to an
+object called `Arthritis_summarized`.
+
+```{r}
+Arthritis_summarized <-
+  Arthritis %>%
+  group_by(Treatment, Improved) %>%
+  summarize(Count = n())
+```
+
+Now we're ready to start making waffles! The aesthetics you need to know
+about here are `fill` and `values`. Values is what we want to map the
+counts or proportions that we just created to and `fill` will connect
+our inner-most group to fill color. We start with the simplest
+possible waffle chart, just looking at improvement among the
+participants in the treatment arm.
+
+```{r, fig.cap = "A basic waffle chart of the results from the treatment arm."}
+library(waffle)
+
+filter(Arthritis_summarized, Treatment == "Treated") %>%
+  ggplot(aes(fill = Improved, values = Count)) +
+  geom_waffle() +
+  labs(fill = "Improvement")
+```
+
+This looks kind of
+like a waffle chart, but there's a lot of superfluous information
+that we'd rather get rid off. Thankfully, **waffle** provides the
+helpful `theme_enhance_waffle()` function for this. Moreover, we probably
+prefer the symbols (rectangles) to be squares---it's
+supposed to look like a waffle after all, right?---which
+we can accomplish by forcing the coordinate system to be isometric using
+`coord_equal()`. Finally, I think it looks more aesthetically pleasing if we
+swap the black line color for white, increase their widths slightly, and
+change theme to the minimal variant.
+
+```{r, fig.cap = "A prettier waffle plot."}
+filter(Arthritis_summarized, Treatment == "Treated") %>%
+  ggplot(aes(fill = Improved, values = Count)) +
+  geom_waffle(color = "white", size = 1.5) +
+  coord_equal() +
+  theme_minimal() +
+  theme_enhance_waffle() +
+  labs(fill = "Improvement")
+```
+
+That looks much better, doesn't it?
+
+To wrap up, we now look to the full data set by including both
+treatment arms. To do this with **waffle**, you need to use facets. Here we do
+so via the `facet_wrap()` function, simple providing the outer category
+that we want to facet on.
+
+```{r, fig.cap = "Improvement after treatment for arthritis in placebo and intervention arms.", fig.width = 6, fig.height = 2}
+ggplot(Arthritis_summarized, aes(fill = Improved, values = Count)) +
+  geom_waffle(color = "white", size = 1.5, n_rows = 5) +
+  facet_wrap("Treatment") +
+  coord_equal() +
+  theme_minimal() +
+  theme_enhance_waffle() +
+  labs(fill = "Improvement")
+```
+
+If you want to make other types of pictograms (with other glyphs instead
+of squares), be sure to check out the examples over at
+<https://github.com/hrbrmstr/waffle>.
+
+## Euler Diagrams
+
+Euler diagrams are used to visualize relationships between sets. Most of
+you have probably encountered Venn diagrams during in your first
+statistics courses. Euler diagrams are like Venn diagrams but don't have the
+requirement that we need to visualize intersections that are empty. Euler
+diagrams are only really useful when you have overlap among categories, such
+that observations can belong to any, all, or none of the levels of a category.
+
+Here we'll use the [eulerr](https://CRAN.R-project.org/package=eulerr) package.
+This package creates *proportional* Euler diagrams, trying to make the
+area of each intersection proportional to that intersection's size. This is
+not always possible, in which case `euler()` will return an approximate fit.
+For this reason, it is important to always first *fit* the diagram, inspect
+the fit, and then finally plot it.
+
+The simplest way to run `euler()` is to provide a named numeric vector
+that indicates intersections and their sizes. Here's a simple example.
+
+```{r}
+# install.packages("eulerr")
+library(eulerr)
+
+fit <- euler(c("A" = 5, "B" = 2, "A&B" = 1))
+```
+
+Notice the use of the ampersand (`&`) to separate intersections here. Let's
+examine the fit of the Euler diagram.
+
+```{r}
+fit
+```
+
+Stress and diagError are both 0, so the fit is perfect! This will in fact
+always be the case for two-set combinations. No we can safely plot the result.
+Simply call `plot()` on `fit` to do so.
+
+```{r, fig.cap = "A simple Euler diagram.", fig.width = 3, fig.height = 3}
+plot(fit)
+```
+
+`euler()` can also work directly with data, provided that the columns are
+factors, characters, or logicals. The arthritis data that we've dealt with
+so far, however, does not lend itself well to an Euler diagram. Can you
+think of why?
+
+The reason is that most of our categories are exclusive. A person cannot be
+both in the treatment arm and in the placebo arm, or for that matter
+have made both no improvement and a marked improvement, so it is not
+suitable for this kind of visualization.
+
+Instead, we'll take a look at a dataset from the **eulerr** package
+called `organisms`. It contains features from a list of organisms:
+
+```{r}
+organisms
+```
+
+Each value indicates for a given organism, such as a cat, whether it is
+an animal (yes), a mammal (yes), plant (no), and so on. We can simply
+call `euler()` on this data set directly.
+
+```{r}
+(fit_organisms <- euler(organisms)) # parantheses makes R print the object
+```
+
+This doesn't look great, unfortunately. The `stress` and `diagError`
+are large^[We won't delve into what these actually mean here, but please read
+the documentation for the package if you are interested.] and if we
+take a look at a diagnostic plot, we'll see that many of the areas in the
+plot are misrepresented.
+
+```{r, fig.cap = "A diagonstic plot of the fit on the organisms data."}
+error_plot(fit_organisms)
+```
+
+One alternative we can try is to use *ellipses* instead of circles. We
+specify this in the call to `euler()`, like so:
+
+```{r}
+(fit_organisms_ellipses <- euler(organisms, shape = "ellipse"))
+```
+
+The stress metric has improved significantly, but not the diagError measure.
+Looking at the error plot, it seems like the errors are smaller than before.
+
+```{r}
+error_plot(fit_organisms_ellipses)
+```
+
+At this point, we need to think hard about whether we can tolerate this
+type of error or not---notice that there, for instance, still is overlap between
+the plant and mammal categories. If not, we should look for another type of
+visualization altogether, but if yes, then we are now ready to plot the final
+result.
+
+```{r, fig.cap = "Relationships between various categorizations of organisms."}
+# quantities = TRUE shows the number of actual observations in each
+# intersection
+plot(fit_organisms_ellipses, quantities = TRUE)
+```
+
+## Source Code
+
+The source code for this document is available at
+<https://github.com/stat-lu/dataviz/blob/main/worked-example-arthritis.Rmd>.

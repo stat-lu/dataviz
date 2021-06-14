@@ -14,8 +14,6 @@ output:
       highlightLines: true
       titleSlideClass: [middle, center]
       countIncrementalSlides: false
-knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, encoding = encoding, output_dir = "pdf") })      
 ---
 
 ```{r setup, include = FALSE}
@@ -43,7 +41,7 @@ kable <- function(x, ...) {
 }
 
 library(RefManageR)
-BibOptions(check.entries = FALSE, 
+BibOptions(check.entries = FALSE,
            bib.style = "authoryear",
            style = "markdown",
            dashed = TRUE)
@@ -65,7 +63,7 @@ library(tidyverse)
 library(productplots) # for happy data set
 happy <- drop_na(happy)
 
-ggplot(happy, aes(degree, happy)) + 
+ggplot(happy, aes(degree, happy)) +
   geom_point(position = "jitter", alpha = 0.1)
 ```
 
@@ -126,7 +124,7 @@ ggplot(happy, aes(degree, fill = happy)) +
 
 ## Mosaic Plots
 
-a type of stacked barchart that maps category size to 
+a type of stacked barchart that maps category size to
 the width of bars
 
 need to use another package for this: [productplots](https://CRAN.R-project.org/package=productplots) or [ggmosaic](https://CRAN.R-project.org/package=ggmosaic), or [vcd](https://CRAN.R-project.org/package=vcd)
@@ -165,16 +163,16 @@ again need to use a new package: [waffle](https://CRAN.R-project.org/package=waf
 # devtools::install_github("hrbrmstr/waffle")
 library(waffle)
 
-happier <- 
+happier <-
   group_by(happy, degree) %>%
   count(happy) %>%
   mutate(n = round(n/100))
 
-ggplot(happier, 
-       aes(fill = happy, 
+ggplot(happier,
+       aes(fill = happy,
            values = n)) +
-  geom_waffle(color = "white", 
-              size = 1.125, 
+  geom_waffle(color = "white",
+              size = 1.125,
               n_rows = 10,
               flip = TRUE) +
   facet_wrap(~degree, nrow = 1) +
@@ -196,7 +194,7 @@ useful when relationships between categorical variables is at interest
 library(eulerr)
 
 combo <- c(
-  "happy" = 100, 
+  "happy" = 100,
   "graduated" = 40,
   "happy&graduated" = 35
 )
@@ -226,7 +224,7 @@ Disclaimer: Johan Larsson is the author of [eulerr](https://CRAN.R-project.org/p
 
 much more to learn on visualizations of categorical data
 
-packages [vcd](https://CRAN.R-project.org/package=vcd) and 
+packages [vcd](https://CRAN.R-project.org/package=vcd) and
 [vcdExtra](https://CRAN.R-project.org/package=vcdExtra) offer lots of functionality
 
 
@@ -237,6 +235,3 @@ names(dimnames(UCB)) <- c("Sex", "Admit?", "Department")
 dimnames(UCB)[[2]] <- c("Yes", "No")
 fourfold(UCB)
 ```
-
-
-

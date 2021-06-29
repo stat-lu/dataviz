@@ -5,22 +5,22 @@
 
 This page contains slides for the courses STAE04 and DABN19: Data Visualization
 
-* [Introduction](01-introduction) ([source](https://github.com/stat-lu/dataviz/blob/main/01-introduction.Rmd))
-* [Introduction to R](02-introduction-to-r) ([source](https://github.com/stat-lu/dataviz/blob/main/02-introduction-to-r.Rmd))
-* [Working with Data in R](03-working-with-data-in-r) ([source](https://github.com/stat-lu/dataviz/blob/main/03-working-with-data-in-r.Rmd))
-* [The Grammar of Graphics and ggplot2](04-the-grammar-of-graphics-and-ggplot2) ([source](https://github.com/stat-lu/dataviz/blob/main/04-the-grammar-of-graphics-and-ggplot2.Rmd))
-* [One Variable](05-one-variable) ([source](https://github.com/stat-lu/dataviz/blob/main/05-one-variable.Rmd))
-* [Data-Ink](06-data-ink) ([source](https://github.com/stat-lu/dataviz/blob/main/06-data-ink.Rmd))
-* [Two Variables](07-two-variables) ([source](https://github.com/stat-lu/dataviz/blob/main/07-two-variables.Rmd))
-* [Scales](08-scales) ([source](https://github.com/stat-lu/dataviz/blob/main/08-scales.Rmd))
-* [Categorical Data](09-categorical-data) ([source](https://github.com/stat-lu/dataviz/blob/main/09-categorical-data.Rmd))
-* [Multivariate Data](10-multivariate-data) ([source](https://github.com/stat-lu/dataviz/blob/main/10-multivariate-data.Rmd))
-* [Color](11-color) ([source](https://github.com/stat-lu/dataviz/blob/main/11-color.Rmd))
-* [Big Data](12-big-data) ([source](https://github.com/stat-lu/dataviz/blob/main/12-big-data.Rmd))
-* [Statistical Models](13-statistical-models) ([source](https://github.com/stat-lu/dataviz/blob/main/13-statistical-models.Rmd))
-* [Maps](14-maps) ([source](https://github.com/stat-lu/dataviz/blob/main/14-maps.Rmd))
-* [Animated and Interactive Visualizations](15-animated-and-interactive-visualizations) ([source](https://github.com/stat-lu/dataviz/blob/main/15-animated-and-interactive-visualizations.Rmd))
-* [Wrapping Up](16-wrapping-up)
+* [Introduction](introduction) ([source](https://github.com/stat-lu/dataviz/blob/main/introduction.Rmd))
+* [Introduction to R](introduction-to-r) ([source](https://github.com/stat-lu/dataviz/blob/main/introduction-to-r.Rmd))
+* [Working with Data in R](working-with-data-in-r) ([source](https://github.com/stat-lu/dataviz/blob/main/working-with-data-in-r.Rmd))
+* [The Grammar of Graphics and ggplot2](the-grammar-of-graphics-and-ggplot2) ([source](https://github.com/stat-lu/dataviz/blob/main/the-grammar-of-graphics-and-ggplot2.Rmd))
+* [One Variable](one-variable) ([source](https://github.com/stat-lu/dataviz/blob/main/one-variable.Rmd))
+* [Data-Ink](data-ink) ([source](https://github.com/stat-lu/dataviz/blob/main/data-ink.Rmd))
+* [Two Variables](two-variables) ([source](https://github.com/stat-lu/dataviz/blob/main/two-variables.Rmd))
+* [Scales](scales) ([source](https://github.com/stat-lu/dataviz/blob/main/scales.Rmd))
+* [Categorical Data](categorical-data) ([source](https://github.com/stat-lu/dataviz/blob/main/categorical-data.Rmd))
+* [Multivariate Data](multivariate-data) ([source](https://github.com/stat-lu/dataviz/blob/main/multivariate-data.Rmd))
+* [Color](color) ([source](https://github.com/stat-lu/dataviz/blob/main/color.Rmd))
+* [Big Data](big-data) ([source](https://github.com/stat-lu/dataviz/blob/main/big-data.Rmd))
+* [Statistical Models](statistical-models) ([source](https://github.com/stat-lu/dataviz/blob/main/statistical-models.Rmd))
+* [Maps](maps) ([source](https://github.com/stat-lu/dataviz/blob/main/maps.Rmd))
+* [Animated and Interactive Visualizations](animated-and-interactive-visualizations) ([source](https://github.com/stat-lu/dataviz/blob/main/animated-and-interactive-visualizations.Rmd))
+* [Wrapping Up](wrapping-up)
 
 ### Worked Examples
 

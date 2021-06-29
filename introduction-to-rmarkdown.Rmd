@@ -1,0 +1,437 @@
+---
+title: "Introduction to R Markdown"
+subtitle: "Data Visualization"
+author: "Johan Larsson"
+affiliation: "Department of Statistics, Lund University"
+date: "`r Sys.Date()`"
+papersize: a4
+geometry: margin=4cm
+colorlinks: true
+output:
+  pdf_document:
+    # number_sections: true
+  html_document: 
+    toc: true
+    toc_float: true
+    theme: united
+    highlight: tango
+references:
+- id: wickham2010
+  title: A Layered Grammar of Graphics
+  author:
+    - family: Wickham
+      given: Hadley
+  issued:
+    year: 2010
+    month: 1
+  container-title: Journal of computational and graphical statistics
+  volume: 19
+  issue: 1
+  page: 3-28
+  DOI: 10.1198/jcgs.2009.07098
+  URL: http://www.tandfonline.com/doi/abs/10.1198/jcgs.2009.07098
+  type: article-journal
+---
+
+```{r setup, include = FALSE}
+# This is the setup chunk. It can be used to setup general options and load
+# packages that you make use of during the report.
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  fig.width = 2.5,
+  fig.height = 2.2
+)
+
+library(tidyverse)
+
+# set a theme for ggplot2
+theme_set(theme_grey(base_size = 10))
+
+options(
+  digits = 3, # limit number of significant digits
+  width = 63  # limit width of code
+)
+```
+
+# R Markdown
+
+This document is written using [R Markdown](http://rmarkdown.rstudio.com). R
+Markdown is a syntax for formatting documents that lets you focus on content.
+You write text (including R code) in a standard text document with the ending
+`.Rmd` and then R Markdown (plus a handful of very useful packages) turns your
+text into a neatly formatted document.
+
+This document serves as both a template for your submissions during the data
+visualization course as well as an introduction into R Markdown.
+
+If you are here for the introduction, simply open this file in R Studio and keep
+reading.
+
+## Installation
+
+To get started, you are going to need two packages: **rmarkdown** and **knitr**.
+Run the following line of code to install these now. If you are currently in the
+R Studio editor when you read this, you can simply highlight the text and hit
+`Ctrl/Cmd + Enter` or put the cursor inside the code chunk below and hit
+`Ctrl/Cmd + Shift + Enter` to run the command (and install the packages).
+
+```{r, eval = FALSE}
+install.packages(c("rmarkdown", "knitr"))
+```
+
+You will also need a distribution of LaTeX. Installing LaTeX can be installed
+easily using the **tinytex** package (if you don't already have LaTeX
+installed). Do so right now by calling the following lines of code.
+
+```{r, eval = FALSE}
+install.packages("tinytex")
+tinytex::install_tinytex()
+```
+
+After this, we also recommend that you set the options in
+`Tools > Global Options > Sweave` in R Studio as in Figure 3.
+
+```{r echo = FALSE}
+download.file(
+  "https://github.com/stat-lu/dataviz/raw/main/images/rstudio-sweave-settings.png",
+  "rstudio-sweave-settings.png",
+  mode = "wb"
+)
+```
+
+![Suggested global options in R Studio.](rstudio-sweave-settings.png){width=300px}
+
+## Knitting
+
+Now that you have LaTeX installed, we can turn this document into a pdf report
+by **knitting** it. To do so in R Studio, simply hit `Ctrl/Cmd + Shift + k`.
+Doing so will prompt R to run through all of your code blocks and text and pass
+this on to LaTeX to render your document into a pdf file, which should open up
+on your screen. As you keep on reading through this `.Rmd` file, try to keep an
+eye on the pdf document to see what the output looks like.
+
+R Markdown files can be knitted to a wide range of medium, including PDF files,
+HTML, and word documents. In this course, however, you will always produce PDF
+files from your R Markdown documents.
+
+## YAML
+
+Each Rmarkdown file starts with a so called YAML block; here is a bare-bones
+one:
+
+```yaml
+---
+title: "An Awesome Title"
+author: "Fantastic Me"
+date: "2020-09-28"
+output: pdf_document
+---
+```
+
+The YAML block contains settings that control the title block (title, author,
+date) and options for the layout. For this course, please use the YAML block
+supplied in this template, modifying only the `author`, `date`, `affiliation`,
+and `title` fields. You should also remove the `references` item in the YAML
+block unless you need references in your report.
+
+## Formatting
+
+R Markdown is an extension of
+[Pandoc Markdown](https://pandoc.org/MANUAL.html#pandocs-markdown), which uses a
+special---but very simple---syntax for formatting text. The following are some
+ways in which you can format text in R Markdown.
+
+### Basic Text Formatting
+
+Start a new paragraph by surrounding text with blank lines.
+
+*Single asterisks italicize text*, **double asterisks format text in bold**, and
+`grave accents formats text in monospace` (which is suitable whenever you want
+to include code).
+
+### Lists
+
+To create (unnumbered) lists in markdown, you add a
+
+- dash before each item in the list, and
+  * asterisks for sub-items in the list,
+- placing each item on its own line, and
+- adding blank lines before and after the list.
+
+Numbered lists are
+
+1. created similarly, but
+2. using numbers instead of dashes.
+
+### Sections
+
+Sections are created by prefacing the section title with a hash tag (`#`):
+
+```markdown
+# One Hashtag Creates a Section
+
+## Two Hashtags Creates a Subsection
+
+### Three Hastags Creates a Subsubsection
+```
+
+### Quotations
+
+R Markdown can even format quotes for you!
+
+> If you want to quote something, adding a `>` before the text
+  creates a block quote ---Johan Larsson
+
+
+### Tables
+
+There are [many ways](https://pandoc.org/MANUAL#tables) to format tables in
+markdown, but the simplest one is two simply create columns of text with dashes
+(`---`) separating the title of each column from the cells of the table.
+
+Table: A caption for the table can be added like this.
+
+Header 1    Header 2
+---------   ---------
+Cell 1      Cell 2
+Cell 3      Cell 4
+
+### Links
+
+To add a link in Markdown, you can either simply surround the URL with brackets
+(as in this link to a R Markdown cheatsheet): <https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf> or you
+can use brackets and parentheses to provide your own
+[text for the link](https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf).
+
+### Images
+
+Images can be added with syntax similar to the one for links, with the text
+inside brackets indicating the caption for the figure. Let's first download an
+image to our working directory.
+
+```{r}
+download.file(
+  "https://imgs.xkcd.com/comics/scientific_paper_graph_quality.png",
+  "xkcd.png",
+  mode = "wb"
+)
+```
+
+![Including the image is then simply a matter of using square brackets and parentheses (<https://xkcd.com/1945/>).](xkcd.png){width=250px}
+
+### Footnotes
+
+Footnotes can be useful to provide additional information^[If the footnote is
+short, it is often best to write it in-line, like this.]. For a longer footnote,
+it might be better to refer to it with a number[^1].
+
+[^1]: Then you can add your text separately in the document.
+
+### Citations
+
+It is possible to add citations in R Markdown but this is somewhat complicated
+if you are not familiar with Markdown and Pandoc. You will not be needing a lot
+of references in this course, so it's perfectly alright to write your references
+and citations manually; in this case, you can skip the next paragraph.
+
+To cite in R Markdown, you will need either  1) a `.bib` file (with
+bibtex-formatted references) somewhere in your working directory or 2) a
+`references` field in the YAML block; in this document we use the latter but
+only to keep this document self-contained. Using a `.bib` file is recommended.
+Find the key of the reference you are looking for and preface it with an `@`,
+like the following reference to @wickham2010, which creates a text reference. If
+you surround the key with brackets, you instead get a non-text citation
+[@wickham2010]. If you've done everything right, the final document will get a
+bibliography at the end (as in this one).
+
+## Code Chunks
+
+So far we've only really talked about features that are made possible by pandoc
+and its flavor of Markdown. But what makes R Markdown special is that is allows
+us to write seamlessly include chunks of R code in our texts. This is a code
+chunk that plots a simple plot using ggplot2:
+
+```{r chode-chunk-label}
+library(tidyverse)
+
+ggplot(msleep, aes(brainwt, sleep_rem)) +
+  geom_point() +
+  scale_x_log10() +
+  labs(x = "Brain Weight (lbs)", y = "REM Sleep (hours)")
+```
+
+As you can see, we've started the code chunk with ` ```{r} ` and ended it with
+` ``` `. Everything in between will be treated as R code, just as if you would
+have written in in an R script of the R terminal. When you compile this document
+all this code will be run and if it produces any output (text, plot, tables)
+then that output will make it into the final document.
+
+### Chunk Settings
+
+You can control many settings via the header of the code chunk (the content
+between `{` and `}` in the first line of the code chunk). In the following chunk
+we've changed the width and height of the figure as well as added a caption to
+the figure. These are settings that will be **incredibly** useful to you during
+the course.
+
+```{r brain-figure, fig.cap = "Brain weight and REM sleep duration for mammals.", fig.width = 4, fig.height = 1.5}
+ggplot(msleep, aes(brainwt, sleep_rem)) +
+  geom_point() +
+  scale_x_log10() +
+  labs(x = "Brain Weight (kg)", y = "REM Sleep (hours)")
+```
+
+There are a few other settings that will also come in handy: `include`, `eval`,
+`results`, `fig.show`, and `echo`.
+
+`echo`
+: Setting `echo = TRUE` means that the code in your code chunk will be included
+  in the output (your pdf report). In this template, `echo` is set to `TRUE` by
+  default (seethe first code hunk header "setup" in this document), but
+  sometimes you onlywant the output of your code and not the code itself, which
+  is often the case when you create figures.
+
+`eval`
+: Setting `eval = FALSE` means that the code in your code chunk will not be
+  evaluated at all. This is often useful when you want to show how something is
+  done (like installing a package) but don't want to do this every time you
+  knit your document.
+
+`results` and `fig.show`
+: Setting either of these to `"hide"` means that the results generated from the
+  code won't make it into the output (your pdf report); uses `results = "hide"`
+  if you want to suppress code results and `fig.show = "hide"` if you want to
+  suppress plots. This is sometimes useful if you want to run code interactively
+  but not have it end up in your output. It can also be useful if the code you
+  run produces output as a side-effect.
+
+`include`
+: Setting `include = FALSE` mean that the code will be evaluated but neither the
+  output not the code will be included. This is equivalent to setting
+  `echo = FALSE`, `eval = TRUE`, and `results = "hide"`.
+
+Here are a couple of examples of these arguments (note that `echo = TRUE`,
+`include = TRUE`, `eval = TRUE`, and `results = "show"` are the defaults):
+
+```{r echo = FALSE}
+# the code in this block will be evaluated and its results will be printed
+# in the output, but the code will not show
+rnorm(5)
+```
+
+```{r results = "hide"}
+# this code block will show in the output,
+# but the results of `rnorm(50)` will not
+rnorm(5)
+```
+
+```{r eval = FALSE}
+# this code will not be evaluated at all
+rnorm(5)
+```
+
+```{r include = FALSE, results = "show"}
+# this code will be evaluated but nothing will show in the output
+rnorm(5)
+```
+
+### Global Chunk Settings
+
+The chunk settings for an R Markdown document can be modified globally. To do
+so, you need to call the `knitr::opts_chunk$set()` function at the top of your
+document. Inside the function, you set defaults for the various chunk arguments.
+The following is the global settings for this document, which you'll also find
+in the first chunk the `setup` chunk, in this document.
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  fig.width = 2.5,
+  fig.height = 2.2
+)
+```
+
+## Reproducibility and Automation
+
+Authoring your documents using R Markdown facilitates reproducibility. Because
+you need to supply all the code used to produce your paper in the `.Rmd` file,
+this makes it much easier for other people to re-run your analysis and use your
+code. It also means that your paper is now automated. Should you need to update
+or modify your data, for instance, you will typically be able to generate your
+final document simply by re-knitting it after having made your changes.
+
+# Learning More About R Markdown
+
+If you want to learn more about R Markdown, we recommend the [R Markdown Cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/install-latex.html). If
+you run into any issues with R Markdown, please use the course's discussion
+board on Canvas or search [stack overflow](https://stackoverflow.com) with the
+`[r-markdown]` or `[knitr]` tag.
+
+# Troubleshooting
+
+## Error: `'"pdflatex"' not found`
+
+If you receive an error when knitting such as
+
+```
+Error: Failed to compile Test.tex.
+In addition: Warning message:
+In system2(..., stdout = FALSE, stderr = FALSE) : '"pdflatex"' not found
+Execution halted
+```
+
+then please try running `tinytex:::install_prebuilt()`.
+
+If this doesn't help, take a look at
+<https://github.com/yihui/tinytex/issues/103> to see if any of the
+suggested solutions there may help.
+
+## Error: `/usr/local/bin not writable`
+
+If you are on Mac OS X, you may be getting the following error (or
+something like it) when
+trying to run `tinytex::install_tinytex()`:
+
+```shell
+add_link_dir_dir: destination /usr/local/bin not writable,
+no links from /Users/<user>/Library/TinyTeX/bin/x86_64-darwin.
+tlmgr: An error has occurred. See above messages. Exiting.
+```
+
+In this case, try to run the following commands in your terminal:
+
+```shell
+sudo chown -R `whoami`:admin /usr/local/bin
+```
+
+followed by
+
+```shell
+~/Library/TinyTeX/bin/x86_64-darwin/tlmgr path add
+```
+
+If this doesn't work, have a look at
+<https://github.com/yihui/tinytex/issues/24>, where this issue has been
+discussed.
+
+## I still cannot knit to `.pdf`!
+
+As a last resort, you can change the output from pdf to Word document
+instead. (But then you need to convert it to pdf before submitting.)
+
+In this case, change the output section in the YAML front matter to
+the following:
+
+```r
+output:
+  word_document:
+    number_sections: true
+```
+
+# References

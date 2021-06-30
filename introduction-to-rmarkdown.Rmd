@@ -9,7 +9,7 @@ geometry: margin=4cm
 colorlinks: true
 output:
   pdf_document:
-    # number_sections: true
+    number_sections: true
   html_document: 
     toc: true
     toc_float: true
@@ -64,27 +64,31 @@ You write text (including R code) in a standard text document with the ending
 `.Rmd` and then R Markdown (plus a handful of very useful packages) turns your
 text into a neatly formatted document.
 
-This document serves as both a template for your submissions during the data
-visualization course as well as an introduction into R Markdown.
+The benefit of using R Markdown is that you can choose the kind of output you
+want. R Markdown documents can be turned into PDFs, Word Documents, and HTML
+pages (and much more) with only a few small changes to the document.
 
-If you are here for the introduction, simply open this file in R Studio and keep
-reading.
+This document has in fact been rendered as both a [PDF document]() and
+[html page](), and you can read either of them. Furthermore, it may be
+instructive to also look at the [source code used to create this document]() to
+get a better feel for what R Markdown documents look like.
 
 ## Installation
 
 To get started, you are going to need two packages: **rmarkdown** and **knitr**.
-Run the following line of code to install these now. If you are currently in the
-R Studio editor when you read this, you can simply highlight the text and hit
-`Ctrl/Cmd + Enter` or put the cursor inside the code chunk below and hit
+Run the following line of code to install these now. If you happen to be looking
+at [the source code]() as you read this, you can simply highlight the text and
+hit `Ctrl/Cmd + Enter` or put the cursor inside the code chunk below and hit
 `Ctrl/Cmd + Shift + Enter` to run the command (and install the packages).
 
 ```{r, eval = FALSE}
 install.packages(c("rmarkdown", "knitr"))
 ```
 
-You will also need a distribution of LaTeX. Installing LaTeX can be installed
-easily using the **tinytex** package (if you don't already have LaTeX
-installed). Do so right now by calling the following lines of code.
+To produce PDF documents, you will also need a distribution of LaTeX. Installing
+LaTeX can be installed easily using the **tinytex** package (if you don't
+already have LaTeX installed). Do so now by calling the following lines of
+code.
 
 ```{r, eval = FALSE}
 install.packages("tinytex")
@@ -94,28 +98,34 @@ tinytex::install_tinytex()
 After this, we also recommend that you set the options in
 `Tools > Global Options > Sweave` in R Studio as in Figure 3.
 
-```{r echo = FALSE}
+![Suggested global options in R Studio.](images/rstudio-sweave-settings.png){width=300px}
+
+## Your First R Markdown Document
+
+For this course, we have provided a R Markdown template that provides better
+defaults for your documents than the built-in ones. You can download the
+template by clicking on [this
+link](https://raw.githubusercontent.com/stat-lu/dataviz/main/template.Rmd),
+right-clicking and choosing "Save page as".
+
+Alternatively, you can download it your current working directory in R by
+calling
+
+```{r template, eval = FALSE}
 download.file(
-  "https://github.com/stat-lu/dataviz/raw/main/images/rstudio-sweave-settings.png",
-  "rstudio-sweave-settings.png",
+  "https://raw.githubusercontent.com/stat-lu/dataviz/main/template.Rmd",
+  "template.Rmd", # destination, you can replace this if you want
   mode = "wb"
 )
 ```
 
-![Suggested global options in R Studio.](rstudio-sweave-settings.png){width=300px}
-
 ## Knitting
 
-Now that you have LaTeX installed, we can turn this document into a pdf report
-by **knitting** it. To do so in R Studio, simply hit `Ctrl/Cmd + Shift + k`.
-Doing so will prompt R to run through all of your code blocks and text and pass
-this on to LaTeX to render your document into a pdf file, which should open up
-on your screen. As you keep on reading through this `.Rmd` file, try to keep an
-eye on the pdf document to see what the output looks like.
-
-R Markdown files can be knitted to a wide range of medium, including PDF files,
-HTML, and word documents. In this course, however, you will always produce PDF
-files from your R Markdown documents.
+Now that you have LaTeX installed, you can turn the R Markdown template into a
+PDF report by **knitting** it. To do so in R Studio, simply hit `Ctrl/Cmd +
+Shift + k` with the file open.  Doing so will tell R to run through all of your
+code blocks and text and pass this on to LaTeX to render your document into a
+pdf file, which should open up on your screen. 
 
 ## YAML
 
@@ -133,9 +143,8 @@ output: pdf_document
 
 The YAML block contains settings that control the title block (title, author,
 date) and options for the layout. For this course, please use the YAML block
-supplied in this template, modifying only the `author`, `date`, `affiliation`,
-and `title` fields. You should also remove the `references` item in the YAML
-block unless you need references in your report.
+supplied in this template, modifying only the `author`, `date`, 
+and `title` fields.
 
 ## Formatting
 
@@ -144,27 +153,20 @@ R Markdown is an extension of
 special---but very simple---syntax for formatting text. The following are some
 ways in which you can format text in R Markdown.
 
-### Basic Text Formatting
 
-Start a new paragraph by surrounding text with blank lines.
+A contiguous block of text is treated as a **paragraph**. Separate paragraphs
+with blank lines.
 
-*Single asterisks italicize text*, **double asterisks format text in bold**, and
-`grave accents formats text in monospace` (which is suitable whenever you want
-to include code).
+You can format text in italics, bold font, or monospace (fixed-width) fonts with
+a few simple symbols (Table 1).
 
-### Lists
+Table: Markdown text formatting.
 
-To create (unnumbered) lists in markdown, you add a
-
-- dash before each item in the list, and
-  * asterisks for sub-items in the list,
-- placing each item on its own line, and
-- adding blank lines before and after the list.
-
-Numbered lists are
-
-1. created similarly, but
-2. using numbers instead of dashes.
+markdown                    output
+--------------------------  ---------------------------
+`*italics*`                 *italics*
+`**boldface**`              **boldface**
+``typewriter (monospace)``  **typerwriter (monospace)**
 
 ### Sections
 
@@ -173,24 +175,75 @@ Sections are created by prefacing the section title with a hash tag (`#`):
 ```markdown
 # One Hashtag Creates a Section
 
-## Two Hashtags Creates a Subsection
+## Two Hashtags Creates a Sub-section
 
-### Three Hastags Creates a Subsubsection
+### Three Hastags Creates a Sub-sub-section
+
 ```
+
+### Lists
+
+To create (unnumbered) lists in markdown, you add a
+
+```{markdown}
+- dash before each item in the list, and
+  - indent with two spaces for a sub-item.
+* You can also use asterisks, and
+  + plus signs.
+```
+
+The output looks like this:
+
+- dash before each item in the list, and
+  - indent with two spaces for a sub-item
+* You can also use asterisks, and
+  + plus signs.
+
+Ordered lists are
+
+```markdown
+1. created similarly, but
+2. use numbers or letters instead of dashes.
+   a) It's easy to add sub-items too!
+```
+
+The output looks like this:
+
+1. created similarly, but
+2. using numbers or letters instead of dashes.
+   a) It's easy to add sub-items too!
 
 ### Quotations
 
 R Markdown can even format quotes for you!
 
+```markdown
 > If you want to quote something, adding a `>` before the text
   creates a block quote ---Johan Larsson
+```
 
+And it looks like this:
+
+> If you want to quote something, adding a `>` before the text
+  creates a block quote ---Johan Larsson
 
 ### Tables
 
 There are [many ways](https://pandoc.org/MANUAL#tables) to format tables in
 markdown, but the simplest one is two simply create columns of text with dashes
 (`---`) separating the title of each column from the cells of the table.
+
+
+```markdown
+Table: A caption for the table can be added like this.
+
+Header 1    Header 2
+---------   ---------
+Cell 1      Cell 2
+Cell 3      Cell 4
+```
+
+Table 2 shows what the output looks like. 
 
 Table: A caption for the table can be added like this.
 
@@ -199,28 +252,39 @@ Header 1    Header 2
 Cell 1      Cell 2
 Cell 3      Cell 4
 
+If the data you want to tabulate is already stored in an object in R, however,
+it would be both tedious and error-prone to copy it by hand. A better
+alternative is to then use `knitr::kable()` (or `kableExtra::kbl()`, which is
+identical to the former but better documented).
+
 ### Links
 
-To add a link in Markdown, you can either simply surround the URL with brackets
-(as in this link to a R Markdown cheatsheet): <https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf> or you
-can use brackets and parentheses to provide your own
-[text for the link](https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf).
+To add a link in Markdown, you can either simply surround the URL with angled
+brackets (`<>`) or square brackets (`[]`) and parantheses (`()`) (Table 3).
+
+Table: Links in markdown
+
++------------------------------+----------------------------+
+| markdown                     | output                     |
++==============================+============================+
+| `<https://stat.lu.se>`       | <https://stat.lu.se>       |
++------------------------------+----------------------------+
+| `[Link](https://stat.lu.se)` | [Link](https://stat.lu.se) |
++------------------------------+----------------------------+
+
 
 ### Images
 
 Images can be added with syntax similar to the one for links, with the text
-inside brackets indicating the caption for the figure. Let's first download an
-image to our working directory.
+inside brackets indicating the caption for the figure. Provided that
+we have stored a figure at `images/xkcd.png`, we can include it like this:
 
-```{r}
-download.file(
-  "https://imgs.xkcd.com/comics/scientific_paper_graph_quality.png",
-  "xkcd.png",
-  mode = "wb"
-)
+```markdown
+![A caption (<https://xkcd.com/1945/>).](images/xkcd.png){width=250px}
 ```
 
-![Including the image is then simply a matter of using square brackets and parentheses (<https://xkcd.com/1945/>).](xkcd.png){width=250px}
+![A caption (<https://xkcd.com/1945/>).](images/xkcd.png){width=250px}
+
 
 ### Footnotes
 

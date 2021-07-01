@@ -42,6 +42,7 @@ This page contains slides for the courses STAE04 and DABN19: Data Visualization
 ### Miscellaneous
 
 * [Getting Started with R and R Studio](misc-getting-started-with-r-and-rstudio)
+* [Introduction to R Markdown](introduction-to-rmarkdown)
 * [The Anatomy of a Plot](misc-the-anatomy-of-a-plot)
 * [Instructions for the Assignments](misc-instructions-for-the-assignments)
 * [Feedback and History of Changes](feedback-and-changes)

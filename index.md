@@ -37,7 +37,8 @@ This page contains slides for the courses STAE04 and DABN19: Data Visualization
 
 ### Submission Template
 
-* [Submission Template and Introduction to R Markdown](https://raw.githubusercontent.com/stat-lu/dataviz/main/template.Rmd)
+* [R Markdown Template](
+   https://raw.githubusercontent.com/stat-lu/dataviz/main/template.Rmd)
 
 ### Miscellaneous
 
@@ -49,4 +50,5 @@ This page contains slides for the courses STAE04 and DABN19: Data Visualization
 
 ### Source code
 
-The source code for all of the material here can be found at <https://github.com/stat-lu/dataviz>.
+The source code for all of the material here can be found at
+<https://github.com/stat-lu/dataviz>.

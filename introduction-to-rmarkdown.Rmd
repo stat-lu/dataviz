@@ -64,9 +64,9 @@ You write text (including R code) in a standard text document with the ending
 `.Rmd` and then R Markdown (plus a handful of very useful packages) turns your
 text into a neatly formatted document.
 
-The benefit of using R Markdown is that you can choose the kind of output you
-want. R Markdown documents can be turned into PDFs, Word Documents, and HTML
-pages (and much more) with only a few small changes to the document.
+The benefit of using R Markdown is that R Markdown documents can be output to a
+myriad of formats, including PDFs, Word Documents, and HTML pages (and much
+more) without having to change the content on your document.
 
 This document has in fact been rendered as both a [PDF document]() and
 [html page](), and you can read either of them. Furthermore, it may be
@@ -280,10 +280,10 @@ inside brackets indicating the caption for the figure. Provided that
 we have stored a figure at `images/xkcd.png`, we can include it like this:
 
 ```markdown
-![A caption (<https://xkcd.com/1945/>).](images/xkcd.png){width=250px}
+![A caption (<https://xkcd.com/1945/>).](images/xkcd.png){width=300px}
 ```
 
-![A caption (<https://xkcd.com/1945/>).](images/xkcd.png){width=250px}
+![A caption (<https://xkcd.com/1945/>).](images/xkcd.png){width=300px}
 
 
 ### Footnotes
@@ -301,14 +301,42 @@ if you are not familiar with Markdown and Pandoc. You will not be needing a lot
 of references in this course, so it's perfectly alright to write your references
 and citations manually; in this case, you can skip the next paragraph.
 
-To cite in R Markdown, you will need either  1) a `.bib` file (with
+To cite in R Markdown, you will need either 1) a `.bib` file (with
 bibtex-formatted references) somewhere in your working directory or 2) a
-`references` field in the YAML block; in this document we use the latter but
-only to keep this document self-contained. Using a `.bib` file is recommended.
-Find the key of the reference you are looking for and preface it with an `@`,
-like the following reference to @wickham2010, which creates a text reference. If
-you surround the key with brackets, you instead get a non-text citation
-[@wickham2010]. If you've done everything right, the final document will get a
+`references` field in the YAML block, like the following:
+
+```{markdown}
+references:
+- id: wickham2010
+  title: A Layered Grammar of Graphics
+  author:
+    - family: Wickham
+      given: Hadley
+  issued:
+    year: 2010
+    month: 1
+  container-title: Journal of computational and graphical statistics
+  volume: 19
+  issue: 1
+  page: 3-28
+  DOI: 10.1198/jcgs.2009.07098
+  URL: http://www.tandfonline.com/doi/abs/10.1198/jcgs.2009.07098
+  type: article-journal
+```
+
+Using a `.bib` file is recommended unless you only have a few references.
+
+To cite something, find the key of the reference you are looking for---in this case
+`wickham2010`, and preface it with an `@`. See the examples in Table 4.
+
+Table: Citations in R Markdown.
+
+type                  markdown                  output
+------------------    -------------------       --------------
+text citation         `@wickham2010`            @wickham2010
+indirect deference    `[@wickham2010]`          [@wickham2010]
+
+If you've done everything right, the final document will get a
 bibliography at the end (as in this one).
 
 ## Code Chunks
@@ -318,6 +346,7 @@ and its flavor of Markdown. But what makes R Markdown special is that is allows
 us to write seamlessly include chunks of R code in our texts. This is a code
 chunk that plots a simple plot using ggplot2:
 
+````{markdown}
 ```{r chode-chunk-label}
 library(tidyverse)
 
@@ -326,6 +355,7 @@ ggplot(msleep, aes(brainwt, sleep_rem)) +
   scale_x_log10() +
   labs(x = "Brain Weight (lbs)", y = "REM Sleep (hours)")
 ```
+````
 
 As you can see, we've started the code chunk with ` ```{r} ` and ended it with
 ` ``` `. Everything in between will be treated as R code, just as if you would

@@ -363,14 +363,14 @@ library(ggplot2)
 --
 
 even more packages available via [bioconductor](https://www.bioconductor.org) and
-git repositories on [github](https://github.com/) and similar sites
+git repositories on [github](https://github.com/) and similar sites.
 
 ```{r eval = FALSE}
 # install.packages("remotes")
 remotes::install_github("hrbrmstr/waffle")
 ```
 
-but in this course we will **only** use CRAN packages
+But in this course we will **only** use CRAN packages
 
 ---
 

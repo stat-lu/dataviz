@@ -16,7 +16,7 @@ output:
 # This is the setup chunk. It can be used to setup general options and load
 # packages that you make use of during the report.
 knitr::opts_chunk$set(
-  echo = TRUE,
+  echo = FALSE,
   warning = FALSE,
   message = FALSE,
   fig.align = "center",
@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
   fig.height = 2.2
 )
 
-# set a theme for ggplot2
+# set a theme, including font size, for ggplot2
 theme_set(theme_grey(base_size = 10))
 
 options(
@@ -47,17 +47,18 @@ Lyndon B. Johnson      Demoratic               1963             1969
 Richard Nixon          Republican              1969             1974
 
 We could also make a neatly formatted table directly from R, using
-`knitr::kable()`! See the result in Table 2.
+`knitr::kable()`! Here we explicitly tell R Markdown to show our code
+in the output. See the result in Table 2.
 
-```{r r-table}
+```{r r-table, echo = TRUE}
 library(tidyverse)
 
 # Pull some data from the presidential data set
 presidential %>%
   head(4) %>%
   knitr::kable(
-    format = "pipe", # works well for both latex and html output
-    caption = "The terms of some presidents in the US."
+    caption = "The terms of some presidents in the US.",
+    booktabs = TRUE # nicer PDF tables (always use this)
   )
 ```
 

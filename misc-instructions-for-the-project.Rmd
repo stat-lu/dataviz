@@ -23,45 +23,65 @@ library(tidyverse)
 
 ## Overview
 
-The final part of this course is a project that you will undertake. In this project, you will tackle a dataset **of your choosing** using the visualization tools that you've encountered during this course. There are two ways to tackle this project, either you
+The final part of this course is a project that you will undertake. In this
+project, you will tackle a data set **of your choosing** using the visualization
+tools that you've encountered during this course. There are two ways to tackle
+this project, either you
 
-1. start with a **research question** and then find a dataset that can be used to answer this question, or
-2. start with a **dataset** and then prepare a research question based on this dataset.
+1. start with a **research question** and then find a data set that can be used
+   to answer this question, or
+2. start with a **data set** and then prepare a research question based on this
+   data set.
 
-## Dataset
+## Data Set
 
-Whichever way you choose, you will need to pick a dataset and this dataset should be 
+Whichever way you choose, you will need to pick a data set and this data set
 
-1. **multivariate**, i.e. it should contain a relatively large number of variables (aim for at least 8), 
-2. should have varaibles measured **on different scales**, and
-3. should **not** be one of the datasets that we've already tackled in this course.
+1. should be **multivariate**, i.e. should contain a relatively large number of
+   variables (aim for at least 8), 
+2. should have variables measured **on different scales**, and
+3. should **not** be one of the data sets that we've already tackled in this
+   course.
 
-You are free to choose any dataset you like that fulfill these requirements, but be aware that some datasets out there require a considerable amount of data wrangling before they become amenable for use with **gplot2**.
+You are free to choose any data set you like that fulfill these requirements,
+but be aware that some data sets out there require a considerable amount of data
+wrangling before they become amenable for use with **ggplot2**.
 
-### Datasets in R Packages
+### Data Sets in R Packages
 
-The by far simplest approach to pick a dataset is to use one that is bundled with an R package. There is a vast number of R packages that contain datasets, but here are a few that may be useful in this regard:
+The by far simplest approach to pick a data set is to use one that is bundled
+with an R package. There is a vast number of R packages that contain data sets,
+but here are a few that may be useful in this regard:
 
 - [carData](https://cran.r-project.org/package=carData) (miscellaneous)
 - [faraway](https://cran.r-project.org/package=faraway) (miscellaneous)
-- [GLMsData](https://cran.r-project.org/package=GLMsData) (miscellaneous, statistical modeling data)
+- [GLMsData](https://cran.r-project.org/package=GLMsData) (miscellaneous,
+  statistical modeling data)
 - [UsingR](https://cran.r-project.org/package=UsingR) (miscellaneous)
-- [HistData](https://cran.r-project.org/package=HistData) (classical datasets from data visualization)
+- [HistData](https://cran.r-project.org/package=HistData) (classical data sets
+  from data visualization)
 - [agridat](https://cran.r-project.org/package=agridat) (agriculture)
-- [archdat](https://cran.r-project.org/package=archdat) (archeology)
+- [archdat](https://cran.r-project.org/package=archdat) (archaeology)
 - [Ecdat](https://cran.r-project.org/package=Ecdat) (econometrics)
 - [wooldridge](https://cran.r-project.org/package=wooldridge) (econometrics)
-- [poliscidata](https://cran.r-project.org/package=poliscidata) (political sciences)
+- [poliscidata](https://cran.r-project.org/package=poliscidata) (political
+  sciences)
 
-Note that while these datasets are easy to access, many of them still require reformatting such as changing variable types, releveling of factors, etc.
+Note that while these data sets are easy to access, many of them still require
+reformatting such as changing variable types, re-leveling of factors, etc.
 
-In addition, there is a [summary of datasets in some R packages here](https://vincentarelbundock.github.io/Rdatasets/datasets.html) that serves as a nice (but limited) overview.
+In addition, there is a [summary of data sets in some R packages
+here](https://vincentarelbundock.github.io/Rdata sets/datasets.html) that
+serves as a nice (but limited) overview.
 
-### External Datasets
+### External Data Sets
 
-Even if there is a wealth of data hidden within packages in R, this collection is still dwarfed by the amount of data that is accessible elsewhere. Finding and wrangling with data outside R often requires a bit more work, however, so if you do take this approach be prepared to get your hands dirty.
+Even if there is a wealth of data hidden within packages in R, this collection
+is still dwarfed by the amount of data that is accessible elsewhere. Finding and
+wrangling with data outside R often requires a bit more work, however, so if you
+do take this approach be prepared to get your hands dirty.
 
-Here are some sources for datasets outside R:
+Here are some sources for data sets outside R:
 
 - [kaggle](https://www.kaggle.com)
 - [UCI machine learning repository](https://archive.ics.uci.edu)
@@ -72,18 +92,31 @@ Here are some sources for datasets outside R:
 
 ## Format
 
-The [general instructions](https://canvas.education.lu.se/courses/5769/pages/assignment-and-project-instructions) that applied to the assignments apply here too. But in addition to these, please pay attention to the following as well:
+The [general
+instructions](https://canvas.education.lu.se/courses/5769/pages/assignment-and-project-instructions)
+that applied to the assignments apply here too. But in addition to these, please
+pay attention to the following as well:
 
 - The report should contain three sections:
   
-  * an **introduction**, within which you describe and motivate the research question as well as the dataset (including where and how to access it). 
-  * an **analysis**, which contains the body of your report, including all (properly formatted) visualizations as well as text describing the those visualizations, and
+  * an **introduction**, within which you describe and motivate the research
+    question as well as the data set (including where and how to access it). 
+  * an **analysis**, which contains the body of your report, including all
+    (properly formatted) visualizations as well as text describing the those
+    visualizations, and
   * a **conclusion**, which summarizes the main findings from the report.
   
   You may use subsections within these sections as you please.
   
 - The report may be no longer than 6 pages.
-- The report may contain at most 8 figures. Aim for quality rather than quantity. Four well-designed and pertinent visualizations is better than eight half-finished designs.
-- At least some of your visualizations must be **multivariate**. Eight vanilla scatter plots and histograms will not demonstrate that you've grasped the contents of this course.
+- The report may contain at most 8 figures. Aim for quality rather than
+  quantity. Four well-designed and pertinent visualizations is better than eight
+  half-finished designs.
+- At least some of your visualizations must be **multivariate**. Eight vanilla
+  scatter plots and histograms will not demonstrate that you've grasped the
+  contents of this course.
+- The choice of plots must be reasonably varied. Using the same plot type (e.g.
+  box plots) for all figures, for instance, is not adequate. 
+
 
 

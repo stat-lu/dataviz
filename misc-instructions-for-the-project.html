@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Instructions for the Project</title>
+
+<script src="misc-instructions-for-the-project_files/header-attrs-2.10/header-attrs.js"></script>
+<script src="misc-instructions-for-the-project_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="misc-instructions-for-the-project_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="misc-instructions-for-the-project_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="misc-instructions-for-the-project_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="misc-instructions-for-the-project_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="misc-instructions-for-the-project_files/navigation-1.1/tabsets.js"></script>
+<link href="misc-instructions-for-the-project_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="misc-instructions-for-the-project_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Instructions for the Project</h1>
+
+</div>
+
+
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p>The final part of this course is a project that you will undertake. In this project, you will tackle a data set <strong>of your choosing</strong> using the visualization tools that you’ve encountered during this course. There are two ways to tackle this project, either you</p>
+<ol style="list-style-type: decimal">
+<li>start with a <strong>research question</strong> and then find a data set that can be used to answer this question, or</li>
+<li>start with a <strong>data set</strong> and then prepare a research question based on this data set.</li>
+</ol>
+</div>
+<div id="data-set" class="section level2">
+<h2>Data Set</h2>
+<p>Whichever way you choose, you will need to pick a data set and this data set</p>
+<ol style="list-style-type: decimal">
+<li>should be <strong>multivariate</strong>, i.e. should contain a relatively large number of variables (aim for at least 8),</li>
+<li>should have variables measured <strong>on different scales</strong>, and</li>
+<li>should <strong>not</strong> be one of the data sets that we’ve already tackled in this course.</li>
+</ol>
+<p>You are free to choose any data set you like that fulfill these requirements, but be aware that some data sets out there require a considerable amount of data wrangling before they become amenable for use with <strong>ggplot2</strong>.</p>
+<div id="data-sets-in-r-packages" class="section level3">
+<h3>Data Sets in R Packages</h3>
+<p>The by far simplest approach to pick a data set is to use one that is bundled with an R package. There is a vast number of R packages that contain data sets, but here are a few that may be useful in this regard:</p>
+<ul>
+<li><a href="https://cran.r-project.org/package=carData">carData</a> (miscellaneous)</li>
+<li><a href="https://cran.r-project.org/package=faraway">faraway</a> (miscellaneous)</li>
+<li><a href="https://cran.r-project.org/package=GLMsData">GLMsData</a> (miscellaneous, statistical modeling data)</li>
+<li><a href="https://cran.r-project.org/package=UsingR">UsingR</a> (miscellaneous)</li>
+<li><a href="https://cran.r-project.org/package=HistData">HistData</a> (classical data sets from data visualization)</li>
+<li><a href="https://cran.r-project.org/package=agridat">agridat</a> (agriculture)</li>
+<li><a href="https://cran.r-project.org/package=archdat">archdat</a> (archaeology)</li>
+<li><a href="https://cran.r-project.org/package=Ecdat">Ecdat</a> (econometrics)</li>
+<li><a href="https://cran.r-project.org/package=wooldridge">wooldridge</a> (econometrics)</li>
+<li><a href="https://cran.r-project.org/package=poliscidata">poliscidata</a> (political sciences)</li>
+</ul>
+<p>Note that while these data sets are easy to access, many of them still require reformatting such as changing variable types, re-leveling of factors, etc.</p>
+<p>In addition, there is a <a href="https://vincentarelbundock.github.io/Rdata%20sets/datasets.html">summary of data sets in some R packages here</a> that serves as a nice (but limited) overview.</p>
+</div>
+<div id="external-data-sets" class="section level3">
+<h3>External Data Sets</h3>
+<p>Even if there is a wealth of data hidden within packages in R, this collection is still dwarfed by the amount of data that is accessible elsewhere. Finding and wrangling with data outside R often requires a bit more work, however, so if you do take this approach be prepared to get your hands dirty.</p>
+<p>Here are some sources for data sets outside R:</p>
+<ul>
+<li><a href="https://www.kaggle.com">kaggle</a></li>
+<li><a href="https://archive.ics.uci.edu">UCI machine learning repository</a></li>
+<li><a href="https://www.scb.se">Statistics Sweden (SCB)</a></li>
+<li><a href="https://www.data.gov">DATA.GOV</a></li>
+<li><a href="https://www.europeandataportal.eu">European Data Portal</a></li>
+<li><a href="https://www.dataportal.se">Sveriges dataportal</a></li>
+</ul>
+</div>
+</div>
+<div id="format" class="section level2">
+<h2>Format</h2>
+<p>The <a href="https://canvas.education.lu.se/courses/5769/pages/assignment-and-project-instructions">general instructions</a> that applied to the assignments apply here too. But in addition to these, please pay attention to the following as well:</p>
+<ul>
+<li><p>The report should contain three sections:</p>
+<ul>
+<li>an <strong>introduction</strong>, within which you describe and motivate the research question as well as the data set (including where and how to access it).</li>
+<li>an <strong>analysis</strong>, which contains the body of your report, including all (properly formatted) visualizations as well as text describing the those visualizations, and</li>
+<li>a <strong>conclusion</strong>, which summarizes the main findings from the report.</li>
+</ul>
+<p>You may use subsections within these sections as you please.</p></li>
+<li><p>The report may be no longer than 6 pages.</p></li>
+<li><p>The report may contain at most 8 figures. Aim for quality rather than quantity. Four well-designed and pertinent visualizations is better than eight half-finished designs.</p></li>
+<li><p>At least some of your visualizations must be <strong>multivariate</strong>. Eight vanilla scatter plots and histograms will not demonstrate that you’ve grasped the contents of this course.</p></li>
+<li><p>The choice of plots must be reasonably varied. Using the same plot type (e.g. box plots) for all figures, for instance, is not adequate.</p></li>
+</ul>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

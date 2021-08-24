@@ -38,7 +38,7 @@ this project, either you
 Whichever way you choose, you will need to pick a data set and this data set
 
 1. should be **multivariate**, i.e. should contain a relatively large number of
-   variables (aim for at least 8), 
+   variables (aim for at least 6), 
 2. should have variables measured **on different scales**, and
 3. should **not** be one of the data sets that we've already tackled in this
    course.
@@ -117,6 +117,8 @@ pay attention to the following as well:
   contents of this course.
 - The choice of plots must be reasonably varied. Using the same plot type (e.g.
   box plots) for all figures, for instance, is not adequate. 
-
+- Adding meta commentary (discussing your choices of visualizations) is
+  typically a good idea (although not mandatory).
+  
 
 

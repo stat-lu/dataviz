@@ -26,22 +26,21 @@ options(scipen = 999)
 ```
 
 For each assignment, as well as for the project, you need to hand in a `.pdf`
-report. This report should be a written
-response to the tasks given in the assignment. It should respond to all the
-questions in the assignment in a **clear** and **succinct** manner.
+report. This report should be a written response to the tasks given in the
+assignment. It should respond to all the questions in the assignment in a
+**clear** and **succinct** manner.
 
 ## Workflow: Two Approaches
 
-There are two approaches you can take when you write your report. The first
-of these is to use R Markdown; the second is to write your report
-in a WYSIWYG (what you see is what you get) software such as
-Libre Office, Google Docs, or Microsoft Word.
+There are two approaches you can take when you write your report. The first of
+these is to use R Markdown; the second is to write your report in a WYSIWYG
+(what you see is what you get) software such as Libre Office, Google Docs, or
+Microsoft Word.
 
 ### R Markdown
 
-If you want to go down this road, start by downloading
-the submission template that we have provided for you by
-running the following code,
+If you want to go down this road, start by downloading the submission template
+that we have provided for you by running the following code,
 
 ```{r}
 download.file(
@@ -147,9 +146,9 @@ mpg %>%
        y = "Engine Displacement")
 ```
 
-If you use a WYSIWYG editor, you need to first import your images
-into the editor and then right-click on them and choose `Insert Caption` (or
-some similar command). **Don't use `ggtitle()`, `labs(title = ...)`!**
+If you use a WYSIWYG editor, you need to first import your images into the
+editor and then right-click on them and choose `Insert Caption` (or some similar
+command). **Don't use `ggtitle()`, `labs(title = ...)`!**
 
 See
 [The Anatomy of a Plot](https://stat-lu.github.io/dataviz/misc-the-anatomy-of-a-plot)
@@ -171,8 +170,8 @@ For each assignment you will need to peer review **three other reports**. To
 complete these reviews, you need to fill out the **rubric** associated with the
 assignment and add a general comment on the submission. In addition, we also
 encourage you to provide **annotated feedback** using the integrated tools in
-Canvas. Please see
-[this page](https://community.canvaslms.com/t5/Student-Guide/How-do-I-submit-a-peer-review-to-an-assignment/ta-p/293)
+Canvas. Please see [this
+page](https://community.canvaslms.com/t5/Student-Guide/How-do-I-submit-a-peer-review-to-an-assignment/ta-p/293)
 to read more about peer-reviewing in canvas.
 
 Finally, please remember to provide **constructive** feedback.
@@ -185,10 +184,9 @@ you will **fail the assignment**.
 ### Grading
 
 The assignments and project will be graded by an instructor or teaching
-assistant as **pass** or **fail**. To pass the course,
-**you need to pass each assignment**. If you fail any assignment (or the
-project), you will get an additional chance to hand in these after the
-conclusion of the course.
+assistant as **pass** or **fail**. To pass the course, **you need to pass each
+assignment**. If you fail any assignment (or the project), you will get an
+additional chance to hand in these after the conclusion of the course.
 
 ## Hints
 
@@ -197,10 +195,10 @@ conclusion of the course.
   functions. (In RStudio simply place the cursor on the function name and hit
   F1).
 - To run code in R Studio inside a R Markdown document, highlight the code and
-  hit `Ctrl/Cmd + Enter`. (There is no need to copy it directly into
-  the terminal.)
-- To create a code chunk in your R Markdown document, use the shortcut
-  `Ctrl/Cmd + Alt + i`.
+  hit `Ctrl/Cmd + Enter`. (There is no need to copy it directly into the
+  terminal.)
+- To create a code chunk in your R Markdown document, use the shortcut `Ctrl/Cmd
+  + Alt + i`.
 - If you want code in your R Markdown document to appear inside your final
   report, use `echo = TRUE` in the header of the code chunk.
 - The size of figures can be controlled using the `fig.width` and `fig.height`

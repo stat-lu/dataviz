@@ -11,7 +11,6 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-
 knitr::opts_chunk$set(
   echo = TRUE,
   message = FALSE,
@@ -42,10 +41,10 @@ Microsoft Word.
 If you want to go down this road, start by downloading the submission template
 that we have provided for you by running the following code,
 
-```{r}
+```{r eval = FALSE}
 download.file(
   "https://raw.githubusercontent.com/stat-lu/dataviz/main/template.Rmd",
-  "template.Rmd", # replace this if you want to
+  "template.Rmd", # filename for the file (which you can replace)
   mode = "wb"
 )
 ```
@@ -61,10 +60,13 @@ simply open the document in R Studio and read through the code and text.
   LaTeX takes care of it all for you.
 * It's very convenient to modify figures or change image sizes. (Simply
   change `fig.width` and `fig.height` in the header).
-* Your document becomes reproducible by someone else if you just give them
-  the `.Rmd` file (and sometimes some other additional auxiliary files).
 * Code that you include is automatically formatted and receives pretty
   syntax highlighting.
+* Your document becomes reproducible by someone else if you just give them
+  the `.Rmd` file (and sometimes some other additional auxiliary files). You
+  are even encouraged to submit your R Markdown file along with your submission
+  for the assignments and project, so that your peers can reproduce your work
+  (if they are interested in doing so).
 
 #### Cons
 
@@ -108,13 +110,20 @@ ggsave("filename.png", width = 3, height = 2.3)
 
 ## Detailed Requirements
 
+### Submissions
+
+You need to submit a PDF with your work. If you'd like to, however, you are also
+free to include `.Rmd` and `.R` files with your submissions containing code to
+reproduce your work. Doing so, however, is not at all obligatory.
+
 ### Writing
 
 Your report does not need to be verbose but it must be **clear** and
 **coherent**. Use full sentences and describe the steps you take and code you've
-included. Prefer a walk-through approach rather than a question: answer format.
-Someone who has not seen the assignment instructions should (reasonably well)
-be able to read your report.
+included. Use a walk-through approach, where you guide the reader through the
+report. Someone who has not seen the assignment instructions but with the same
+background as you should be able to read and follow along reasonably well. Do
+not use a question: answer format in your report.
 
 ### Figures
 
@@ -131,8 +140,7 @@ library(tidyverse)
 mpg %>%
   ggplot(aes(cyl, displ)) +
   geom_point() +
-  labs(x = "Number of Cylinders",
-       y = "Engine Displacement")
+  labs(x = "Number of Cylinders", y = "Engine Displacement")
 ```
 ````
 
@@ -142,27 +150,25 @@ library(tidyverse)
 mpg %>%
   ggplot(aes(cyl, displ)) +
   geom_point() +
-  labs(x = "Number of Cylinders",
-       y = "Engine Displacement")
+  labs(x = "Number of Cylinders", y = "Engine Displacement")
 ```
 
 If you use a WYSIWYG editor, you need to first import your images into the
 editor and then right-click on them and choose `Insert Caption` (or some similar
 command). **Don't use `ggtitle()`, `labs(title = ...)`!**
 
-See
-[The Anatomy of a Plot](https://stat-lu.github.io/dataviz/misc-the-anatomy-of-a-plot)
-for examples and more instruction on how to format your figures.
+See [The Anatomy of a
+Plot](https://stat-lu.github.io/dataviz/misc-the-anatomy-of-a-plot) for examples
+and more instruction on how to format your figures.
 
 ### Code
 
 Only include code when you are **instructed** to do so. When you do include
-code, please
-avoid having it escape into the margin by using multiple lines to separate code.
-Good code style is not a requirement in this course but is nevertheless good
-practice. It might be a good idea to conform to a style guide such as
-[the tidyverse style guide](https://style.tidyverse.org/). R Studio
-can also format code for you if you select it and hit `Cmd/Ctrl + Alt + a`.
+code, please avoid having it escape into the margin by using multiple lines to
+separate code. Good code style is not a requirement in this course but is
+nevertheless good practice. It might be a good idea to conform to a style guide
+such as [the tidyverse style guide](https://style.tidyverse.org/). R Studio can
+also format code for you if you select it and hit `Cmd/Ctrl + Alt + a`.
 
 ## Peer Review and Examination
 

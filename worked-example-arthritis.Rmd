@@ -24,7 +24,6 @@ knitr::opts_chunk$set(
 options(scipen = 999)
 ```
 
-
 ## Arthritis
 
 In this worked example we will be working with data from a treatment trial for
@@ -79,7 +78,7 @@ is due to two reasons:
    inner grouping variable is ordinal. For other problems, however, this can
    be much more detrimental to the result.]
 2. The bars are not proportional.^[To be fair, the differences between the group
-   sizes are small here, but this also means that we don't lose any information
+   sizes are small here, but this also means that we don't lose much information
    when using proportional bars instead.]
 
 Let's try a grouped proportional bar chart instead. To do this, we need
@@ -96,8 +95,7 @@ We will try the second option here. We start with the code.
 Arthritis %>%
   ggplot(aes(Treatment, group = Improved, fill = Improved)) +
   geom_bar(aes(y = after_stat(prop)), position = "dodge") +
-  labs(fill = "Improvement",
-       y = "Proportion")
+  labs(fill = "Improvement", y = "Proportion")
 ```
 
 So how does this work? The key to this is that `geom_bar()` computes (and makes
@@ -358,3 +356,4 @@ plot(fit_organisms_ellipses, quantities = TRUE)
 
 The source code for this document is available at
 <https://github.com/stat-lu/dataviz/blob/main/worked-example-arthritis.Rmd>.
+

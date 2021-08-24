@@ -11,7 +11,6 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-
 knitr::opts_chunk$set(
   echo = TRUE,
   message = FALSE,
@@ -26,12 +25,12 @@ options(scipen = 999)
 ```
 
 
-## Arthrithis
+## Arthritis
 
-In this worked example we will be working with data from a treatment trial
-for Arthritis. The data comes from the
-[vcd package](https://CRAN.R-project.org/package=vcd). To begin, let's
-load the package and take a `glimpse()` at the data.
+In this worked example we will be working with data from a treatment trial for
+Arthritis. The data comes from the [vcd
+package](https://CRAN.R-project.org/package=vcd). To begin, let's load the
+package and take a `glimpse()` at the data.
 
 ```{r}
 # install.packages("vcd") # if you haven't installed it yet
@@ -41,14 +40,14 @@ library(tidyverse)
 glimpse(Arthritis)
 ```
 
-Notice that `Improved` is helpfully formatted as an ordinal (ordered)
-variable already, which is going to help ggplot to choose the correct
-color palettes for us.
+Notice that `Improved` is helpfully formatted as an ordinal (ordered) variable
+already, which is going to help ggplot to choose the correct color palettes for
+us.
 
 ## Bar Charts
 
-Let's start with a simple bar chart to see how many people were allocated
-to the two treatment arms.
+Let's start with a simple bar chart to see how many people were allocated to the
+two treatment arms.
 
 ```{r, fig.cap = "Treatment allocation for the arthritis study.", fig.width = 2.2, fig.height = 2.2}
 library(tidyverse)
@@ -101,22 +100,22 @@ Arthritis %>%
        y = "Proportion")
 ```
 
-So how does this work? The key to this is that `geom_bar()` computes (and
-makes accessible) certain statistics. Among these are `prop`, which is
-the *group-wise* proportion. To access this statistic, we need to use the
-special `after_stat()` function, which acts as a wrapper that evaluates
-its arguments after the statistics in the enclosing function have been
-computed. To get this to work properly, we also need to map the `group`
-aesthetic, so that ggplot knows which category to compute proportions within.
+So how does this work? The key to this is that `geom_bar()` computes (and makes
+accessible) certain statistics. Among these are `prop`, which is the
+*group-wise* proportion. To access this statistic, we need to use the special
+`after_stat()` function, which acts as a wrapper that evaluates its arguments
+after the statistics in the enclosing function have been computed. To get this
+to work properly, we also need to map the `group` aesthetic, so that ggplot
+knows which category to compute proportions within.
 
 This strategy can be used with many other layer functions (`geom_*()` functions)
 in ggplot.
 
 ## Mosaic Plots
 
-In the lecture we also encountered mosaic plots, which are proportional
-bar charts that map not only the height of the bars but also the
-width of the bars to group sizes.
+In the lecture we also encountered mosaic plots, which are proportional bar
+charts that map not only the height of the bars but also the width of the bars
+to group sizes.
 
 In the lecture, we used the
 [productplots](https://CRAN.R-project.org/package=productplots) package, but
@@ -144,13 +143,12 @@ The key features to notice about this call are
 2. the call to `product()`, which acts simply as a list of variables that
    you want to use in the mosaic plot.
 
-The main benefit of the mosaic plot is that we get to see more of the data.
-With the bar charts we needed to separate visualizations to provide
-information on the overall size of the groups (treatment arms), whereas
-with the mosaic plot we can make do with only a single plot.^[But note that
-it is the *relative* size that we show. If we want the actual *counts* in
-the outer category, we still need to add additional plots or provide
-this information in text.]
+The main benefit of the mosaic plot is that we get to see more of the data. With
+the bar charts we needed to separate visualizations to provide information on
+the overall size of the groups (treatment arms), whereas with the mosaic plot we
+can make do with only a single plot.^[But note that it is the *relative* size
+that we show. If we want the actual *counts* in the outer category, we still
+need to add additional plots or provide this information in text.]
 
 ## Waffle Plots
 
@@ -158,21 +156,20 @@ Waffle plots are easy-to-read visualizations that are actually quite uncommon
 in statistical visualizations but much more prevalent in media outlets such as
 newspapers. They are, as we mentioned in the lecture, at their best when some of
 the categories are so small that their sizes are hard to estimate in a
-barchart or mosaic plot.
+bar chart or mosaic plot.
 
-There is a great package for mosaic plots that interact well with
-ggplot2 called [waffle](https://CRAN.R-project.org/package=waffle).
-Unfortunately, the current version on CRAN is outdated^[Feel free to
-voice your support for a CRAN update at
-<https://github.com/hrbrmstr/waffle/issues/72>.] and much of the new
+There is a great package for mosaic plots that interact well with ggplot2 called
+[waffle](https://CRAN.R-project.org/package=waffle). Unfortunately, the current
+version on CRAN is outdated^[Feel free to voice your support for a CRAN update
+at <https://github.com/hrbrmstr/waffle/issues/72>.] and much of the new
 functionality that makes it work well with ggplot is only available from the
 [development version at GitHub](https://github.com/hrbrmstr/waffle).
 
 For that reason, waffle plots are not compulsory material in this course and
 will instead serve as bonus material for those who are interested.
 
-To download development versions of R packages from GitHub, you need the
-the [remotes](https://CRAN.R-project.org/package=remotes) package or the
+To download development versions of R packages from GitHub, you need the 
+[remotes](https://CRAN.R-project.org/package=remotes) package or the
 [devtools](https://CRAN.R-project.org/package=devtools) package.
 
 ```{r, eval = FALSE}
@@ -183,15 +180,15 @@ install.packages("remotes")
 remotes::install_github("hrbrmstr/waffle") # or devtools::install_github()
 ```
 
-The waffle package requires that our data contains counts of the
-categories, so before we can use it, we need to do a bit of wrangling. More
-precisely, you need to group the data by `Improved` and `Treatment` and
-then use `summarize()` together with either the `n()` function to get either
-counts or some other expression for proportions. We'll settle for counts in
-this example. Before looking at the following code, see if you can do this by
-yourself. The result should be a 6-row tibble with columns `Treatment`,
-`Improved` and `Count` (or whatever you want to call it). Save the result to an
-object called `Arthritis_summarized`.
+The waffle package requires that our data contains counts of the categories, so
+before we can use it, we need to do a bit of wrangling. More precisely, you need
+to group the data by `Improved` and `Treatment` and then use `summarize()`
+together with either the `n()` function to get either counts or some other
+expression for proportions. We'll settle for counts in this example. Before
+looking at the following code, see if you can do this by yourself. The result
+should be a 6-row tibble with columns `Treatment`, `Improved` and `Count` (or
+whatever you want to call it). Save the result to an object called
+`Arthritis_summarized`.
 
 ```{r}
 Arthritis_summarized <-
@@ -200,12 +197,11 @@ Arthritis_summarized <-
   summarize(Count = n())
 ```
 
-Now we're ready to start making waffles! The aesthetics you need to know
-about here are `fill` and `values`. Values is what we want to map the
-counts or proportions that we just created to and `fill` will connect
-our inner-most group to fill color. We start with the simplest
-possible waffle chart, just looking at improvement among the
-participants in the treatment arm.
+Now we're ready to start making waffles! The aesthetics you need to know about
+here are `fill` and `values`. Values is what we want to map the counts or
+proportions that we just created to and `fill` will connect our inner-most group
+to fill color. We start with the simplest possible waffle chart, just looking at
+improvement among the participants in the treatment arm.
 
 ```{r, fig.cap = "A basic waffle chart of the results from the treatment arm."}
 library(waffle)
@@ -216,16 +212,14 @@ filter(Arthritis_summarized, Treatment == "Treated") %>%
   labs(fill = "Improvement")
 ```
 
-This looks kind of
-like a waffle chart, but there's a lot of superfluous information
-that we'd rather get rid off. Thankfully, **waffle** provides the
-helpful `theme_enhance_waffle()` function for this. Moreover, we probably
-prefer the symbols (rectangles) to be squares---it's
-supposed to look like a waffle after all, right?---which
-we can accomplish by forcing the coordinate system to be isometric using
-`coord_equal()`. Finally, I think it looks more aesthetically pleasing if we
-swap the black line color for white, increase their widths slightly, and
-change theme to the minimal variant.
+This looks kind of like a waffle chart, but there's a lot of superfluous
+information that we'd rather get rid off. Thankfully, **waffle** provides the
+helpful `theme_enhance_waffle()` function for this. Moreover, we probably prefer
+the symbols (rectangles) to be squares---it's supposed to look like a waffle
+after all, right?---which we can accomplish by forcing the coordinate system to
+be isometric using `coord_equal()`. Finally, I think it looks more aesthetically
+pleasing if we swap the black line color for white, increase their widths
+slightly, and change theme to the minimal variant.
 
 ```{r, fig.cap = "A prettier waffle plot."}
 filter(Arthritis_summarized, Treatment == "Treated") %>%
@@ -239,10 +233,10 @@ filter(Arthritis_summarized, Treatment == "Treated") %>%
 
 That looks much better, doesn't it?
 
-To wrap up, we now look to the full data set by including both
-treatment arms. To do this with **waffle**, you need to use facets. Here we do
-so via the `facet_wrap()` function, simple providing the outer category
-that we want to facet on.
+To wrap up, we now look to the full data set by including both treatment arms.
+To do this with **waffle**, you need to use facets. Here we do so via the
+`facet_wrap()` function, simple providing the outer category that we want to
+facet on.
 
 ```{r, fig.cap = "Improvement after treatment for arthritis in placebo and intervention arms.", fig.width = 6, fig.height = 2}
 ggplot(Arthritis_summarized, aes(fill = Improved, values = Count)) +
@@ -309,7 +303,7 @@ both in the treatment arm and in the placebo arm, or for that matter
 have made both no improvement and a marked improvement, so it is not
 suitable for this kind of visualization.
 
-Instead, we'll take a look at a dataset from the **eulerr** package
+Instead, we'll take a look at a data set from the **eulerr** package
 called `organisms`. It contains features from a list of organisms:
 
 ```{r}
@@ -321,7 +315,7 @@ an animal (yes), a mammal (yes), plant (no), and so on. We can simply
 call `euler()` on this data set directly.
 
 ```{r}
-(fit_organisms <- euler(organisms)) # parantheses makes R print the object
+(fit_organisms <- euler(organisms)) # parentheses makes R print the object
 ```
 
 This doesn't look great, unfortunately. The `stress` and `diagError`

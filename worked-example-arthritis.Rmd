@@ -82,32 +82,37 @@ is due to two reasons:
    when using proportional bars instead.]
 
 Let's try a grouped proportional bar chart instead. To do this, we need
-to do a little more work since there is no direct option to do this
-in ggplot2. Our two choices are:
+to do a little preparatory work since there is no direct option to do this
+in ggplot2. 
 
-1. use `group_by()` and `summarize()` to compute the proportions we need
-   directly, and then plot the bar chart with `geom_col()` or
-2. use `after_stat()`.
+What we need to do is to prepare a data set with the proportions that we would
+like to plot. In the following lines, we
 
-We will try the second option here. We start with the code.
+1. use `count()` to count the number of observations in each combination of
+   `Treatment` and `Improved`,
+2. group the data set by `Treatment`, and
+3. compute the proportions using `mutate()`.
+
+```{r}
+arthritis_prop <-
+  Arthritis %>%
+  count(Treatment, Improved) %>% # like group_by + summarize
+  group_by(Treatment) %>%
+  mutate(prop = n / sum(n))
+```
+
+Now we're ready to construct our plot, which we do exactly like a standard
+grouped bar plot, except we use `geom_col()` and map the `y` aesthetic since we
+have summary data.
 
 ```{r, fig.cap = "Grouped, proportional bar chart of the arthritis data.", fig.height = 3}
-Arthritis %>%
-  ggplot(aes(Treatment, group = Improved, fill = Improved)) +
-  geom_bar(aes(y = after_stat(prop)), position = "dodge") +
+ggplot(arthritis_prop, aes(Treatment, prop, fill = Improved)) +
+  geom_col(position = "dodge") +
   labs(fill = "Improvement", y = "Proportion")
 ```
 
-So how does this work? The key to this is that `geom_bar()` computes (and makes
-accessible) certain statistics. Among these are `prop`, which is the
-*group-wise* proportion. To access this statistic, we need to use the special
-`after_stat()` function, which acts as a wrapper that evaluates its arguments
-after the statistics in the enclosing function have been computed. To get this
-to work properly, we also need to map the `group` aesthetic, so that ggplot
-knows which category to compute proportions within.
-
-This strategy can be used with many other layer functions (`geom_*()` functions)
-in ggplot.
+No it's suddenly quite easy to compare the proportion of people who improved
+some between the two groups. 
 
 ## Mosaic Plots
 
@@ -186,10 +191,10 @@ expression for proportions. We'll settle for counts in this example. Before
 looking at the following code, see if you can do this by yourself. The result
 should be a 6-row tibble with columns `Treatment`, `Improved` and `Count` (or
 whatever you want to call it). Save the result to an object called
-`Arthritis_summarized`.
+`arthritis_summarized`.
 
 ```{r}
-Arthritis_summarized <-
+arthritis_summarized <-
   Arthritis %>%
   group_by(Treatment, Improved) %>%
   summarize(Count = n())
@@ -204,7 +209,7 @@ improvement among the participants in the treatment arm.
 ```{r, fig.cap = "A basic waffle chart of the results from the treatment arm."}
 library(waffle)
 
-filter(Arthritis_summarized, Treatment == "Treated") %>%
+filter(arthritis_summarized, Treatment == "Treated") %>%
   ggplot(aes(fill = Improved, values = Count)) +
   geom_waffle() +
   labs(fill = "Improvement")
@@ -220,7 +225,7 @@ pleasing if we swap the black line color for white, increase their widths
 slightly, and change theme to the minimal variant.
 
 ```{r, fig.cap = "A prettier waffle plot."}
-filter(Arthritis_summarized, Treatment == "Treated") %>%
+filter(arthritis_summarized, Treatment == "Treated") %>%
   ggplot(aes(fill = Improved, values = Count)) +
   geom_waffle(color = "white", size = 1.5) +
   coord_equal() +
@@ -237,7 +242,7 @@ To do this with **waffle**, you need to use facets. Here we do so via the
 facet on.
 
 ```{r, fig.cap = "Improvement after treatment for arthritis in placebo and intervention arms.", fig.width = 6, fig.height = 2}
-ggplot(Arthritis_summarized, aes(fill = Improved, values = Count)) +
+ggplot(arthritis_summarized, aes(fill = Improved, values = Count)) +
   geom_waffle(color = "white", size = 1.5, n_rows = 5) +
   facet_wrap("Treatment") +
   coord_equal() +

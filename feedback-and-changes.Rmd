@@ -27,24 +27,26 @@ options(scipen = 999)
 
 # Spring 2021
 
+### Feedback from Last Run
+
+Feedback on the course was positive across all items in the course evaluation.
+We received one specific request, which was to make the workshops (help 
+sessions) weekly instead of bi-weekly.
+
 ### Changes
 
-- Several new *Worked Examples* have been added to the course. The source
-  code for all of these worked examples has also been made available on the
-  GitHub repository for the course.
-- All of the reading assignments have been converted into
-  quizzes.
+- Several new *Worked Examples* have been added to the course. The source code
+  for all of these worked examples has also been made available on the GitHub
+  repository for the course.
+- All of the reading assignments have been converted into quizzes.
 - The initial "Post a Visualization" assignment has been removed.
-- The workshops have been made weekly (instead of bi-weekly), and
-  the duration has been shortened to one hour.
+- The workshops have been made weekly (instead of bi-weekly), and the duration
+  has been shortened to one hour.
 - Prerequisites and requirements for the course modules have been removed so
   that all the course content is now accessible right away.
 
 # Fall 2020
 
-### Feedback
+First time for the course.
 
-Feedback on the course was positive across all items in the course evaluation.
-We received one specific request, which was to make the workshops (help 
-sessions) weekly instead of bi-weekly.
 

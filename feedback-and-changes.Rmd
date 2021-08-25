@@ -65,6 +65,7 @@ thought might improve the course:
 - Several questions on the quizzes have been modified. Some have been removed.
 - The **ggmosaic** package is recommended instead of **productplots** in most
   places.
+- Coding videos have been planned as part of the workshops.
 
 # Spring 2021
 

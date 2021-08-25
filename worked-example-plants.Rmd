@@ -28,17 +28,20 @@ options(scipen = 999)
 ## Carbon Dioxide Uptake in Grass Plants
 
 In this example we'll take a look at an experiment on cold tolerance of the
-grass species
-[Echinochloa crus-galli](https://en.wikipedia.org/wiki/Echinochloa_crus-galli).
+grass species [Echinochloa
+crus-galli](https://en.wikipedia.org/wiki/Echinochloa_crus-galli).
 
 ```{r, echo = FALSE, fig.cap = "A specimen of Echinochloa crus-galli."}
-knitr::include_graphics("https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Echinochloa_crus-galli01.jpg/220px-Echinochloa_crus-galli01.jpg")
+knitr::include_graphics(paste0(
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/",
+  "Echinochloa_crus-galli01.jpg/220px-Echinochloa_crus-galli01.jpg"
+))
 ```
 
 ### Data
 
-The data we are going to look at is available in the `CO2` dataset from
-**datasets** (a package that is part of the base R distribution). There are five
+The data we are going to look at is available in the `CO2` data set from
+**data sets** (a package that is part of the base R distribution). There are five
 variables:
 
 `Plant`
@@ -56,19 +59,19 @@ variables:
 `uptake`
 : a numeric vector of carbon dioxide uptake rates (umol/m^2 sec)
 
-The goal of the experiment was to investigate how carbon dioxide uptake
-is affected based on the ambient carbon dioxide concentration (`conc`), the
-origin of the plant `Type`, and `Treatment` (whether the plant was chilled
-overnight before the experiment started or not).
+The goal of the experiment was to investigate how carbon dioxide uptake is
+affected based on the ambient carbon dioxide concentration (`conc`), the origin
+of the plant `Type`, and `Treatment` (whether the plant was chilled overnight
+before the experiment started or not).
 
 ### Simple Scatter Plot
 
 Let's start basic and just look at a scatter plot of the uptake and ambient
-concentration. We'll of course map uptake to the y axis, and concentration
-to the x axis. Before we get started, we'll also rename some of the
-variables so that we get decent axis labels by default and change
-`Plant` from ordered to unordered (since the variable obviously isn't
-ordinal). We'll call the new dataset `co2`.
+concentration. We'll of course map uptake to the y axis, and concentration to
+the x axis. Before we get started, we'll also rename some of the variables so
+that we get decent axis labels by default and change `Plant` from ordered to
+unordered (since the variable obviously isn't ordinal). We'll call the new data
+set `co2`.
 
 ```{r, fig.cap = "CO2 uptake and ambient CO2 concentration."}
 library(tidyverse)
@@ -76,9 +79,7 @@ library(tidyverse)
 co2 <-
   CO2 %>%
   as_tibble() %>%
-  rename(Concentration = conc,
-         Origin = Type,
-         Uptake = uptake) %>%
+  rename(Concentration = conc, Origin = Type, Uptake = uptake) %>%
   mutate(Plant = factor(Plant, ordered = FALSE))
 
 ggplot(co2, aes(Concentration, Uptake)) +

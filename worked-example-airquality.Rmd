@@ -29,10 +29,10 @@ options(scipen = 999)
 
 As soon as you're faced with two numeric variables, your first instinct should
 always be to want to put them on a scatter plot. One such situation could arise
-with a dataset like the `airquality` dataset, which consists of
+with a data set like the `airquality` data set, which consists of
 air quality measurements from New York, in May to September 1973.
 
-The variables in this dataset are
+The variables in this data set are
 
 `Ozone`
 : Mean ozone in parts per billion from 1300 to 1500 hours at Roosevelt Island
@@ -51,7 +51,7 @@ The variables in this dataset are
 `Day`, `Month`
 : Self-explanatory.
 
-Here are the first few rows of the dataset.
+Here are the first few rows of the data set.
 
 ```{r}
 head(airquality)
@@ -109,7 +109,7 @@ airquality2 <-
 airquality2
 ```
 
-Now we're ready to play with the data. The main interest of the dataset is
+Now we're ready to play with the data. The main interest of the data set is
 of course air quality, so we want to look at ozone levels across time.
 
 Here is a first attempt. We use the line geom, which is a natural choice
@@ -161,7 +161,7 @@ p3
 It's unfortunately hard to see a clear pattern here, likely because
 air pollution varies significantly from day to day due to other factors as well.
 A possible way to solve this is to form a new variable, `Weekday`, in our
-dataset, which represents the weekday. We use the `wday()` function
+data set, which represents the weekday. We use the `wday()` function
 from lubridate for this purpose.
 
 ```{r, fig.cap = "Air pollution across the week from May to June in 1973."}
@@ -176,7 +176,7 @@ airquality3 %>%
 
 Great, but now the point geom is probably not the best candidate for
 this job, at least not without jittering and/or opacity. As an alternative,
-we could instead use boxplots here. To use boxplots here, we need to
+we could instead use box plots here. To use box plots here, we need to
 also convert the `Weekday` variable to a factor variable. To make sure
 that its order is also kept, we use `as.ordered()` here. We do this
 directly in the call to `ggplot()`, but note that this means that you
@@ -194,7 +194,7 @@ Now we actually *can* see that there is a slight improvement in
 air quality over the weekends, at least in terms of the median.
 
 Take some time to visualize the relationships between time and the other
-variables in the dataset too.
+variables in the data set too.
 
 ## Source Code
 

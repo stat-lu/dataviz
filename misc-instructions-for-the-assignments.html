@@ -1606,47 +1606,50 @@ div.tocify {
 <p>There are two approaches you can take when you write your report. The first of these is to use R Markdown; the second is to write your report in a WYSIWYG (what you see is what you get) software such as Libre Office, Google Docs, or Microsoft Word.</p>
 <div id="r-markdown" class="section level3">
 <h3>R Markdown</h3>
-<p>If you want to go down this road, start by downloading the submission template that we have provided for you by running the following code,</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">download.file</span>(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>  <span class="st">&quot;https://raw.githubusercontent.com/stat-lu/dataviz/main/template.Rmd&quot;</span>,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>  <span class="st">&quot;template.Rmd&quot;</span>, <span class="co"># filename for the file (which you can replace)</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>  <span class="dt">mode =</span> <span class="st">&quot;wb&quot;</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>)</span></code></pre></div>
-<p>which will download and save the file to your working directory.</p>
-<p>The template also serves as an introduction to R Markdown. To get started, simply open the document in R Studio and read through the code and text.</p>
-<div id="pros" class="section level4">
-<h4>Pros</h4>
+<p>R Markdown represents a way to write reproducible reports that can be rendered in a wide variety of formats and which allows you to interleave R code with text.</p>
+<p><em>Pros:</em></p>
 <ul>
 <li>You don’t need to bother with formatting details. R Markdown, pandoc, and LaTeX takes care of it all for you.</li>
 <li>It’s very convenient to modify figures or change image sizes. (Simply change <code>fig.width</code> and <code>fig.height</code> in the header).</li>
 <li>Code that you include is automatically formatted and receives pretty syntax highlighting.</li>
 <li>Your document becomes reproducible by someone else if you just give them the <code>.Rmd</code> file (and sometimes some other additional auxiliary files). You are even encouraged to submit your R Markdown file along with your submission for the assignments and project, so that your peers can reproduce your work (if they are interested in doing so).</li>
 </ul>
-</div>
-<div id="cons" class="section level4">
-<h4>Cons</h4>
+<p><em>Cons:</em></p>
 <ul>
 <li>You need to learn Markdown syntax and R Markdown code chunks, which will require an initial time investment. If you don’t expect to write these kinds of reports or presentations in the future or will be working with people who will not use R Markdown, this investment may not pay off.</li>
 <li>There are sometimes technical difficulties in getting R Markdown working, especially for Windows machines<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</li>
 </ul>
+<div id="getting-started-with-r-markdown" class="section level4">
+<h4>Getting Started with R Markdown</h4>
+<p>To get you going with R Markdown, we have prepared an introduction that you can read <a href="https://github.com/stat-lu/dataviz/raw/main/introduction-to-rmarkdown.pdf">here</a>.</p>
 </div>
+</div>
+<div id="template" class="section level3">
+<h3>Template</h3>
+<p>We have provided an R Markdown template that we want you to use if you use R Markdown. Download it to <code>template.Rmd</code> in your working directory by calling the following lines of code.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">download.file</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>  <span class="st">&quot;https://raw.githubusercontent.com/stat-lu/dataviz/main/template.Rmd&quot;</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>  <span class="st">&quot;template.Rmd&quot;</span>, <span class="co"># filename for the file (which you can replace if you want)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>  <span class="dt">mode =</span> <span class="st">&quot;wb&quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>)</span></code></pre></div>
 </div>
 <div id="wysiwyg" class="section level3">
 <h3>WYSIWYG</h3>
-<p>If you prefer to use a WYSIWYG editor, you will likely want to either use <code>ggplot2::ggsave()</code> or the built-in export utility in the plot pane of R Studio to save your plots to your hard drive and then input them manually into your document. Here is a simple example of how to do this:</p>
+<p>If you prefer to use a WYSIWYG editor, use <code>ggplot2::ggsave()</code> to save your plots to your hard drive and then input them manually into your document. Here is a simple example of how to do this:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">library</span>(ggplot2)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="kw">ggplot</span>(mpg, <span class="kw">aes</span>(cty, hwy)) <span class="op">+</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="st">  </span><span class="kw">geom_point</span>()</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="kw">ggsave</span>(<span class="st">&quot;filename.png&quot;</span>, <span class="dt">width =</span> <span class="dv">3</span>, <span class="dt">height =</span> <span class="fl">2.3</span>)</span></code></pre></div>
-<div id="pros-1" class="section level4">
+<p>It may be tempting to use the built-in plot save function in R Studio, but we recommend against this because then you have to resize your figures manually each time you want to save the plot.</p>
+<div id="pros" class="section level4">
 <h4>Pros</h4>
 <ul>
 <li>You probably already are familiar with Microsoft Word or Google Docs, so you can get going quickly.</li>
 </ul>
 </div>
-<div id="cons-1" class="section level4">
+<div id="cons" class="section level4">
 <h4>Cons</h4>
 <ul>
 <li>Modifying figures is a little bit of a hassle since you need to re-import the figure every time you modify the plot or make changes to its size.</li>

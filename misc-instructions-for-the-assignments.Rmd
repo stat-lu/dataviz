@@ -38,23 +38,11 @@ Microsoft Word.
 
 ### R Markdown
 
-If you want to go down this road, start by downloading the submission template
-that we have provided for you by running the following code,
+R Markdown represents a way to write reproducible reports that can be rendered
+in a wide variety of formats and which allows you to interleave R code with
+text.
 
-```{r eval = FALSE}
-download.file(
-  "https://raw.githubusercontent.com/stat-lu/dataviz/main/template.Rmd",
-  "template.Rmd", # filename for the file (which you can replace)
-  mode = "wb"
-)
-```
-
-which will download and save the file to your working directory.
-
-The template also serves as an introduction to R Markdown. To get started,
-simply open the document in R Studio and read through the code and text.
-
-#### Pros
+*Pros:*
 
 * You don't need to bother with formatting details. R Markdown, pandoc, and
   LaTeX takes care of it all for you.
@@ -68,7 +56,7 @@ simply open the document in R Studio and read through the code and text.
   for the assignments and project, so that your peers can reproduce your work
   (if they are interested in doing so).
 
-#### Cons
+*Cons:*
 
 * You need to learn Markdown syntax and R Markdown code chunks, which will
   require an initial time investment. If you don't expect
@@ -79,12 +67,31 @@ simply open the document in R Studio and read through the code and text.
   especially for Windows machines^[This is typically not a problem since you
   can export your document to a Word document instead of a PDF.].
 
+#### Getting Started with R Markdown
+
+To get you going with R Markdown, we have prepared an introduction that you can
+read
+[here](https://github.com/stat-lu/dataviz/raw/main/introduction-to-rmarkdown.pdf).
+
+### Template
+
+We have provided an R Markdown template that we want you to use if you use R
+Markdown. Download it to `template.Rmd` in your working directory by calling
+the following lines of code.
+
+```{r eval = FALSE}
+download.file(
+  "https://raw.githubusercontent.com/stat-lu/dataviz/main/template.Rmd",
+  "template.Rmd", # filename for the file (which you can replace if you want)
+  mode = "wb"
+)
+```
+
 ### WYSIWYG
 
-If you prefer to use a WYSIWYG editor, you will likely want to either
-use `ggplot2::ggsave()` or the built-in export utility in the plot pane of
-R Studio to save your plots to your hard drive and then input them manually
-into your document. Here is a simple example of how to do this:
+If you prefer to use a WYSIWYG editor, use
+`ggplot2::ggsave()` to save your plots to your hard drive and then input them
+manually into your document. Here is a simple example of how to do this:
 
 ```{r, eval = FALSE}
 library(ggplot2)
@@ -94,6 +101,10 @@ ggplot(mpg, aes(cty, hwy)) +
 
 ggsave("filename.png", width = 3, height = 2.3)
 ```
+
+It may be tempting to use the built-in plot save function in R Studio, but we
+recommend against this because then you have to resize your figures manually
+each time you want to save the plot.
 
 #### Pros
 
@@ -127,11 +138,11 @@ not use a question: answer format in your report.
 
 ### Figures
 
-Any figures you include should have descriptive labels and captions. If you
-are using R Markdown, please use the `fig.cap` argument in the R Markdown
-chunk header to provide a caption. Also make use of `fig.width` and `fig.height`
-to control the size of the figures. A code chunk for a figure might look
-something like this:
+Any figures you include should have descriptive labels and captions. If you are
+using R Markdown, please use the `fig.cap` argument in the R Markdown chunk
+header to provide a caption. Also make use of `fig.width` and `fig.height` to
+control the size of the figures. A code chunk for a figure might look something
+like this:
 
 ````
 ```{r, fig.cap = "Engine displacement and number of cylinders for 38 popular models of cars from <https://fueleconomy.gov>.", fig.width = 4.2, fig.height = 3.7}`r ''`

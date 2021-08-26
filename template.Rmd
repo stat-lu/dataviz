@@ -2,7 +2,6 @@
 title: "Template"
 subtitle: "STAE04/DABN19: Data Visualization"
 author: "Your Name"
-affiliation: "Department of Statistics, Lund University"
 date: "`r Sys.Date()`"
 papersize: a4
 geometry: margin=4cm
@@ -13,23 +12,25 @@ output:
 ---
 
 ```{r setup, include = FALSE}
-# This is the setup chunk. It can be used to setup general options and load
-# packages that you make use of during the report.
+# Setup options for R Markdown
 knitr::opts_chunk$set(
-  echo = FALSE,
-  warning = FALSE,
-  message = FALSE,
-  fig.align = "center",
-  fig.width = 2.5,
-  fig.height = 2.2
+  echo       = FALSE,    # Do not print code
+  warning    = FALSE,    # Suppress warnings
+  message    = FALSE,    # Suppress messages
+  fig.align  = "center", # Center figures
+  fig.width  = 2.7,      # Good standard figure width for single-panel figures
+  fig.height = 2.4       # Good standard figure height for single-panel figures
 )
 
-# set a theme, including font size, for ggplot2
+library(tidyverse)
+
+# Set a theme for ggplot2
 theme_set(theme_grey(base_size = 10))
 
+# Set options
 options(
-  digits = 3, # limit number of significant digits
-  width = 63  # limit width of code to prevent overflowing
+  digits = 3, # limit the number of significant digits
+  width  = 63 # limit the width of code output
 )
 ```
 
@@ -50,7 +51,7 @@ We could also make a neatly formatted table directly from R, using
 `knitr::kable()`! Here we explicitly tell R Markdown to show our code
 in the output. See the result in Table 2.
 
-```{r r-table, echo = TRUE}
+```{r table1, echo = TRUE}
 library(tidyverse)
 
 # Pull some data from the presidential data set
@@ -68,8 +69,7 @@ the terms of some of the presidents (Figure 1).
 ```{r plot1, fig.cap = "The terms of some presidents in the US.", fig.width = 5}
 presidential %>%
   head(9) %>%
-  mutate(order = 1:n(),
-         name = reorder(name, order)) %>%
+  mutate(order = 1:n(), name = reorder(name, order)) %>%
   ggplot(aes(xmin = start, xmax = end, y = name, color = party)) +
   geom_linerange() +
   scale_color_manual(values = c("navy", "red")) +

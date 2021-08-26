@@ -29,7 +29,8 @@ options(scipen = 999)
 
 ### R
 
-Installing R is easy. Simply go to <https://cloud.r-project.org/> and download the appropriate version of R depending on your operating system:
+Installing R is easy. Simply go to <https://cloud.r-project.org/> and download
+the appropriate version of R depending on your operating system:
 
 Linux
 : Click on *Download R for Linux*, pick a link based on your distribution
@@ -47,9 +48,9 @@ Mac (OS) X
 ### R Studio
 
 After you're done installing R, it's time to install R Studio. Simply go to
-<https://rstudio.com/products/rstudio/download/#download> and pick a
-suitable version for R Studio depending on your operating system. Download
-and install it.
+<https://rstudio.com/products/rstudio/download/#download> and pick a suitable
+version for R Studio depending on your operating system. Download and install
+it.
 
 ## Getting Started with R Studio
 
@@ -70,7 +71,6 @@ To proceed, open R Studio and do the following:
 ### Settings
 
 There are a lot of settings in R Studio. Most of the defaults are fine, but
-there is at least one setting we recommend that you alter straight away. Go
-to `Tools -> Global Options` and un-check
-*"Restore .RData into workspace at startup"* and select *"never"* for
-*"Save workspace to .Rdata on exit"*.
+there is at least one setting we recommend that you alter straight away. Go to
+`Tools -> Global Options` and uncheck *"Restore .RData into work space at
+startup"* and select *"never"* for *"Save work space to .Rdata on exit"*.

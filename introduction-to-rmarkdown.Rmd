@@ -62,19 +62,18 @@ options(
 This document is written using [R Markdown](http://rmarkdown.rstudio.com). R
 Markdown is a syntax for formatting documents that lets you focus on content.
 You write text (including R code) in a standard text document with the ending
-`.Rmd` and then your machine (R Markdown) your text into a neatly formatted
-document. 
+`.Rmd` and then your machine turns your text into a neatly formatted document. 
 
-In addition, R Markdown documents can be compiled into a
-wide variety of formats, including PDFs, Word Documents, and HTML pages (and much
-more) without having to change the content on your document.
+In addition, R Markdown documents can be compiled into a wide variety of
+formats, including PDFs, Word Documents, and HTML pages (and much more) without
+having to change the content on your document.
 
 This document has in fact been rendered as both a [PDF
 document](https://github.com/stat-lu/dataviz/raw/main/introduction-to-rmarkdown.pdf)
 and [html page](https://stat-lu.github.io/dataviz/introduction-to-rmarkdown).
-You can choose any of these when reading the document, but we recommend
-reading the PDF version to get a sense of what your output actually will
-look like (since you'll be handing in PDF documents in this course).
+You can choose any of these when following this guide, but we recommend reading
+the PDF version to get a sense of what your output actually will look like
+(since you'll be handing in PDF documents in this course).
 
 Authoring your documents using R Markdown facilitates reproducibility. Because
 you need to supply all the code used to produce your paper in the `.Rmd` file,
@@ -86,7 +85,7 @@ final document simply by re-knitting it after having made your changes.
 As you proceed though this document, consider taking a look at the
 [R Markdown source code for this document](
 https://github.com/stat-lu/dataviz/blob/main/introduction-to-rmarkdown.Rmd)
-to get a better feel for what R Markdown documents look like.
+too, to get a better feel for what R Markdown documents look like.
 
 # Getting Started
 
@@ -105,31 +104,26 @@ install.packages(c("rmarkdown", "knitr"))
 ```
 
 To produce PDF documents, you will also need a distribution of LaTeX. Installing
-LaTeX is fortunately easy using the **tinytex** package.
-Do so now (unless you already have a working installation of LaTeX on your
-computer) by calling the following lines of
-code.
+LaTeX is fortunately easy using the **tinytex** package. Do so now (unless you
+already have a working installation of LaTeX on your computer) by calling the
+following lines of code.
 
 ```{r, eval = FALSE}
 install.packages("tinytex")
 tinytex::install_tinytex()
 ```
 
-After this, we also recommend that you set the options in
-`Tools > Global Options > Sweave` in R Studio as in Figure 1.
+After this, we also recommend that you set the options in `Tools > Global
+Options > Sweave` in R Studio as in Figure 1.
 
-![Suggested global options in R Studio.](images/rstudio-sweave-settings.png){width=300px}
+![Suggested global options in R
+Studio.](images/rstudio-sweave-settings.png){width=300px}
 
 ## Your First R Markdown Document
 
 For this course, we have provided a R Markdown template that provides better
-defaults for your documents than the built-in ones. You can download the
-template by clicking on [this
-link](https://raw.githubusercontent.com/stat-lu/dataviz/main/template.Rmd),
-right-clicking, and then choosing "Save page as".
-
-Alternatively, you can download it your current working directory in R by
-calling
+defaults for your documents than the built-in one. You can download it your
+current working directory in R by calling the following lines.
 
 ```{r template, eval = FALSE}
 download.file(
@@ -139,20 +133,19 @@ download.file(
 )
 ```
 
-and then opening the `template.Rmd` file in RStudio.
+Then open the `template.Rmd` file in RStudio.
 
 ## Knitting
 
 Now that you have LaTeX installed, you can turn the R Markdown template into a
-PDF by *knitting* it. To do so in R Studio, simply hit `Ctrl/Cmd +
-Shift + k` with the file open.  Doing so will tell R to run through all of your
-code blocks and text and pass this on to LaTeX to render your document into a
-PDF file, which should open up on your screen. 
+PDF by *knitting* it. To do so in R Studio, simply hit `Ctrl/Cmd + Shift + k`
+with the file open.  Doing so will tell R to run through all of your code blocks
+and text and pass this on to LaTeX to render your document into a PDF file,
+which should open up on your screen. 
 
 # YAML block
 
-Each Rmarkdown file starts with a so called YAML block; here is a bare-bones
-one:
+Each R Markdown file starts with a so called YAML block, such as this one:
 
 ```yaml
 ---
@@ -165,20 +158,18 @@ output: pdf_document
 
 The YAML block contains settings that control the title block (title, author,
 date) and options for the layout. For this course, please use the YAML block
-supplied in the template, modifying only the `author` 
-and `title` fields. (The `date` field in the template
-adds the current date automatically.)
+supplied in the template, modifying only the `author` and `title` fields. (The
+`date` field in the template adds the current date automatically.)
 
 # Formatting
 
-R Markdown is an extension of
-[Pandoc Markdown](https://pandoc.org/MANUAL.html#pandocs-markdown), which uses a
+R Markdown is an extension of [Pandoc
+Markdown](https://pandoc.org/MANUAL.html#pandocs-markdown), which uses a
 special---but very simple---syntax for formatting text.
 
-Firt of all, a contiguous block of text is treated as a **paragraph**. Separate
-paragraphs with blank lines.
-Formatting text in italics, bold font, or monospace (fixed-width) fonts is
-accomplished by wrapping text with symbols (Table 1).
+First of all, a contiguous block of text is treated as a **paragraph**. Separate
+paragraphs with blank lines. Formatting text in italics, bold font, or monospace
+(fixed-width) fonts is accomplished by wrapping text with symbols (Table 1).
 
 Table: Markdown text formatting.
 
@@ -207,7 +198,7 @@ In Figure 2, we show what this looks like.
 
 ## Lists
 
-To create (unnumbered) lists in markdown, you add a
+To create (unnumbered) lists in markdown, add a
 
 ```
 - dash before each item in the list, and
@@ -264,7 +255,7 @@ Cell 3      Cell 4
 ## Links
 
 To add a link in Markdown, you can either simply surround the URL with angled
-brackets (`<>`) or square brackets (`[]`) and parantheses (`()`) if you
+brackets (`<>`) or square brackets (`[]`) and parentheses (`()`) if you
 want to replace the URL with a label (Table 3).
 
 Table: Links in Markdown.
@@ -313,7 +304,7 @@ your references and citations manually; in this case, you can skip the next
 paragraph.
 
 To cite in R Markdown, you will need either 1) a `.bib` file (with
-bibtex-formatted references) somewhere in your working directory or 2) a
+BibTeX-formatted references) somewhere in your working directory or 2) a
 `references` field in the YAML block, like the following:
 
 ```
@@ -352,13 +343,11 @@ bibliography at the end (as in this one).
 
 # Code Chunks
 
-So far we've only really talked about features that are included in
-vanilla Markdown^[To be precise, some of these features actually need
-pandoc's flavor of Markdown to work.].
-But what makes R Markdown special is that is allows
-us to include chunks of R code in our texts, have them be evaluated,
-and their output included in the final document. Here is a simple
-example of a code chunk.
+So far we've only really talked about features that are included in vanilla
+Markdown^[To be precise, some of these features actually need Pandoc's flavor of
+Markdown to work.]. But what makes R Markdown special is that is allows us to
+include chunks of R code in our texts, have them be evaluated, and their output
+included in the final document. Here is a simple example of a code chunk.
 
 ````
 `r ''```{r}
@@ -383,11 +372,10 @@ all the code you include will receive pretty syntax highlighting.
 
 ## Figures
 
-The primary reason for why R Markdown is so useful in this
-course is as a means of getting our visualizations into a document. 
-To produce a visualization in R Markdown, simply write the code as you
-would have otherwise, knit the document, and watch the magic happen. Here's
-an example.
+The primary reason for why R Markdown is so useful in this course is as a means
+of getting our visualizations into a document. To produce a visualization in R
+Markdown, simply write the code as you would have otherwise, knit the document,
+and watch the magic happen. Here's an example.
 
 ````
 `r ''```{r chode-chunk-label}
@@ -412,19 +400,18 @@ ggplot(msleep, aes(brainwt, sleep_rem)) +
 ```
 
 The header of the code chunk (everything between `{r` and `}`) can be used to
-specify settings that control the behavior and output of the code. The
-first word after `r` is treated as the *label* of the code chunk. You don't need
-to use labels at all^[They are mostly useful if you want to use some advanced
-features like cross-referencing with the **bookdown** package, but this
-is beyond our scope here.]. In
-particular, when we generate figures, the `fig.width`, `fig.height`, and
-`fig.cap` options to set the dimenions of the resulting figure as well as its
-caption.
+specify settings that control the behavior and output of the code. The first
+word after `r` is treated as the *label* of the code chunk. You don't need to
+use labels at all^[They are mostly useful if you want to use some advanced
+features like cross-referencing with the **bookdown** package, but this is
+beyond our scope here.]. In particular, when we generate figures, the
+`fig.width`, `fig.height`, and `fig.cap` options to set the dimensions of the
+resulting figure as well as its caption.
 
 In the following code chunk, we've used this to modify the size of the figure
-and to add a descriptive caption.^[We've inserted a line break into the
-code chunk header to avoid having it escape into the margin here, but be aware
-that you cannot actually do this in your code.]
+and to add a descriptive caption.^[We've inserted a line break into the code
+chunk header to avoid having it escape into the margin here, but be aware that
+you cannot actually do this in your code.]
 
 ````
 `r ''```{r brain-figure, fig.cap = "Brain weight and REM sleep 
@@ -452,18 +439,18 @@ to use R Markdown to create tables directly from code and objects in R using
 `knitr::kable()` (or `kableExtra::kbl()`, which is identical to the former
 command but better documented).
 
-Let's, for istance say we wanted to show the first few rows of some of
-the variales in the `mpg` dataset. Then we could do the 
-following:
+Let's, for instance say we wanted to show the first few rows of some of the
+variables in the `mpg` data set. Then we could do the following:
 
 ````
 `r ''```{r kable-example, echo = FALSE}
 library(ggplot2)
+
 mpg %>%
-  head() %>%
+  head(8) %>%
   select(1:6) %>%
   kableExtra::kbl(
-    caption = "The first observations of the `mpg` dataset.",
+    caption = "The first observations of the `mpg` data set.",
     booktabs = TRUE # nicer tables for PDF output
   )
 ```
@@ -471,11 +458,12 @@ mpg %>%
 
 ```{r kable-example, echo = FALSE}
 library(ggplot2)
+
 mpg %>%
-  head() %>%
+  head(8) %>%
   select(1:6) %>%
   kableExtra::kbl(
-    caption = "The first observations of the `mpg` dataset.",
+    caption = "The first observations of the `mpg` data set.",
     booktabs = TRUE # nicer tables for PDF output
   )
 ```
@@ -573,7 +561,7 @@ issues and remedies for them.
 
 ## Error: `'"pdflatex"' not found`
 
-If you receive an error when knitting such as
+If you receive an error when knitting such as the following,
 
 ```
 Error: Failed to compile Test.tex.
@@ -585,14 +573,13 @@ Execution halted
 then please try running `tinytex:::install_prebuilt()`.
 
 If this doesn't help, take a look at
-<https://github.com/yihui/tinytex/issues/103> to see if any of the
-suggested solutions there may help.
+<https://github.com/yihui/tinytex/issues/103> to see if any of the suggested
+solutions there may help.
 
 ## Error: `/usr/local/bin not writable`
 
-If you are on Mac OS X, you may be getting the following error (or
-something like it) when
-trying to run `tinytex::install_tinytex()`:
+If you are on Mac OS X, you may be getting the following error (or something
+like it) when trying to run `tinytex::install_tinytex()`:
 
 ```shell
 add_link_dir_dir: destination /usr/local/bin not writable,
@@ -618,11 +605,11 @@ discussed.
 
 ## I still cannot knit to PDF!
 
-As a last resort, you can change the output from pdf to Word document
-instead. (But then you need to convert it to pdf before submitting.)
+As a last resort, you can change the output from PDF to Word document instead
+(but then you need to convert it to PDF before submitting).
 
-In this case, change the output section in the YAML front matter to
-the following:
+In this case, change the output section in the YAML front matter to the
+following:
 
 ```r
 output:

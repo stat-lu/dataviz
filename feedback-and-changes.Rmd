@@ -34,7 +34,8 @@ good", and 14 "excellent". Most of the respondents were equally positive for
 most other questions except for the one regarding literature, which was regarded
 as "sufficient" by 2, "good" by 6, "very good" by 4, "excellent" by 5, and
 "don't know" by 2. Everyone except one respondent reported that they spent
-between 0 and 17 hours per week on the course.
+between 0 and 17 hours per week on the course. The mean amount of time spent
+was just below 10 hours.
 
 When it comes to constructive feedback, here are a few things that students
 thought might improve the course:
@@ -65,7 +66,7 @@ thought might improve the course:
 - Several questions on the quizzes have been modified. Some have been removed.
 - The **ggmosaic** package is recommended instead of **productplots** in most
   places.
-- Coding videos have been planned as part of the workshops.
+- Several coding videos have been added.
 
 # Spring 2021
 

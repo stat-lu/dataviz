@@ -4,7 +4,7 @@
     <title>Working with Data in R</title>
     <meta charset="utf-8" />
     <meta name="author" content="Johan Larsson" />
-    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link rel="stylesheet" href="assets/styles.css" type="text/css" />
   </head>
@@ -76,7 +76,7 @@ read_csv("data/us_cars.csv") %&gt;%
 
 class: center, middle
 
-&lt;img src="03-working-with-data-in-r_files/figure-html/unnamed-chunk-3-1.png" width="648" style="display: block; margin: auto;" /&gt;
+&lt;img src="working-with-data-in-r_files/figure-html/unnamed-chunk-3-1.png" width="648" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -331,7 +331,7 @@ d_tidy &lt;- pivot_longer(
 .pull-right[
 
 ```
-## # A tibble: 6 x 3
+## # A tibble: 6 × 3
 ##   person intervention result
 ##   &lt;chr&gt;  &lt;chr&gt;         &lt;dbl&gt;
 ## 1 James  control           1
@@ -357,7 +357,7 @@ filter(d_tidy,
 ```
 
 ```
-## # A tibble: 4 x 3
+## # A tibble: 4 × 3
 ##   person intervention result
 ##   &lt;chr&gt;  &lt;chr&gt;         &lt;dbl&gt;
 ## 1 James  control           1
@@ -378,7 +378,7 @@ select(d_tidy, person, result)
 ```
 
 ```
-## # A tibble: 6 x 2
+## # A tibble: 6 × 2
 ##   person result
 ##   &lt;chr&gt;   &lt;dbl&gt;
 ## 1 James       1
@@ -400,7 +400,7 @@ mutate(d_tidy, rel_result = result/max(result))
 ```
 
 ```
-## # A tibble: 6 x 4
+## # A tibble: 6 × 4
 ##   person intervention result rel_result
 ##   &lt;chr&gt;  &lt;chr&gt;         &lt;dbl&gt;      &lt;dbl&gt;
 ## 1 James  control           1      0.167
@@ -422,7 +422,7 @@ group_by(d_tidy, intervention) %&gt;%
 ```
 
 ```
-## # A tibble: 2 x 2
+## # A tibble: 2 × 2
 ##   intervention mean_result
 ##   &lt;chr&gt;              &lt;dbl&gt;
 ## 1 control             2   
@@ -446,7 +446,7 @@ d_tidy %&gt;%
 ```
 
 ```
-## # A tibble: 2 x 2
+## # A tibble: 2 × 2
 ##   intervention result
 ##   &lt;chr&gt;         &lt;dbl&gt;
 ## 1 control           1
@@ -461,7 +461,7 @@ select(filter(d_tidy, person == "James"), intervention, result)
 ```
 
 ```
-## # A tibble: 2 x 2
+## # A tibble: 2 × 2
 ##   intervention result
 ##   &lt;chr&gt;         &lt;dbl&gt;
 ## 1 control           1

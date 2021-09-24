@@ -4,7 +4,7 @@
     <title>Two Variables</title>
     <meta charset="utf-8" />
     <meta name="author" content="Johan Larsson" />
-    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link rel="stylesheet" href="assets/styles.css" type="text/css" />
   </head>
@@ -45,7 +45,7 @@ ggplot(swiss,
 
 .pull-right[
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="07-two-variables_files/figure-html/unnamed-chunk-2-1.png" alt="Fertility and % of draftees receiving highest mark on army examination in French-speaking provinces in Switzerland." width="360" /&gt;
+&lt;img src="two-variables_files/figure-html/unnamed-chunk-2-1.png" alt="Fertility and % of draftees receiving highest mark on army examination in French-speaking provinces in Switzerland." width="360" /&gt;
 &lt;p class="caption"&gt;Fertility and % of draftees receiving highest mark on army examination in French-speaking provinces in Switzerland.&lt;/p&gt;
 &lt;/div&gt;
 ]
@@ -56,7 +56,7 @@ ggplot(swiss,
 
 Understanding patterns is key to being able to visualize data effectively.
 
-&lt;img src="07-two-variables_files/figure-html/unnamed-chunk-3-1.png" width="576" style="display: block; margin: auto;" /&gt;
+&lt;img src="two-variables_files/figure-html/unnamed-chunk-3-1.png" width="576" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -67,13 +67,13 @@ A good visualization should describe the variation in the data.
 ]
 
 .pull-right-60[
-&lt;img src="07-two-variables_files/figure-html/unnamed-chunk-4-1.png" width="396" style="display: block; margin: auto;" /&gt;
+&lt;img src="two-variables_files/figure-html/unnamed-chunk-4-1.png" width="396" style="display: block; margin: auto;" /&gt;
 ]
 
 --
 
 .pull-left-60[
-&lt;img src="07-two-variables_files/figure-html/unnamed-chunk-5-1.png" width="396" style="display: block; margin: auto;" /&gt;
+&lt;img src="two-variables_files/figure-html/unnamed-chunk-5-1.png" width="396" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right-40[
@@ -97,7 +97,7 @@ ggplot(economics, aes(date, uempmed)) +
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="07-two-variables_files/figure-html/unnamed-chunk-6-1.png" alt="Median unemployment duration in the US." width="648" /&gt;
+&lt;img src="two-variables_files/figure-html/unnamed-chunk-6-1.png" alt="Median unemployment duration in the US." width="648" /&gt;
 &lt;p class="caption"&gt;Median unemployment duration in the US.&lt;/p&gt;
 &lt;/div&gt;
 
@@ -117,7 +117,7 @@ filter(ChickWeight, Chick == 5) %&gt;%
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="07-two-variables_files/figure-html/unnamed-chunk-7-1.png" alt="Weight of a chick over time." width="432" /&gt;
+&lt;img src="two-variables_files/figure-html/unnamed-chunk-7-1.png" alt="Weight of a chick over time." width="432" /&gt;
 &lt;p class="caption"&gt;Weight of a chick over time.&lt;/p&gt;
 &lt;/div&gt;
 
@@ -136,7 +136,7 @@ ggplot(msleep, aes(vore, sleep_total)) +
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="07-two-variables_files/figure-html/unnamed-chunk-8-1.png" alt="Boxplot of total sleep duration for different mammals." width="504" /&gt;
+&lt;img src="two-variables_files/figure-html/unnamed-chunk-8-1.png" alt="Boxplot of total sleep duration for different mammals." width="504" /&gt;
 &lt;p class="caption"&gt;Boxplot of total sleep duration for different mammals.&lt;/p&gt;
 &lt;/div&gt;
 
@@ -147,13 +147,13 @@ ggplot(msleep, aes(vore, sleep_total)) +
 Pay attention to whether or not the factor is **ordered**.
 
 .pull-left[
-&lt;img src="07-two-variables_files/figure-html/unnamed-chunk-9-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="two-variables_files/figure-html/unnamed-chunk-9-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]
 
 --
 
 .pull-right[
-&lt;img src="07-two-variables_files/figure-html/unnamed-chunk-10-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="two-variables_files/figure-html/unnamed-chunk-10-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -172,7 +172,7 @@ ggplot(mpg, aes(cty, hwy)) +
   geom_point() 
 ```
 
-&lt;img src="07-two-variables_files/figure-html/unnamed-chunk-11-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="two-variables_files/figure-html/unnamed-chunk-11-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]
 
 --
@@ -184,7 +184,7 @@ ggplot(mpg, aes(cty, hwy)) +
 * geom_point(alpha = 0.2)
 ```
 
-&lt;img src="07-two-variables_files/figure-html/unnamed-chunk-12-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="two-variables_files/figure-html/unnamed-chunk-12-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -205,7 +205,7 @@ ggplot(msleep,
 * scale_y_continuous()
 ```
 
-&lt;img src="07-two-variables_files/figure-html/unnamed-chunk-13-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="two-variables_files/figure-html/unnamed-chunk-13-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]
 
 --
@@ -220,7 +220,7 @@ ggplot(msleep,
 * scale_x_log10()
 ```
 
-&lt;img src="07-two-variables_files/figure-html/unnamed-chunk-14-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="two-variables_files/figure-html/unnamed-chunk-14-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]
 
 ---

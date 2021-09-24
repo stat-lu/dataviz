@@ -4,7 +4,7 @@
     <title>The Grammar of Graphics and ggplot2</title>
     <meta charset="utf-8" />
     <meta name="author" content="Johan Larsson" />
-    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link rel="stylesheet" href="assets/styles.css" type="text/css" />
   </head>
@@ -88,7 +88,7 @@ mpg %&gt;%
 ]
 
 .pull-right[.vcenter[
-&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-4-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-4-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]]
 
 ---
@@ -116,7 +116,7 @@ mpg %&gt;%
 ]
 
 .pull-right[.vcenter[
-&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-5-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-5-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]]
 
 ---
@@ -144,7 +144,7 @@ ggplot(faithful,
   stat_density_2d()
 ```
 
-&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-6-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-6-1.png" width="360" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -173,7 +173,7 @@ p + geom_area()
 ]
 
 .pull-right[
-&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-7-1.png" width="360" style="display: block; margin: auto;" /&gt;&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-7-2.png" width="360" style="display: block; margin: auto;" /&gt;&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-7-3.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-7-1.png" width="360" style="display: block; margin: auto;" /&gt;&lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-7-2.png" width="360" style="display: block; margin: auto;" /&gt;&lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-7-3.png" width="360" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -193,7 +193,7 @@ ggplot(mpg, aes(hwy, drv)) +
   geom_point()
 ```
 
-&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-8-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-8-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]
 
 --
@@ -210,7 +210,7 @@ ggplot(mpg, aes(hwy, drv)) +
   )
 ```
 
-&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-9-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-9-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -233,7 +233,7 @@ p &lt;- ggplot(msleep, aes(brainwt, sleep_total)) +
 p # + scale_x_continuous()
 ```
 
-&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-11-1.png" width="316.8" style="display: block; margin: auto;" /&gt;
+&lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-11-1.png" width="316.8" style="display: block; margin: auto;" /&gt;
 ]
 
 --
@@ -244,7 +244,7 @@ p # + scale_x_continuous()
 p + scale_x_log10()
 ```
 
-&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-12-1.png" width="316.8" style="display: block; margin: auto;" /&gt;
+&lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-12-1.png" width="316.8" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -278,9 +278,9 @@ mutate(mpg, cyl = factor(cyl)) %&gt;%
 ]
 
 .pull-right-40[
-&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-15-1.png" width="252" style="display: block; margin: auto;" /&gt;
+&lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-15-1.png" width="252" style="display: block; margin: auto;" /&gt;
 
-&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-16-1.png" width="252" style="display: block; margin: auto;" /&gt;
+&lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-16-1.png" width="252" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -313,7 +313,7 @@ ggplot(
 ]
 
 .pull-right[
-&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-18-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-18-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -326,7 +326,7 @@ parts of the grammar with each plot would be **very** tiresome
 
 thankfully, the grammar of graphics (and ggplot2) comes with a **hierarchy of defaults**
 
-&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-19-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-19-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]
 
 --
@@ -383,7 +383,7 @@ visualizing data with a single variable.
 ]
 
 .pull-right[
-&lt;img src="04-the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-22-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-22-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]
 
 ---

@@ -4,7 +4,7 @@
     <title>One Variable</title>
     <meta charset="utf-8" />
     <meta name="author" content="Johan Larsson" />
-    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link rel="stylesheet" href="assets/styles.css" type="text/css" />
   </head>
@@ -41,7 +41,7 @@ ggplot(faithful, aes(waiting)) +
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="05-one-variable_files/figure-html/unnamed-chunk-1-1.png" alt="Duration between eruptions of the Old Faithful geyser." width="504" /&gt;
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-1-1.png" alt="Duration between eruptions of the Old Faithful geyser." width="504" /&gt;
 &lt;p class="caption"&gt;Duration between eruptions of the Old Faithful geyser.&lt;/p&gt;
 &lt;/div&gt;
 
@@ -68,7 +68,7 @@ faithful %&gt;%
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="05-one-variable_files/figure-html/unnamed-chunk-2-1.png" alt="Histogram of Old Faithful data." width="360" /&gt;
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-2-1.png" alt="Histogram of Old Faithful data." width="360" /&gt;
 &lt;p class="caption"&gt;Histogram of Old Faithful data.&lt;/p&gt;
 &lt;/div&gt;
 
@@ -91,7 +91,7 @@ faithful %&gt;%
 *   geom_density(bw = 5)
 ```
 
-&lt;img src="05-one-variable_files/figure-html/unnamed-chunk-3-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-3-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
@@ -103,7 +103,7 @@ faithful %&gt;%
 *   geom_density(bw = 10)
 ```
 
-&lt;img src="05-one-variable_files/figure-html/unnamed-chunk-4-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-4-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]
 
 often good idea to add a **rug** layer (`geom_rug()`) to density plots
@@ -137,7 +137,7 @@ faithful %&gt;%
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="05-one-variable_files/figure-html/unnamed-chunk-5-1.png" alt="Boxplot of the Old Faithful data, which fails completely in accurately describing the distribution." width="360" /&gt;
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-5-1.png" alt="Boxplot of the Old Faithful data, which fails completely in accurately describing the distribution." width="360" /&gt;
 &lt;p class="caption"&gt;Boxplot of the Old Faithful data, which fails completely in accurately describing the distribution.&lt;/p&gt;
 &lt;/div&gt;
 ]
@@ -158,7 +158,7 @@ faithful %&gt;%
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="05-one-variable_files/figure-html/unnamed-chunk-6-1.png" alt="geom_violin() does not work with a single variable, so we need to use the trick y = 1 here." width="468" /&gt;
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-6-1.png" alt="geom_violin() does not work with a single variable, so we need to use the trick y = 1 here." width="468" /&gt;
 &lt;p class="caption"&gt;geom_violin() does not work with a single variable, so we need to use the trick y = 1 here.&lt;/p&gt;
 &lt;/div&gt;
 
@@ -178,7 +178,7 @@ need to first transform data into **long** format
     geom_boxplot()
 ```
 
-&lt;img src="05-one-variable_files/figure-html/unnamed-chunk-7-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-7-1.png" width="360" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -199,7 +199,7 @@ pivot_longer(mpg, c(displ, cty, hwy)) %&gt;%
 *   facet_wrap("name", scales = "free_x")
 ```
 
-&lt;img src="05-one-variable_files/figure-html/unnamed-chunk-8-1.png" width="648" style="display: block; margin: auto;" /&gt;
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-8-1.png" width="648" style="display: block; margin: auto;" /&gt;
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>

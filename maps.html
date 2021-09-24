@@ -4,7 +4,7 @@
     <title>Maps</title>
     <meta charset="utf-8" />
     <meta name="author" content="Johan Larsson" />
-    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <script src="libs/kePrint-0.0.1/kePrint.js"></script>
     <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
@@ -59,7 +59,7 @@ ggplot(world, aes(long, lat, group = group)) +
   coord_map(xlim = c(-180, 180), ylim = c(-52, 83.6))
 ```
 
-&lt;img src="14-maps_files/figure-html/unnamed-chunk-3-1.png" width="576" style="display: block; margin: auto;" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-3-1.png" width="576" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -202,7 +202,7 @@ ggplot(usa_arr, aes(long, lat, group = group, fill = Murder)) +
   coord_map()
 ```
 
-&lt;img src="14-maps_files/figure-html/unnamed-chunk-7-1.png" width="576" style="display: block; margin: auto;" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-7-1.png" width="576" style="display: block; margin: auto;" /&gt;
 
 **problem:** state area influence impression of effect!
 
@@ -278,7 +278,7 @@ ggplot(airports, aes(Longitude, Latitude)) +
   coord_map()
 ```
 
-&lt;img src="14-maps_files/figure-html/unnamed-chunk-10-1.png" width="576" style="display: block; margin: auto;" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-10-1.png" width="576" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -294,7 +294,7 @@ ggplot() +
   coord_map(xlim = c(-180, 180), ylim = c(-52, 83.6))
 ```
 
-&lt;img src="14-maps_files/figure-html/unnamed-chunk-11-1.png" width="576" style="display: block; margin: auto;" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-11-1.png" width="576" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -333,7 +333,7 @@ p
 ]
 
 .pull-right[
-&lt;img src="14-maps_files/figure-html/unnamed-chunk-13-1.png" width="230.4" style="display: block; margin: auto;" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-13-1.png" width="230.4" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -349,7 +349,7 @@ p +
   geom_point()
 ```
 
-&lt;img src="14-maps_files/figure-html/gerplot-1.png" width="396" style="display: block; margin: auto;" /&gt;
+&lt;img src="maps_files/figure-html/gerplot-1.png" width="396" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -381,7 +381,7 @@ ggmap(map)
 ]
 
 .pull-right[
-&lt;img src="14-maps_files/figure-html/unnamed-chunk-14-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-14-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -407,7 +407,7 @@ ggmap(map) +
 ]
 
 .pull-right[
-&lt;img src="14-maps_files/figure-html/unnamed-chunk-16-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-16-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -424,7 +424,7 @@ ggmap(map, darken = 0.3) +
   scale_fill_distiller(palette = "YlOrRd", direction = 1)
 ```
 
-&lt;img src="14-maps_files/figure-html/houston-crime-dens-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+&lt;img src="maps_files/figure-html/houston-crime-dens-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
 
 .footnote[
 This example was adapted from &lt;https://github.com/dkahle/ggmap/&gt;.
@@ -447,7 +447,7 @@ ggplot(map_data("state"), aes(long, lat, group = group)) +
   coord_map("bonne", lat0 = 40)
 ```
 
-&lt;img src="14-maps_files/figure-html/unnamed-chunk-17-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-17-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -488,7 +488,7 @@ ggnetworkmap(usa, nw, great.circles = TRUE, alpha = 1,
 class: center, middle
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="14-maps_files/figure-html/unnamed-chunk-19-1.png" alt="Network map of flights in the US." width="720" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-19-1.png" alt="Network map of flights in the US." width="720" /&gt;
 &lt;p class="caption"&gt;Network map of flights in the US.&lt;/p&gt;
 &lt;/div&gt;
 
@@ -535,7 +535,7 @@ world_map + coord_map("mercator", xlim = c(-180, 180))
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="14-maps_files/figure-html/unnamed-chunk-21-1.png" alt="Mercator" width="432" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-21-1.png" alt="Mercator" width="432" /&gt;
 &lt;p class="caption"&gt;Mercator&lt;/p&gt;
 &lt;/div&gt;
 
@@ -551,7 +551,7 @@ world_map + coord_map("mollweide", xlim = c(-180, 180))
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="14-maps_files/figure-html/unnamed-chunk-22-1.png" alt="Mollweide" width="648" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-22-1.png" alt="Mollweide" width="648" /&gt;
 &lt;p class="caption"&gt;Mollweide&lt;/p&gt;
 &lt;/div&gt;
 
@@ -567,7 +567,7 @@ world_map + coord_map("azequidistant", xlim = c(-180, 180))
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="14-maps_files/figure-html/unnamed-chunk-23-1.png" alt="Azimuthal Equidistance" width="360" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-23-1.png" alt="Azimuthal Equidistance" width="360" /&gt;
 &lt;p class="caption"&gt;Azimuthal Equidistance&lt;/p&gt;
 &lt;/div&gt;
 
@@ -584,7 +584,7 @@ world_map + coord_map("gall", lat0 = 0, xlim = c(-180, 180))
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="14-maps_files/figure-html/unnamed-chunk-24-1.png" alt="Gall Stereographic" width="648" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-24-1.png" alt="Gall Stereographic" width="648" /&gt;
 &lt;p class="caption"&gt;Gall Stereographic&lt;/p&gt;
 &lt;/div&gt;
 

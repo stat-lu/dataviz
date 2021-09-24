@@ -4,7 +4,7 @@
     <title>Color</title>
     <meta charset="utf-8" />
     <meta name="author" content="Johan Larsson" />
-    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link rel="stylesheet" href="assets/styles.css" type="text/css" />
   </head>
@@ -33,13 +33,13 @@ need to pay attention to data type!
 .pull-left[
 ### Sequential Palette
 
-&lt;img src="11-color_files/figure-html/unnamed-chunk-1-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-1-1.png" width="360" style="display: block; margin: auto;" /&gt;
 
 imply order among values
 
 ### Qualitative Palette
 
-&lt;img src="11-color_files/figure-html/unnamed-chunk-2-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-2-1.png" width="360" style="display: block; margin: auto;" /&gt;
 
 imply no ordering
 ]
@@ -47,7 +47,7 @@ imply no ordering
 .pull-right[
 ### Diverging Palette
 
-&lt;img src="11-color_files/figure-html/unnamed-chunk-3-1.png" width="360" style="display: block; margin: auto;" /&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-3-1.png" width="360" style="display: block; margin: auto;" /&gt;
 
 emphasis on low, mid, and high ends
 ]
@@ -101,7 +101,7 @@ ggplot(diamonds, aes(price, fill = cut)) +
 * scale_fill_ordinal()
 ```
 
-&lt;img src="11-color_files/figure-html/unnamed-chunk-5-1.png" width="648" style="display: block; margin: auto;" /&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-5-1.png" width="648" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -131,7 +131,7 @@ mtcars_cor %&gt;%
 
 .pull-right[
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="11-color_files/figure-html/unnamed-chunk-7-1.png" alt="Heatmap of correlation matrix." width="345.6" /&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-7-1.png" alt="Heatmap of correlation matrix." width="345.6" /&gt;
 &lt;p class="caption"&gt;Heatmap of correlation matrix.&lt;/p&gt;
 &lt;/div&gt;
 
@@ -155,7 +155,7 @@ ggplot(msleep, aes(bodywt, sleep_total, color = vore)) +
 * scale_color_discrete()
 ```
 
-&lt;img src="11-color_files/figure-html/unnamed-chunk-8-1.png" width="576" style="display: block; margin: auto;" /&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-8-1.png" width="576" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -199,7 +199,7 @@ p &lt;- ggplot(mpg, aes(hwy, fill = drv)) + geom_density(alpha = 0.5)
 *cvdPlot(p)
 ```
 
-&lt;img src="11-color_files/figure-html/unnamed-chunk-10-1.png" width="720" style="display: block; margin: auto;" /&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-10-1.png" width="720" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -229,14 +229,14 @@ p +
 ]
 
 .pull-right[
-&lt;img src="11-color_files/figure-html/unnamed-chunk-11-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-11-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
 
 ]
 
 ---
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="11-color_files/figure-html/unnamed-chunk-12-1.png" alt="All the palettes in ColorBrewer." width="720" /&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-12-1.png" alt="All the palettes in ColorBrewer." width="720" /&gt;
 &lt;p class="caption"&gt;All the palettes in ColorBrewer.&lt;/p&gt;
 &lt;/div&gt;
 
@@ -268,13 +268,13 @@ tibble(x = rnorm(1e4),
 ]
 
 .pull-right[
-&lt;img src="11-color_files/figure-html/unnamed-chunk-13-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-13-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="11-color_files/figure-html/unnamed-chunk-14-1.png" alt="Palettes from the viridis package." width="576" /&gt;&lt;img src="11-color_files/figure-html/unnamed-chunk-14-2.png" alt="Palettes from the viridis package." width="576" /&gt;&lt;img src="11-color_files/figure-html/unnamed-chunk-14-3.png" alt="Palettes from the viridis package." width="576" /&gt;&lt;img src="11-color_files/figure-html/unnamed-chunk-14-4.png" alt="Palettes from the viridis package." width="576" /&gt;&lt;img src="11-color_files/figure-html/unnamed-chunk-14-5.png" alt="Palettes from the viridis package." width="576" /&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-14-1.png" alt="Palettes from the viridis package." width="576" /&gt;&lt;img src="color_files/figure-html/unnamed-chunk-14-2.png" alt="Palettes from the viridis package." width="576" /&gt;&lt;img src="color_files/figure-html/unnamed-chunk-14-3.png" alt="Palettes from the viridis package." width="576" /&gt;&lt;img src="color_files/figure-html/unnamed-chunk-14-4.png" alt="Palettes from the viridis package." width="576" /&gt;&lt;img src="color_files/figure-html/unnamed-chunk-14-5.png" alt="Palettes from the viridis package." width="576" /&gt;
 &lt;p class="caption"&gt;Palettes from the viridis package.&lt;/p&gt;
 &lt;/div&gt;
 
@@ -288,7 +288,7 @@ color visualizations are still sometimes printed in greyscale; may be a good ide
 use palettes that vary lightness
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="11-color_files/figure-html/unnamed-chunk-15-1.png" alt="The same plot in original colors and greyscale." width="720" /&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-15-1.png" alt="The same plot in original colors and greyscale." width="720" /&gt;
 &lt;p class="caption"&gt;The same plot in original colors and greyscale.&lt;/p&gt;
 &lt;/div&gt;
 
@@ -301,7 +301,7 @@ use palettes that vary lightness
 beautiful visualizations will always attract more attention
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="11-color_files/figure-html/unnamed-chunk-16-1.png" alt="Which would you prefer?" width="720" /&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-16-1.png" alt="Which would you prefer?" width="720" /&gt;
 &lt;p class="caption"&gt;Which would you prefer?&lt;/p&gt;
 &lt;/div&gt;
 

@@ -4,7 +4,7 @@
     <title>Categorical Data</title>
     <meta charset="utf-8" />
     <meta name="author" content="Johan Larsson" />
-    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link rel="stylesheet" href="assets/styles.css" type="text/css" />
   </head>
@@ -27,7 +27,7 @@ class: middle, center, title-slide
 visualizing categorical data usually comes down to visualizing **proportions**
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-1-1.png" alt="A 'scatter plot' of categorical data; not very appealing." width="2000" /&gt;
+&lt;img src="categorical-data_files/figure-html/unnamed-chunk-1-1.png" alt="A 'scatter plot' of categorical data; not very appealing." width="2000" /&gt;
 &lt;p class="caption"&gt;A 'scatter plot' of categorical data; not very appealing.&lt;/p&gt;
 &lt;/div&gt;
 
@@ -50,7 +50,7 @@ ggplot(happy, aes(happy)) +
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-2-1.png" alt="Happiness ratings from the GSS in the US." width="432" /&gt;
+&lt;img src="categorical-data_files/figure-html/unnamed-chunk-2-1.png" alt="Happiness ratings from the GSS in the US." width="432" /&gt;
 &lt;p class="caption"&gt;Happiness ratings from the GSS in the US.&lt;/p&gt;
 &lt;/div&gt;
 
@@ -67,7 +67,7 @@ ggplot(happy, aes(degree, fill = happy)) +
 * geom_bar(position = "dodge")
 ```
 
-&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-3-1.png" width="720" style="display: block; margin: auto;" /&gt;
+&lt;img src="categorical-data_files/figure-html/unnamed-chunk-3-1.png" width="720" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -82,7 +82,7 @@ ggplot(happy, aes(degree, fill = happy)) +
 * geom_bar() # position = "stack" is the default
 ```
 
-&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-4-1.png" width="720" style="display: block; margin: auto;" /&gt;
+&lt;img src="categorical-data_files/figure-html/unnamed-chunk-4-1.png" width="720" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -97,13 +97,13 @@ ggplot(happy, aes(degree, fill = happy)) +
   ylab("Proportion")
 ```
 
-&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-5-1.png" width="720" style="display: block; margin: auto;" /&gt;
+&lt;img src="categorical-data_files/figure-html/unnamed-chunk-5-1.png" width="720" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Mosaic Plots
 
-a type of stacked barchart that maps category size to 
+a type of stacked barchart that maps category size to
 the width of bars
 
 need to use another package for this: [productplots](https://CRAN.R-project.org/package=productplots) or [ggmosaic](https://CRAN.R-project.org/package=ggmosaic), or [vcd](https://CRAN.R-project.org/package=vcd)
@@ -116,7 +116,7 @@ library(productplots)
   theme(legend.position = "none") # remove legend
 ```
 
-&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-6-1.png" width="720" style="display: block; margin: auto;" /&gt;
+&lt;img src="categorical-data_files/figure-html/unnamed-chunk-6-1.png" width="720" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -132,7 +132,7 @@ choice of mappings with categorical data is important
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-7-1.png" alt="The proportional stacked bar chart with a different mapping." width="720" /&gt;
+&lt;img src="categorical-data_files/figure-html/unnamed-chunk-7-1.png" alt="The proportional stacked bar chart with a different mapping." width="720" /&gt;
 &lt;p class="caption"&gt;The proportional stacked bar chart with a different mapping.&lt;/p&gt;
 &lt;/div&gt;
 
@@ -148,7 +148,7 @@ again need to use a new package: [waffle](https://CRAN.R-project.org/package=waf
 
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-8-1.png" alt="A waffle plot of the happiness data. Every square represents 100 people. The code is quite complicated (see the source code)." width="720" /&gt;
+&lt;img src="categorical-data_files/figure-html/unnamed-chunk-8-1.png" alt="A waffle plot of the happiness data. Every square represents 100 people. The code is quite complicated (see the source code)." width="720" /&gt;
 &lt;p class="caption"&gt;A waffle plot of the happiness data. Every square represents 100 people. The code is quite complicated (see the source code).&lt;/p&gt;
 &lt;/div&gt;
 
@@ -166,7 +166,7 @@ useful when relationships between categorical variables is at interest
 library(eulerr)
 
 combo &lt;- c(
-  "happy" = 100, 
+  "happy" = 100,
   "graduated" = 40,
   "happy&amp;graduated" = 35
 )
@@ -180,7 +180,7 @@ plot(r)
 ]
 
 .pull-right[
-&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-9-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+&lt;img src="categorical-data_files/figure-html/unnamed-chunk-9-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
 ]
 
 
@@ -194,17 +194,14 @@ Disclaimer: Johan Larsson is the author of [eulerr](https://CRAN.R-project.org/p
 
 much more to learn on visualizations of categorical data
 
-packages [vcd](https://CRAN.R-project.org/package=vcd) and 
+packages [vcd](https://CRAN.R-project.org/package=vcd) and
 [vcdExtra](https://CRAN.R-project.org/package=vcdExtra) offer lots of functionality
 
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="09-categorical-data_files/figure-html/unnamed-chunk-10-1.png" alt="A plot from the vcd package." width="338.4" /&gt;
+&lt;img src="categorical-data_files/figure-html/unnamed-chunk-10-1.png" alt="A plot from the vcd package." width="338.4" /&gt;
 &lt;p class="caption"&gt;A plot from the vcd package.&lt;/p&gt;
 &lt;/div&gt;
-
-
-
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

@@ -294,7 +294,7 @@ some of the issues of overlapping with opacity.
 
 Our next attempt is to try a hexagonal binning plot instead.
 
-```{r, fig.cap = "A hexagonal binning plot for the Chile survey data.", fig.width = 7, fig.height = 4.8, dev = "svg"}
+```{r, fig.cap = "A hexagonal binning plot for the Chile survey data.", fig.width = 7, fig.height = 4.8}
 Chile2 %>%
   ggplot(aes(age, statusquo)) +
   geom_hex(bins = 10) +

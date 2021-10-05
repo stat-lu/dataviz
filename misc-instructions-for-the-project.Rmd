@@ -119,6 +119,30 @@ pay attention to the following as well:
   box plots) for all figures, for instance, is not adequate. 
 - Adding meta commentary (discussing your choices of visualizations) is
   typically a good idea (although not mandatory).
-  
 
+### Animations and Interactive Graphics
 
+The support for animated and interactive graphics in PDF reports is
+unfortunately not great. Including interactive visualizations are simply not
+possible (as far as we know). Animated graphics can be included but only be read
+by a few select PDF readers (Adobe Acrobat, for instance), so if you want to
+include animated visualizations, only add them in an appendix to your report.
+
+A possible alternative is to use HTML output instead of PDF output when you knit
+your R Markdown document and then publish your report on a website such as
+[rpubs](https://rpubs.com/). In your submission, you then only need to submit a
+document with the link to the site.
+
+### Alternative Formats
+
+It is generally fine to pursue alternative types of formats for your data
+visualization projects, such as developing a Shiny application with interactive
+data visualizations or recording a presentation (with slides of data
+visualizations), instead of writing a report. If you do, however, note that we
+may not always be able to help you if you end up struggling and that your fellow
+students will not be required to peer review your work. Also note that the
+requirements above still apply when it comes to the variation of and type of
+visualizations.
+
+If you have an alternative idea for your project format, please be in touch with
+the course instructor to verify that your plan is okay before you pursue it.

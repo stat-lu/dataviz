@@ -50,6 +50,8 @@ if (!interactive()) {
   theme_set(theme_grey(base_size = 14))
 }
 
+xaringanExtra::use_search(show_icon = TRUE)
+
 options(digits = 3)
 ```
 

@@ -6,12 +6,6 @@
     <meta name="author" content="Johan Larsson" />
     <script src="libs/header-attrs-2.11/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
-    <script src="libs/mark.js-8.11.1/mark.min.js"></script>
-    <link href="libs/xaringanExtra-search-0.0.1/search.css" rel="stylesheet" />
-    <script src="libs/xaringanExtra-search-0.0.1/search.js"></script>
-    <script>window.addEventListener('load', function() { window.xeSearch = new RemarkSearch({"position":"bottom-left","caseSensitive":false,"showIcon":true,"autoSearch":true}) })</script>
-    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
-    <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
     <link rel="stylesheet" href="assets/styles.css" type="text/css" />
   </head>
   <body>
@@ -32,38 +26,63 @@ class: middle, center, title-slide
 
 Data in the wild is often **spatial** in nature.
 
-Basic functionality for working with maps is available directly in **ggplot2**.
+If you find spatial data, your first urge should be to map it!
 
-For more advanced functionality, we need to involve other packages (and ggplot in fact
-relies on some of them for features such as map projections).
+### Themes for Maps
 
-typically a good idea to go for a minimalist theme when mapping
+the default ggplot2 theme is not suitable for maps
 
 
 ```r
 library(tidyverse)
+
 theme_set(theme_void())
 ```
+
+`theme_bw()` is also a good choice, particularly if you need coordinates
 
 
 
 ---
 
-## Simple Maps
+## Mapping with ggplot2: Two Methods
 
-`map_data()` converts various objects to data that ggplot can use and 
-offers a simple interface to the [maps](https://CRAN.R-project.org/package=maps)
-package.
+### Native ggplot2
+
+- `geom_polygon()` and `coord_map()`
+- no external dependencies
+- fine for simple maps
+
+--
+
+.pull-left[
+### Simple Features
+
+what we will use instead
+
+- `geom_sf()` and `coord_sf()`
+- much more powerful
+- heavy-lifting done by the [sf](https://cran.r-project.org/package=sf) package
+]
+
+.pull-right[
+&lt;img src="images/simple-features.jpg" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Hello World!
 
 
 ```r
-world &lt;- map_data("world")
-ggplot(world, aes(long, lat, group = group)) +
-  geom_polygon() +
-  coord_map(xlim = c(-180, 180), ylim = c(-52, 83.6))
+library(rnaturalearth)
+world &lt;- ne_countries(returnclass = "sf")
+
+ggplot(world) +
+  geom_sf(fill = "black", col = "white")
 ```
 
-&lt;img src="maps_files/figure-html/unnamed-chunk-3-1.png" width="576" style="display: block; margin: auto;" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-4-1.png" width="720" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -73,13 +92,13 @@ Maps are nice in and by themselves, but what we're really looking for
 is to visualize some data.
 
 .pull-left[
-Spatial data comes in different forms:
+### Forms of Spatial Data
 
 - vector (polygon) data
 - point (coordinate) data
 - raster data
 
-These different types of data can (and often need to be) combined.
+Visualizations can combine these types however you like.
 ]
 
 .pull-right[
@@ -90,107 +109,29 @@ These different types of data can (and often need to be) combined.
 
 ## Vector Data
 
-**example:** crime data from USA states from 1974
+often have separate data sources: one for the map, one for the data of interest
+
+often need to merge these data sets together
+
+Simple features are compatible with most tidyverse operations: `filter()`,
+`select()`, `mutate()`, `group_by()`, `*_join()` etc.
+
+--
+
+### Example: Crime Data in US states from 1974
 
 
 ```r
-usa &lt;- map_data("state")
-arr &lt;- as_tibble(USArrests, rownames = "region") %&gt;%
-  mutate(region = tolower(region))
+# map data
+usa &lt;- ne_states(iso_a2 = "US", returnclass = "sf") %&gt;%
+  filter(!(postal %in% c("AK", "HI")))
 
-usa_arr &lt;- left_join(usa, arr)
+# data of interest
+arr &lt;- as_tibble(USArrests, rownames = "region")
+
+# merge the simple features map with the data
+usa_arr &lt;- left_join(usa, arr, by = c("gn_name" = "region"))
 ```
-
-&lt;table class="table" style="font-size: 20px; margin-left: auto; margin-right: auto;"&gt;
- &lt;thead&gt;
-  &lt;tr&gt;
-   &lt;th style="text-align:right;"&gt; long &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; lat &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; group &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; order &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; region &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; subregion &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Murder &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Assault &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; UrbanPop &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Rape &lt;/th&gt;
-  &lt;/tr&gt;
- &lt;/thead&gt;
-&lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; -87.5 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 30.4 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; alabama &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 13.2 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 236 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 58 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 21.2 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; -87.5 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 30.4 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; alabama &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 13.2 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 236 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 58 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 21.2 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; -87.5 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 30.4 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; alabama &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 13.2 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 236 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 58 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 21.2 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; -87.5 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 30.3 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; alabama &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 13.2 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 236 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 58 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 21.2 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; -87.6 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 30.3 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; alabama &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 13.2 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 236 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 58 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 21.2 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; -87.6 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 30.3 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; alabama &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 13.2 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 236 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 58 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 21.2 &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
 
 ---
 
@@ -200,160 +141,141 @@ Mapping to fill color produces a **choropleth**.
 
 
 ```r
-ggplot(usa_arr, aes(long, lat, group = group, fill = Murder)) +
-  geom_polygon() +
-  scale_fill_distiller(direction = 1, palette = "Reds") +
-  coord_map()
+ggplot(usa_arr, aes(fill = Murder)) +
+  geom_sf(col = "white") +
+  scale_fill_distiller(direction = 1, palette = "Reds")
 ```
 
-&lt;img src="maps_files/figure-html/unnamed-chunk-7-1.png" width="576" style="display: block; margin: auto;" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-7-1.png" width="648" style="display: block; margin: auto;" /&gt;
 
-**problem:** state area influence impression of effect!
+easy to read, but area of region influences visual impression
+
+---
+
+### Choropleth Alternatives
+
+use **sf** package to get centroid of each state and plot bubbles
+
+
+```r
+centroids &lt;- sf::st_centroid(usa_arr)
+
+ggplot(usa) +
+  geom_sf(col = "white") +
+  geom_sf(aes(size = Murder), data = centroids) 
+```
+
+&lt;img src="maps_files/figure-html/unnamed-chunk-8-1.png" width="648" style="display: block; margin: auto;" /&gt;
+
+harder to read, but visual impression is no longer influenced by area
 
 ---
 
 ## Point Data
 
-coordinates (longitude and latitude)
+longitude (x-axis coordinates) and latitude (y-axis coordinates)
 
 
 ```r
-airports &lt;- read_tsv(
-  "https://slcladal.github.io/data/airports.txt", 
+airports_raw &lt;- read_tsv(
+  paste0("https://github.com/stat-lu/dataviz/",
+         "raw/main/data/airports.txt"), 
   col_names = TRUE
 )
 ```
 
-&lt;table class="table" style="font-size: 20px; margin-left: auto; margin-right: auto;"&gt;
- &lt;thead&gt;
-  &lt;tr&gt;
-   &lt;th style="text-align:right;"&gt; ID &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; Name &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; City &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; Country &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Latitude &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Longitude &lt;/th&gt;
-  &lt;/tr&gt;
- &lt;/thead&gt;
-&lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Goroka Airport &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Goroka &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Papua New Guinea &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -6.08 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 145 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Madang Airport &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Madang &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Papua New Guinea &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -5.21 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 146 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Mount Hagen Kagamuga Airport &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Mount Hagen &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Papua New Guinea &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -5.83 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 144 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Nadzab Airport &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Nadzab &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Papua New Guinea &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -6.57 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 147 &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
----
-
-one possibility: just plot the points
+if we want to be able to use projections, we need to convert this
+data to a simple features object
 
 
 ```r
-ggplot(airports, aes(Longitude, Latitude)) +
-  geom_point(cex = 0.1, alpha = 0.5) +
-  coord_map()
+library(sf)
+
+airports &lt;- st_as_sf(
+  airports_raw,
+  coords = c("Longitude", "Latitude"),
+  crs = 4326 # use this if you have longitude and latitudes
+)
 ```
 
-&lt;img src="maps_files/figure-html/unnamed-chunk-10-1.png" width="576" style="display: block; margin: auto;" /&gt;
+.footnote[
+Original data is from &lt;https://slcladal.github.io/data/airports.txt&gt;.
+]
 
 ---
 
-but we might also want to include the geography
+### Stacking Layers
+
+easy to stack layers of different geometries (here: polygons and points)
 
 
 ```r
 ggplot() +
-  geom_polygon(aes(long, lat, group = group), 
-               fill = "grey", data = world) +
-  geom_point(aes(Longitude, Latitude), 
-             cex = 0.1, data = airports) +
-  coord_map(xlim = c(-180, 180), ylim = c(-52, 83.6))
+  geom_sf(data = world, col = "white") +
+  geom_sf(data = airports, cex = 0.1)
 ```
 
-&lt;img src="maps_files/figure-html/unnamed-chunk-11-1.png" width="576" style="display: block; margin: auto;" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-11-1.png" width="720" style="display: block; margin: auto;" /&gt;
 
 ---
 
-### Adding Layers
+### Airports in Skåne
 
-Points do not always suffice by themselves in revealing patterns.
+first filter the data
 
 
 ```r
-ger_map &lt;- filter(world, region == "Germany")
-ger_air &lt;- filter(airports, 
-                  Country == "Germany", 
-                  Longitude &gt; 5, Latitude &lt; 57)
+skane_map &lt;- ne_states("Sweden", returnclass = "sf") %&gt;%
+  filter(name == "Skåne")
+
+# filter out only airports in skåne (using st_intersection)
+airports_sweden &lt;- filter(airports, Country == "Sweden")
+skane_air &lt;- st_intersection(airports_sweden, skane_map)
 ```
 
 --
 
 .pull-left[
+then plot it!
+
 
 ```r
-p &lt;- ggplot(
-  ger_air, 
-  aes(Longitude, Latitude)
-) +
-  geom_polygon(
-    aes(long, 
-        lat, 
-        group = group), 
-    inherit.aes = FALSE, 
-    fill = "gray", 
-    data = ger_map
-  ) +
-  coord_map()
+p &lt;- ggplot(skane_map) +
+  geom_sf(col = "white") +
+  geom_sf(data = skane_air)
+
 p
 ```
 ]
 
 .pull-right[
-&lt;img src="maps_files/figure-html/unnamed-chunk-13-1.png" width="230.4" style="display: block; margin: auto;" /&gt;
-
+&lt;img src="maps_files/figure-html/unnamed-chunk-13-1.png" width="252" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
 
-adding density estimates with contour lines and color
+### Adding Text Labels
 
+Let's add some labels too!
+
+.pull-left[
 
 ```r
-p +
-* geom_density_2d_filled(alpha = 0.25) +
-* geom_density_2d(col = 1) +
-  geom_point()
-```
+library(ggrepel)
 
-&lt;img src="maps_files/figure-html/gerplot-1.png" width="396" style="display: block; margin: auto;" /&gt;
+p + 
+  geom_sf_label(
+    aes(label = Name),
+    data = skane_air,
+    nudge_y = 0.06,
+    nudge_x = 0.2
+  )
+```
+]
+
+.pull-right[
+&lt;img src="maps_files/figure-html/unnamed-chunk-14-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+]
 
 ---
 
@@ -369,10 +291,12 @@ The [ggmap](https://CRAN.R-project.org/package=ggmap) package pulls raster map d
 ```r
 library(ggmap)
 
-bbox &lt;- c(left = -95.39681, 
-          right = -95.34188, 
-          bottom = 29.73631, 
-          top = 29.78400)
+bbox &lt;- c(
+  left   = -95.39681, 
+  right  = -95.34188, 
+  bottom = 29.73631, 
+  top    = 29.78400
+)
 
 map &lt;- get_stamenmap(
   bbox, 
@@ -385,7 +309,7 @@ ggmap(map)
 ]
 
 .pull-right[
-&lt;img src="maps_files/figure-html/unnamed-chunk-14-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-15-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -394,41 +318,56 @@ ggmap(map)
 
 
 ```r
-crime2 &lt;- filter(crime, offense == "robbery")
+robberies &lt;- filter(crime, offense == "robbery")
 ```
+
+stacking layers on raster maps is also easy
 
 .pull-left[
 
 ```r
-ggmap(map) +
+houston_plot &lt;- 
+  ggmap(map) +
   geom_point(
     aes(lon, lat), 
     col = "firebrick",
     alpha = 0.5,
-    data = crime2
+    data = robberies
+  )
+
+houston_plot
+```
+]
+
+.pull-right[
+&lt;img src="maps_files/figure-html/unnamed-chunk-17-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+### Crime in Houston: 2D Density Layer
+
+.pull-left[
+
+```r
+houston_plot +
+  geom_density_2d_filled(
+    aes(lon, lat), 
+    alpha = 0.5,
+    data = robberies,
+    show.legend = FALSE
+  ) +
+  scale_fill_brewer(
+    palette = "YlOrRd",
+    direction = 1
   )
 ```
 ]
 
 .pull-right[
-&lt;img src="maps_files/figure-html/unnamed-chunk-16-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-18-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+
 ]
-
----
-
-### Crime in Houston
-
-
-```r
-ggmap(map, darken = 0.3) +
-  stat_density2d(aes(lon, lat, fill = ..level..), 
-                 alpha = 0.5,
-                 geom = "polygon", 
-                 data = crime2) +
-  scale_fill_distiller(palette = "YlOrRd", direction = 1)
-```
-
-&lt;img src="maps_files/figure-html/houston-crime-dens-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
 
 .footnote[
 This example was adapted from &lt;https://github.com/dkahle/ggmap/&gt;.
@@ -436,65 +375,40 @@ This example was adapted from &lt;https://github.com/dkahle/ggmap/&gt;.
 
 ---
 
-## Geocoding
+## Geocoding (Address Data)
 
-Geocoding converts text (addresses, landmarks) into **coordinates**.
+Geocoding converts addresses or names of places into **coordinates**.
 
-We use the [tidygeocoder package](https://CRAN.R-project.org/package=tidygeocoder):
-
-
-```r
-*wh &lt;- tidygeocoder::geo("the white house")
-ggplot(map_data("state"), aes(long, lat, group = group)) +
-  geom_polygon(col = "white") +
-  geom_point(x = wh$long, y = wh$lat, col = "red", size = 4) +
-  coord_map("bonne", lat0 = 40)
-```
-
-&lt;img src="maps_files/figure-html/unnamed-chunk-17-1.png" width="432" style="display: block; margin: auto;" /&gt;
-
-
----
-
-## Networks
-
-Networks are common in spatial data.
-
-cannot be easily visualized in ggplot; use `ggnetworkmap()`from [GGally](https://CRAN.R-project.org/package=GGally) instead
-
-must first construct a network 
-
-**example:** airports and flights in the US (see the source code for the rather
-complicated data set)
-
-
-
---
+many options available; here we use the
+[tidygeocoder package](https://CRAN.R-project.org/package=tidygeocoder):
 
 
 ```r
-usa &lt;- ggplot(map_data("state"), aes(long, lat)) +
-  geom_polygon(aes(group = group), 
-               color = "white", fill = "light grey") +
-  coord_map("bonne", lat0 = 40, 
-            xlim = c(-120, -70),  ylim = c(25, 50)) 
-
-library(GGally)
-
-ggnetworkmap(usa, nw, great.circles = TRUE, alpha = 1, 
-             segment.alpha = 0.25, ring.group = degree, 
-             weight = degree, segment.color = "firebrick")
+*lu &lt;- tidygeocoder::geo("Lund University, Sweden")
 ```
 
+.pull-left[
 
----
+```r
+lu_sf &lt;- st_as_sf(
+  lu, 
+  coords = c("long", "lat"),
+  crs = 4326
+)
 
-class: center, middle
+ggplot(skane_map) +
+  geom_sf() +
+  geom_sf(
+    data = lu_sf,
+    cex = 3,
+    col = "firebrick1"
+  )
+```
+]
 
-&lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="maps_files/figure-html/unnamed-chunk-19-1.png" alt="Network map of flights in the US." width="720" /&gt;
-&lt;p class="caption"&gt;Network map of flights in the US.&lt;/p&gt;
-&lt;/div&gt;
+.pull-right[
+&lt;img src="maps_files/figure-html/unnamed-chunk-20-1.png" width="324" style="display: block; margin: auto;" /&gt;
+]
 
 ---
 
@@ -505,7 +419,7 @@ The only truly accurate representation of the earth is as a **sphere**.
 We need to **project** this spherical surface onto a plane.
 
 .pull-left[
-For **large-scale** maps, this inevitably leads to **distortions**
+This leads to **distortions**
 in one (or several) of the following aspects:
 
 - areas
@@ -513,8 +427,9 @@ in one (or several) of the following aspects:
 - directions
 - distances
 
-There is a plethora of map projections, which all preserve some of
-these features at the expense of others.
+The larger the scale of the map is, the worse the distortion becomes
+
+Every map projection is a compromise.
 ]
 
 .pull-right[
@@ -527,19 +442,41 @@ these features at the expense of others.
 
 ---
 
+### Projections With ggplot2 and sf
+
+Simplest approach is to find the EPSG code for the projection you want at
+&lt;https://epsg.io/&gt;.
+
+- copy-paste the first line, for instance "ESRI:54016" for the World Gall
+  Stereographic projection
+- add `coord_sf(crs = sf::st_crs("ESRI:54016"))` to the ggplot2 call
+
+
+```r
+# base map
+# default projection: WGS84 (x = longitude, y = latitude)
+world_map &lt;- 
+  world %&gt;%
+  filter(continent != "Antarctica") %&gt;%
+  ggplot() +
+  geom_sf() +
+  theme_bw()
+```
+
+---
+
 ### Conformal
 
 preserves angles (shapes) locally
 
 
 ```r
-world_map &lt;- ggplot(world, aes(long, lat, group = group)) +
-  geom_path()
-world_map + coord_map("mercator", xlim = c(-180, 180))
+library(sf) # for st_crs
+world_map + coord_sf(crs = st_crs("EPSG:3857"))
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="maps_files/figure-html/unnamed-chunk-21-1.png" alt="Mercator" width="432" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-23-1.png" alt="Mercator" width="504" /&gt;
 &lt;p class="caption"&gt;Mercator&lt;/p&gt;
 &lt;/div&gt;
 
@@ -551,11 +488,11 @@ preserves area measure
 
 
 ```r
-world_map + coord_map("mollweide", xlim = c(-180, 180))
+world_map + coord_sf(crs = st_crs("ESRI:54009"))
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="maps_files/figure-html/unnamed-chunk-22-1.png" alt="Mollweide" width="648" /&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-24-1.png" alt="Mollweide" width="720" /&gt;
 &lt;p class="caption"&gt;Mollweide&lt;/p&gt;
 &lt;/div&gt;
 
@@ -567,12 +504,12 @@ preserves distance between any two points
 
 
 ```r
-world_map + coord_map("azequidistant", xlim = c(-180, 180))
+world_map + coord_sf(crs = st_crs("ESRI:54032"))
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="maps_files/figure-html/unnamed-chunk-23-1.png" alt="Azimuthal Equidistance" width="360" /&gt;
-&lt;p class="caption"&gt;Azimuthal Equidistance&lt;/p&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-25-1.png" alt="Azimuthal Equidistant" width="360" /&gt;
+&lt;p class="caption"&gt;Azimuthal Equidistant&lt;/p&gt;
 &lt;/div&gt;
 
 ---
@@ -584,12 +521,12 @@ tries to compromise distortions among the various aspects
 
 
 ```r
-world_map + coord_map("gall", lat0 = 0, xlim = c(-180, 180))
+world_map + coord_sf(crs = st_crs("ESRI:54030"))
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="maps_files/figure-html/unnamed-chunk-24-1.png" alt="Gall Stereographic" width="648" /&gt;
-&lt;p class="caption"&gt;Gall Stereographic&lt;/p&gt;
+&lt;img src="maps_files/figure-html/unnamed-chunk-26-1.png" alt="Robinson" width="720" /&gt;
+&lt;p class="caption"&gt;Robinson&lt;/p&gt;
 &lt;/div&gt;
 
 ---
@@ -599,28 +536,13 @@ world_map + coord_map("gall", lat0 = 0, xlim = c(-180, 180))
 See &lt;https://en.wikipedia.org/wiki/List_of_map_projections&gt; for an exhaustive
 list of different map projections.
 
+Many projections have parameters that allow fine-grained control, but this is
+beyond the scope here.
+
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="images/projection-waterman.png" alt="The Waterman Butterfly Projection. A compromise projection." width="90%" /&gt;
+&lt;img src="images/projection-waterman.png" alt="The Waterman Butterfly Projection. A compromise projection." width="70%" /&gt;
 &lt;p class="caption"&gt;The Waterman Butterfly Projection. A compromise projection.&lt;/p&gt;
 &lt;/div&gt;
-
----
-
-## More about Maps
-
-### Other Packages
-
-There is a large collection of packages in R that deal with spatial data, many with more
-functionality than ggplot2.
-
-See [the CRAN task view on spatial data](https://cran.r-project.org/web/views/Spatial.html)
-for a comprehensive run-down on these packages and their functionality.
-
-### Where to go Next
-
-If you want to read more about mapping with ggplot2, we recommend
-the [Maps chapter in the ggplot2 book](https://ggplot2-book.org/maps.html).
-
 
 &lt;!-- --- --&gt;
 

@@ -51,106 +51,128 @@ if (!interactive()) {
   theme_set(theme_grey(base_size = 16))
 }
 
-xaringanExtra::use_search(show_icon = TRUE)
+# xaringanExtra::use_search(show_icon = TRUE)
 
 options(digits = 3)
 ```
 
 ## Visualizing Categorical Data
 
-visualizing categorical data usually comes down to visualizing **proportions**
+usually, the real aim is to visualize **proportions**
 
-```{r, echo = FALSE, fig.cap = "A 'scatter plot' of categorical data; not very appealing.", fig.width = 10, fig.height = 5, dev = "png", dpi = 200}
+.pull-left[
+### Example
+
+happiness data from the US in 2006
+
+```{r}
 library(tidyverse)
-library(productplots) # for happy data set
-happy <- drop_na(happy)
+data(
+  "happiness",
+  package = "wooldridge"
+)
 
-ggplot(happy, aes(degree, happy)) +
-  geom_point(position = "jitter", alpha = 0.1)
+# see slide source code for 
+# data wrangling code
 ```
 
+]
 
-ggplot2 has **limited** capabilities for visualizing categorical data
+```{r, echo = FALSE}
+happiness <- 
+  as_tibble(happiness) %>%
+  mutate(
+    happy = factor(
+      happy, 
+      levels = c("not too happy", "pretty happy", "very happy" ),
+      ordered = TRUE
+    ),
+    gender = recode( female, "1" = "female", "0" = "male" )
+  ) %>% filter(y06 == 1)
+```
 
----
+--
 
-## Barcharts
+.pull-right[
+### Bar Charts
 
 simple and readable
 
-```{r, fig.width = 6, fig.height = 3.2, fig.cap = "Happiness ratings from the GSS in the US."}
-library(productplots) # for happy data set
-happy <- drop_na(happy)
-
-ggplot(happy, aes(happy)) +
+```{r, fig.height = 3.5}
+ggplot(happiness, aes(happy)) +
   geom_bar() #<<
 ```
+]
 
 ---
 
-## Grouped Barchart
+## Grouped Bar Charts
 
-good when counts are what matters and group sizes are important, but hard to judge within
-categories
+good when counts are what matters or when you have small data sets
 
-```{r, fig.width = 10}
-ggplot(happy, aes(degree, fill = happy)) +
-  geom_bar(position = "dodge") #<<
+```{r, fig.width = 9, fig.height = 5}
+ggplot(happiness, aes(gender, fill = happy)) +
+  geom_bar(position = "dodge", col = "black") #<<
 ```
 
 ---
 
-## Stacked Barchart
+## Stacked Bar Charts
 
-same use case as grouped barcharts, but easier to compare within categories whilst
-harder to compare between
+compact way to visualize counts, but seldom preferable over grouped bar chart
 
-```{r, fig.width = 10}
-ggplot(happy, aes(degree, fill = happy)) +
-  geom_bar() # position = "stack" is the default #<<
+```{r, fig.width = 7, fig.height = 5}
+ggplot(happiness, aes(gender, fill = happy)) +
+  geom_bar(col = "black") # position = "stack" is the default #<<
 ```
 
 ---
 
-## Proportional Stacked Barchart
+## Proportional Grouped Bar Charts
 
-easy to compare both between and within categories but lose information on category size
+good default choice for bar charts (when you have enough data)
 
-```{r, fig.width = 10}
-ggplot(happy, aes(degree, fill = happy)) +
-  geom_bar(position = "fill") + #<<
-  ylab("Proportion")
+but need to summarize data before plotting!
+
+```{r, fig.width = 7, fig.height = 3.5}
+happiness_props <- group_by(happiness, gender, happy) %>%
+  summarize(n = n()) %>%
+  mutate(prop = n / sum(n))
+
+ggplot(happiness_props, aes(gender, prop, fill = happy)) +
+  geom_col(position = "dodge", col = "black")      #<<
+```
+
+---
+
+## Proportional Stacked Bar Charts
+
+compact way to visualize proportions
+
+slightly more intuitive than grouped proportional bar charts, but harder to
+read
+```{r, fig.width = 6}
+ggplot(happiness, aes(gender, fill = happy)) +
+  geom_bar(position = "fill", col = "black") + #<<
+  labs(y = "proportion")
 ```
 
 ---
 
 ## Mosaic Plots
 
-a type of stacked barchart that maps category size to
+a type of stacked bar chart that maps category size to
 the width of bars
 
-need to use another package for this: [productplots](https://CRAN.R-project.org/package=productplots) or [ggmosaic](https://CRAN.R-project.org/package=ggmosaic), or [vcd](https://CRAN.R-project.org/package=vcd)
+need to use another package for this:
+[ggmosaic](https://CRAN.R-project.org/package=ggmosaic)
 
-```{r, fig.width = 10}
-library(productplots)
-prodplot(happy, ~ happy + degree) + #<<
-  aes(fill = happy) +
-  theme(legend.position = "none") # remove legend
+```{r, fig.width = 6}
+library(ggmosaic)
+ggplot(happiness) +
+  geom_mosaic(aes(product(happy, gender), fill = happy)) + #<<
+  guides(fill = "none") # remove redundant ink
 ```
-
----
-
-## Mappings
-
-choice of mappings with categorical data is important
-
-```{r, fig.cap = "The proportional stacked bar chart with a different mapping.", fig.width = 10, fig.height = 3.8}
-ggplot(happy, aes(happy, fill = degree)) + #<<
-  geom_bar(position = "fill", col = 1) +
-  ylab("Proportion")
-```
-
-pay attention to **which relationship it is you want to display**
 
 ---
 
@@ -158,82 +180,111 @@ pay attention to **which relationship it is you want to display**
 
 suitable when there are large differences between categories
 
-again need to use a new package: [waffle](https://CRAN.R-project.org/package=waffle)
+again need to use a new package:
+[waffle](https://CRAN.R-project.org/package=waffle)
 
-
-```{r, echo = FALSE, fig.width = 10, fig.height = 6, fig.cap = "A waffle plot of the happiness data. Every square represents 100 people. The code is quite complicated (see the source code)."}
+```{r, echo = FALSE, fig.width = 7, fig.height = 5, fig.cap = "A waffle plot of the happiness data. Every square represents approximately 10 people. The code is quite complicated (see the source code)."}
 # devtools::install_github("hrbrmstr/waffle")
 library(waffle)
 
-happier <-
-  group_by(happy, degree) %>%
+happiness_counts <-
+  group_by(happiness, gender) %>%
   count(happy) %>%
-  mutate(n = round(n/100))
+  mutate(n = round(n / 10))
 
-ggplot(happier,
-       aes(fill = happy,
-           values = n)) +
-  geom_waffle(color = "white",
-              size = 1.125,
-              n_rows = 10,
-              flip = TRUE) +
-  facet_wrap(~degree, nrow = 1) +
+ggplot(happiness_counts, aes(fill = happy, values = n)) +
+  geom_waffle(color = "white", size = 1.125, n_rows = 10, flip = TRUE) +
+  facet_wrap("gender", nrow = 1) +
   coord_equal() +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 16) +
   theme_enhance_waffle()
 ```
 
+
 ---
 
-## Euler and Venn Diagrams
+## What About Pie Charts?
 
-useful when relationships between categorical variables is at interest
-
-**proportional** diagrams best but not always possible for more than two categories
+okay in some instances (2-3 categories), but avoid as a thumb rule
 
 .pull-left[
-```{r eulerr, eval = FALSE}
-library(eulerr)
+```{r fig.width = 4, fig.height = 5, echo = FALSE}
+library(scales)
 
-combo <- c(
-  "happy" = 100,
-  "graduated" = 40,
-  "happy&graduated" = 35
-)
+happiness_bins <-
+  happiness %>%
+  count(workstat) 
 
-# fit and inspect
-r <- euler(combo)
-
-# plot
-plot(r)
+ggplot(happiness_bins, aes(x = "", y = n, fill = workstat)) +
+  geom_col(width = 1, col = 1) +
+  coord_polar("y", start = 0) +
+  scale_fill_brewer(palette = "Accent") +
+  theme_minimal(base_size = 16) +
+  theme(
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    panel.border = element_blank(),
+    panel.grid = element_blank(),
+    legend.pos = "bottom",
+    legend.title = element_blank()
+  ) +
+  guides(fill = guide_legend(ncol = 2))
 ```
 ]
 
 .pull-right[
-```{r ref.label = "eulerr", echo = FALSE}
-
+```{r fig.height = 5, echo = FALSE}
+ggplot(happiness_bins, aes(workstat, n, fill = workstat)) +
+  geom_col(col = "black", show.legend = FALSE) +
+  scale_fill_brewer(palette = "Accent") +
+  labs(x = NULL, y = "count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-]
-
-
-.footnote[
-Disclaimer: Johan Larsson is the author of [eulerr](https://CRAN.R-project.org/package=eulerr).
 ]
 
 ---
 
-## More on Visualizing Categorical Data
+## Pay Attention to Mappings
 
-much more to learn on visualizations of categorical data
+choice of mappings is critical when dealing with categorical data!
 
-packages [vcd](https://CRAN.R-project.org/package=vcd) and
-[vcdExtra](https://CRAN.R-project.org/package=vcdExtra) offer lots of functionality
-
-
-```{r, echo = FALSE, fig.width = 4.7, fig.height = 4.7, fig.cap = "A plot from the vcd package."}
-library(vcd)
-UCB <- aperm(UCBAdmissions[, , 1:4], c(2, 1, 3))
-names(dimnames(UCB)) <- c("Sex", "Admit?", "Department")
-dimnames(UCB)[[2]] <- c("Yes", "No")
-fourfold(UCB)
+```{r, fig.width = 7, fig.height = 4}
+ggplot(happiness, aes(happy, fill = gender)) + #<<
+  geom_bar(position = "fill", col = "black") +
+  ylab("Proportion")
 ```
+
+---
+
+## Ordering
+
+if variable is ordinal: just format it as an ordered factor
+
+if variable is **not** ordinal: consider ordering it manually!
+
+```{r, fig.width = 10, fig.height = 3.5}
+# no ordering
+happiness %>%
+  count(region) %>%
+  ggplot(aes(region, n)) +
+  geom_col() +
+  guides(x = guide_axis(n.dodge = 2)) # avoid label overlap
+```
+
+---
+
+## Ordering
+
+if variable is ordinal: just format it as an ordered factor
+
+if variable is **not** ordinal: consider ordering it manually!
+
+```{r, fig.width = 10, fig.height = 3.5}
+happiness %>%
+  count(region) %>%
+  mutate(region = fct_reorder(region, n, .desc = TRUE)) %>% #<<
+  ggplot(aes(region, n)) +
+  geom_col() +
+  guides(x = guide_axis(n.dodge = 2)) # avoid label overlap
+```
+

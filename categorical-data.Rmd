@@ -205,17 +205,18 @@ ggplot(happiness_counts, aes(fill = happy, values = n)) +
 
 ## What About Pie Charts?
 
-okay in some instances (2-3 categories), but avoid as a thumb rule
+okay in a few instances, but avoid as a thumb rule
 
 .pull-left[
-```{r fig.width = 4, fig.height = 5, echo = FALSE}
+```{r fig.width = 4, fig.height = 6, echo = FALSE}
 library(scales)
 
 happiness_bins <-
   happiness %>%
-  count(workstat) 
+  count(workstat) %>%
+  mutate(work = fct_reorder(workstat, n, .desc = TRUE))
 
-ggplot(happiness_bins, aes(x = "", y = n, fill = workstat)) +
+ggplot(happiness_bins, aes(x = "", y = n, fill = work)) +
   geom_col(width = 1, col = 1) +
   coord_polar("y", start = 0) +
   scale_fill_brewer(palette = "Accent") +
@@ -232,9 +233,11 @@ ggplot(happiness_bins, aes(x = "", y = n, fill = workstat)) +
 ```
 ]
 
+--
+
 .pull-right[
 ```{r fig.height = 5, echo = FALSE}
-ggplot(happiness_bins, aes(workstat, n, fill = workstat)) +
+ggplot(happiness_bins, aes(work, n, fill = work)) +
   geom_col(col = "black", show.legend = FALSE) +
   scale_fill_brewer(palette = "Accent") +
   labs(x = NULL, y = "count") +

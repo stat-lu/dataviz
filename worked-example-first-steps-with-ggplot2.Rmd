@@ -427,6 +427,11 @@ You are free to choose theme for yourself, but I highly recommend that you
 try to stick to one and the same theme for any given report to create a 
 uniform design for your reports.
 
+There are other packages that provide additional themes for ggplot2 too.
+If you are interested, we recommend you check out
+[ggthemes](https://cran.r-project.org/package=ggthemes)
+and [cowplot](https://cran.r-project.org/package=cowplot).
+
 ## Source Code
 
 The source code for this document is available at

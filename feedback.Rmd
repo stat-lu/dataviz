@@ -1,5 +1,5 @@
 ---
-title: "Feedback and History of Changes"
+title: "Course Feedback"
 author: "Johan Larsson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 

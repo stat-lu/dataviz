@@ -69,7 +69,7 @@ options(scipen = 999)
 - Prerequisites and requirements for the course modules have been removed so
   that all the course content is now accessible right away.
 
-# Fall 2020
+## Fall 2020
 
 First time for the course.
 

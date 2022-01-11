@@ -35,13 +35,14 @@ and you can download and read it into your workspace with the following command.
 library(tidyverse)
 
 xy <- read_csv(
-  "https://raw.githubusercontent.com/stat-lu/dataviz/main/data/xy.csv")
+  "https://raw.githubusercontent.com/stat-lu/dataviz/main/data/xy.csv"
+)
 ```
 
-### Boxplot
+### Box Plot
 
 Let's try to explore the univariate distributions of these two variables.
-We begin with a boxplot.
+We begin with a box plot.
 
 ```{r, fig.cap = "A boxplot of the x variable.", fig.height = 1.5}
 ggplot(xy, aes(x)) +
@@ -62,18 +63,31 @@ the problem with boxplots: they can never "discover" anything *but*
 a single mode, since boxplots are based on statistics only related to the
 quantiles of the distribution.
 
-### Dotplot
+### Dot Plot
 
 When studying a distribution, it is usually better to start off with a plot
 that does less abstraction, such as a
-simple dotplot. The dots in a dotplot can represent more
-than one observation if you want to, but I think it works best when
-each dot is a single observation. Use `binwidth = 1` to request this.
+simple dot plot. In a dot plot, each observation is indicated by a
+dot. 
 
-```{r, fig.cap = "A dotplot of the x variable.", fig.height = 1.3, fig.width = 5}
+When constructing the dot plot, the values that are used are cut
+in intervals (much like a histogram) and observations that fall within
+a given intervals are stacked on top of another. The maximum width of these
+intervals is decided by the `binwidth`, which by default is 1/30 times the
+range of the data. The exact behavior then depends on the setting of the
+`method` argument, which by default is `"dotdensity"`, which uses an
+algorithm from a paper by Wilkinson^[Remember him? The author of the
+original grammar of graphics.]. Here we try to use the `"histodot"` method
+instead, which works exactly like a histogram. We se the binwidth to 5
+
+```{r, fig.cap = "A dotplot of the x variable.", fig.height = 2.9, fig.width = 5}
 ggplot(xy, aes(x)) +
-  geom_dotplot(binwidth = 1)
+  geom_dotplot(method = "histodot", binwidth = 3) +
+  guides(y = "none") # do you remember why we did this?
 ```
+
+Try changing the `method` argument to the default, and then try playing a bit
+with the `binwidth` settings.
 
 It's hard to summarize this distribution in a few words, but it does not
 quite seem to be uni-modal. There is also a slight indication that
@@ -83,10 +97,10 @@ to a whole number when they are uncertain about the answer.
 
 ### Histogram
 
-Perhaps this is the case here, so let's use a *histogram* instead. With
-histograms we need to specify the number of bins or the bindwith manually.
-Given the number of observations here, and the dotplot we previously plotted,
-a value of five might be appropriate to remove the effect of possible round-off
+Perhaps this is the case here, so let's use a *histogram* instead. Just as
+with the dot plot, we need to specify the bin width (or number of bins) here.
+Given the number of observations here, and the dot plot we previously plotted,
+a bin width of five might be appropriate to remove the effect of possible round-off
 bias and elucidate the shape of the distribution better.
 
 ```{r, fig.cap = "A histogram of the x variable.", fig.height = 2, fig.width = 4}
@@ -109,80 +123,33 @@ Here we try a few different choices to highlight this.
 ```{r, fig.cap = "Density plots with various density estimate choices."}
 ggplot(xy, aes(x)) +
   geom_density() + # kernel = "gaussian", the default
-  geom_density(col = "navy", kernel = "rectangular") +
   geom_density(col = "dark orange", bw = 10)
 ```
 
+Try adding another density estimate, this time with a *rectangular* kernel.
+
 The default density layer uses Silverman's
-rule-of-thumb (see `?bw.nrd0`) for choosing bandwith but there are other
-choices that are probably better, such as `bw = "SJ"`.
+rule-of-thumb (see `?bw.nrd0`) for choosing band width but there are other
+choices that are probably better, such as `bw = "SJ"`. Try this out too.
 
-## Multiple Distributions in One Plot
+### Compactly Displaying Several Univariate Distributions
 
-When you have several related variables from the same dataset, it
-often makes good sense to juxtapose them in a plot in order to make it
-easier for the reader to compare the distributions.
-We do so by first pivoting our dataset into a long format in order to have
-one column that denotes the name of the variable and one column that
-contains those variables' values.
-
-```{r}
-xy_long <- pivot_longer(xy, everything())
-
-xy_long
-```
-
-We've used the default settings for `names_to` and `values_to` here, which
-gives us the column names `name` and `value` and specified that we want
-to pivot all the variables by calling `everything()`.
-
-### Violin Plots
-
-Now we're ready to plot our distribution. Let's try a violin plot this time.
-
-```{r, fig.cap = "Violin plots of the x and y variables from our dataset."}
-ggplot(xy_long, aes(name, value)) +
-  geom_violin()
-```
-
-Violin plots are great for juxtaposing distributions of variables that are
-on roughly the same scale, which is the case here.
-
-The distribution for `y` seems to be substantially different from that of
-`x`. It is definitely more flat---almost uniform.
-
-### Faceted Histograms
-
-Another approach, which is particularly suitable when the variables are
-on different scales are histograms. To plot multiple histograms we
-need to use *facets*. To do so, we use `facet_wrap()`.
-
-```{r, fig.cap = "Faceted histograms of the distributions of x and y.", fig.width = 6, fig.height = 3.2}
-ggplot(xy_long, aes(value)) +
-    geom_histogram(binwidth = 10) +
-    facet_wrap("name", scales = "free_x")
-```
-
-The argument `scaled = "free_x"` is typically appropriate when plotting
-multiple variables like this. Notice that we've used a larger bindwidth
-this time around.
-
-### Patchwork
-
-Another approach when juxtaposing plots of distributions like this is to use
+It can sometimes be useful to display several plots of univariate 
+distributions in a compact design. One way to do so is via
 the [patchwork](https://CRAN.R-project.org/package=patchwork) package, which
 can be used to *patch* together plots that you have created separately.
-This is very useful if you want to juxtapose plots that use different types of
-layers. Let's install the package first.
+Let's install the package first.
 
 ```{r eval = FALSE}
 install.packages("patchwork")
 ```
 
-The idea of **patchwork** is extremely simple. You simply add separate plots
-together using `+`. Say we wanted to juxtapose a density plot of
-variable `x` with a histogram of variably `y`---all we then need to do is
-create the plots separately and then add them together.
+**patchwork** is simple and inituitive yet powerful. Most of its functionality
+can be obtained simply by using unary operators (such as `+`) to
+patch plots together. `+` and `|` are used to patch plots horizontally, and `/` to
+patch them vertically.
+
+In the following plot, we patch a histogram and density plot together.
 
 ```{r, fig.cap = "Density plot of x and histogram of y.", fig.width = 6, fig.height = 3}
 library(patchwork)
@@ -193,13 +160,35 @@ p1 <- ggplot(xy, aes(x)) +
 p2 <- ggplot(xy, aes(y)) +
   geom_histogram(bins = 12)
 
-p1 + p2
+p1 | p2
 ```
 
-Simple, right? How plots are patched together can be controlled in detail,
-so make sure to check out the
-[documentation](https://patchwork.data-imaginist.com/index.html) if you're
-interested.
+Next, we try to stack them horizontally
+
+```{r, fig.cap = "Density plot of x and histogram of y.", fig.width = 6, fig.height = 5}
+p1 / p2
+```
+
+
+And here is an example where we go one step further, using a more
+complicated layout and addings labels to the plots.
+
+```{r, fig.width = 6, fig.height = 5}
+p3 <- ggplot(xy, aes(x, y = 1)) +
+  geom_violin()
+
+pw <- (p1 | p2) / p3
+
+pw + plot_annotation(tag_levels = "A")
+```
+
+Simple, right? Play around with patchwork and it's various options. One thing
+that can be particularly useful to know about is that if you have a legend, such
+as a color legend, that's shared between the plots you're patching together,
+then patchwork will automatically merge these guides into one.
+
+For more examples, check out
+[documentation](https://patchwork.data-imaginist.com/index.html).
 
 ## Rawr!
 

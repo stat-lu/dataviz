@@ -44,10 +44,12 @@ kable <- function(x, ...) {
 }
 
 library(RefManageR)
-BibOptions(check.entries = FALSE,
-           bib.style = "authoryear",
-           style = "markdown",
-           dashed = TRUE)
+BibOptions(
+  check.entries = FALSE,
+  bib.style = "authoryear",
+  style = "markdown",
+  dashed = TRUE
+)
 bib <- ReadBib("assets/references.bib")
 
 if (!interactive()) {

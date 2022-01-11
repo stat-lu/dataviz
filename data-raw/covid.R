@@ -6,11 +6,6 @@ covid <- read_csv(
  "https://opendata.ecdc.europa.eu/covid19/nationalcasedeath/csv"
 )
 
-# world <- map_data(getMap("coarse"))
-
-# for some reason matching fails on antigua and barbuda
-covid$country[grepl("^Antigua", covid$country)] <- "Antigua and Barbuda"
-
 covid2 <-
   covid %>%
   as_tibble() %>%

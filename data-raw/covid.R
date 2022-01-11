@@ -38,13 +38,4 @@ covid3 <-
     cumulative_count
   )
 
-tmp <-
-  covid3 %>%
-  summarize(last_month = month(max(date)),
-            last_year = year(max(date)))
-
-# remove the last (incomplete) month
-covid4 <-
-  filter(covid3, !(year == tmp$last_year & month == tmp$last_month))
-
 write_csv(covid4, "data/covid.csv")

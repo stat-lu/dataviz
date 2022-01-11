@@ -1,5 +1,5 @@
 ---
-title: "Feedback and History of Changes"
+title: "Change Log for the Course"
 author: "Johan Larsson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
@@ -25,28 +25,17 @@ knitr::opts_chunk$set(
 options(scipen = 999)
 ```
 
-# Fall 2021
+## Spring 2022
 
-### Feedback from Last Run
+- Three of the lecture videos have been replaced
+- A new practice quiz, "Practice: Getting Started with ggplot2" has been added
+- All parts of the course that have to do with mapping now uses simple features
+  instead of the standard polygon map approach.
+- The quizzes are once again completely automatically graded.
+- Several quizzes have been revised, often simplified.
+- The **productplots** package has been replaced with the **ggmosaic** package.
 
-Among the 19 respondents, one gave the course a "sufficient" score, 4 "very
-good", and 14 "excellent". Most of the respondents were equally positive for
-most other questions except for the one regarding literature, which was regarded
-as "sufficient" by 2, "good" by 6, "very good" by 4, "excellent" by 5, and
-"don't know" by 2. Everyone except one respondent reported that they spent
-between 0 and 17 hours per week on the course. The mean amount of time spent
-was just below 10 hours.
-
-When it comes to constructive feedback, here are a few things that students
-thought might improve the course:
-
-- coding videos,
-- more time for the project,
-- more theory and tools for data wrangling,
-- better overview of course content, and
-- less assignments and quizzes in general.
-
-### Changes
+## Fall 2021
 
 - The R Markdown template and introduction have been separated into two
   documents and the introduction has been revised, including a new portion on
@@ -68,15 +57,7 @@ thought might improve the course:
   places.
 - Several coding videos have been added.
 
-# Spring 2021
-
-### Feedback from Last Run
-
-Feedback on the course was positive across all items in the course evaluation.
-We received one specific request, which was to make the workshops (help 
-sessions) weekly instead of bi-weekly.
-
-### Changes
+## Spring 2021
 
 - Several new *Worked Examples* have been added to the course. The source code
   for all of these worked examples has also been made available on the GitHub

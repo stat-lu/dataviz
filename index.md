@@ -5,21 +5,32 @@
 
 This page contains slides for the courses STAE04 and DABN19: Data Visualization
 
-* [Introduction](introduction) ([source](https://github.com/stat-lu/dataviz/blob/main/introduction.Rmd))
-* [Introduction to R](introduction-to-r) ([source](https://github.com/stat-lu/dataviz/blob/main/introduction-to-r.Rmd))
-* [Working with Data in R](working-with-data-in-r) ([source](https://github.com/stat-lu/dataviz/blob/main/working-with-data-in-r.Rmd))
-* [The Grammar of Graphics and ggplot2](the-grammar-of-graphics-and-ggplot2) ([source](https://github.com/stat-lu/dataviz/blob/main/the-grammar-of-graphics-and-ggplot2.Rmd))
-* [One Variable](one-variable) ([source](https://github.com/stat-lu/dataviz/blob/main/one-variable.Rmd))
+* [Introduction](introduction)
+  ([source](https://github.com/stat-lu/dataviz/blob/main/introduction.Rmd)) *
+  [Introduction to R](introduction-to-r)
+  ([source](https://github.com/stat-lu/dataviz/blob/main/introduction-to-r.Rmd))
+* [Working with Data in R](working-with-data-in-r)
+  ([source](https://github.com/stat-lu/dataviz/blob/main/working-with-data-in-r.Rmd))
+* [The Grammar of Graphics and ggplot2](the-grammar-of-graphics-and-ggplot2)
+  ([source](https://github.com/stat-lu/dataviz/blob/main/the-grammar-of-graphics-and-ggplot2.Rmd))
+* [One Variable](one-variable)
+  ([source](https://github.com/stat-lu/dataviz/blob/main/one-variable.Rmd))
 * [Data-Ink](data-ink) ([source](https://github.com/stat-lu/dataviz/blob/main/data-ink.Rmd))
-* [Two Variables](two-variables) ([source](https://github.com/stat-lu/dataviz/blob/main/two-variables.Rmd))
+* [Two Variables](two-variables)
+  ([source](https://github.com/stat-lu/dataviz/blob/main/two-variables.Rmd))
 * [Scales](scales) ([source](https://github.com/stat-lu/dataviz/blob/main/scales.Rmd))
-* [Categorical Data](categorical-data) ([source](https://github.com/stat-lu/dataviz/blob/main/categorical-data.Rmd))
-* [Multivariate Data](multivariate-data) ([source](https://github.com/stat-lu/dataviz/blob/main/multivariate-data.Rmd))
+* [Categorical Data](categorical-data)
+  ([source](https://github.com/stat-lu/dataviz/blob/main/categorical-data.Rmd))
+* [Multivariate Data](multivariate-data)
+  ([source](https://github.com/stat-lu/dataviz/blob/main/multivariate-data.Rmd))
 * [Color](color) ([source](https://github.com/stat-lu/dataviz/blob/main/color.Rmd))
 * [Big Data](big-data) ([source](https://github.com/stat-lu/dataviz/blob/main/big-data.Rmd))
-* [Statistical Models](statistical-models) ([source](https://github.com/stat-lu/dataviz/blob/main/statistical-models.Rmd))
+* [Statistical Models](statistical-models)
+  ([source](https://github.com/stat-lu/dataviz/blob/main/statistical-models.Rmd))
 * [Maps](maps) ([source](https://github.com/stat-lu/dataviz/blob/main/maps.Rmd))
-* [Animated and Interactive Visualizations](animated-and-interactive-visualizations) ([source](https://github.com/stat-lu/dataviz/blob/main/animated-and-interactive-visualizations.Rmd))
+* [Animated and Interactive
+  Visualizations](animated-and-interactive-visualizations)
+  ([source](https://github.com/stat-lu/dataviz/blob/main/animated-and-interactive-visualizations.Rmd))
 * [Wrapping Up](wrapping-up)
 
 ### Worked Examples
@@ -45,7 +56,8 @@ This page contains slides for the courses STAE04 and DABN19: Data Visualization
 * [Introduction to R Markdown](introduction-to-rmarkdown)
 * [The Anatomy of a Plot](misc-the-anatomy-of-a-plot)
 * [Instructions for the Assignments](misc-instructions-for-the-assignments)
-* [Feedback and History of Changes](feedback-and-changes)
+* [Summaries of Previous Course Evaluations](feedback)
+* [History of Changes](changelog)
 
 ### Source code
 

@@ -15,7 +15,6 @@ covid2 <-
 covid3 <-
   covid2 %>%
   separate(year_week, c("year", "week")) %>%
-  rename(region = country) %>%
   mutate(
     year = as.integer(year),
     week = as.integer(week) - 1L,
@@ -23,9 +22,8 @@ covid3 <-
     month = as.integer(month(date))
   ) %>%
   select(
-    region,
-    region_code,
-    continent,
+    country,
+    country_code,
     population,
     date,
     year,
@@ -38,4 +36,4 @@ covid3 <-
     cumulative_count
   )
 
-write_csv(covid4, "data/covid.csv")
+write_csv(covid3, "data/covid.csv")

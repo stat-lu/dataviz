@@ -158,9 +158,11 @@ How about Moonrise Kingdom?]
 library(wesanderson)
 
 darjeeling_pal <- function(...) {
-  scale_fill_manual(...,
-                    values = wes_palette("Darjeeling2"),
-                    na.value = "grey")
+  scale_fill_manual(
+    ...,
+    values = wes_palette("Darjeeling2"),     
+    na.value = "grey"
+  )
 }
 
 # this option replaces the default palette for all future ggplots
@@ -270,7 +272,8 @@ Chile2 %>%
 ```
 
 This means that we should think again about our design. One possibility may be
-to cut age into age groups before plotting.
+to cut age into age groups before plotting or to limit the range of data
+to regions where there are many observations.
 
 ## Satisfaction with the Status Quo
 
@@ -302,19 +305,27 @@ Chile2 %>%
   ylab("Support for the Status Quo")
 ```
 
-This certainly looks better. We now see that there appears to
+This looks a little better. We now see that there appears to
 be a difference between the various regions and age groups. Support for the
 current regime seems to be weak in the City of Santiago, particularly for
-the younger age group.
+the younger age group. But there are at least two issues with
+these hexagon plots.
 
-One issue with using hexagon plots like this is that they put equal emphasis
+One issue is that they put equal emphasis
 on both of the variables mapped to the x and y axes. When we are primarily
 interested in one of the variables---the support for the status quo here---this
 does not communicate this message effectively. To highlight the distribution
 of the status quo support, instead, it might therefore be more appropriate
 to use a different type of design.
 
-To do so, we now go back to the ridged density plots. We cut the
+But most importantly, the measure of interest here is really the number of
+observations in each bin as a proportion of the number of observations
+in each region (facet). As it stands, the regions where there are few
+observations now have basically all their bins colored in a single color,
+which is not optimal. We could fix this relatively easily, but because
+of the previously mentioned issue, we'll try something different.
+
+What we'll do is to go back to the ridged density plots. We cut the
 age variable into categories before plotting. To top it off, we
 also try a more minimalist theme (`theme_minimal()`). Finally,
 please make note of the `labeller` argument in `facet_grid()`, which is
@@ -330,8 +341,10 @@ Chile2 %>%
   geom_density_ridges() +
   theme_minimal() +
   theme(legend.position = "none") +
-  labs(y = "Region",
-       x = "Satisfaction with the Status Quo")
+  labs(
+    y = "Region",
+    x = "Satisfaction with the Status Quo"
+  )
 ```
 
 The plot is now a piece of work that we should be happy with.

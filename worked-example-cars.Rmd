@@ -422,7 +422,7 @@ The result here, `NA`, is a consequence of the presence of `NA` values in
 the column `sleep_rem` in `msleep` and this behavior is actually the default
 for many functions in R. To deal with this, you have
 two options: 1) directly remove the observations with `NA` values from the data
-set using `na_drop()` or 2) set `na.rm = TRUE` in the call to `mean()`, which
+set using `drop_na()` or 2) set `na.rm = TRUE` in the call to `mean()`, which
 excludes the `NA` observations in that particular function call.
 
 The second option is usually the best choice, since it means that

@@ -193,11 +193,6 @@ to read more about peer-reviewing in canvas.
 
 Finally, please remember to provide **constructive** feedback.
 
-### You have one week to complete your peer review!
-
-If you have not completed your peer review within one week past the deadline,
-you will **fail the assignment**.
-
 ### Grading
 
 The assignments and project will be graded by an instructor or teaching

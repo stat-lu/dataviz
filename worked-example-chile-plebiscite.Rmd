@@ -1,7 +1,6 @@
 ---
 title: "Worked Example: Chile Plebiscite"
 author: "Johan Larsson"
-#date: "9/4/2020"
 output:
   html_document:
     toc: true

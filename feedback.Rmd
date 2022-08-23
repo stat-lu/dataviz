@@ -25,6 +25,58 @@ knitr::opts_chunk$set(
 options(scipen = 999)
 ```
 
+## Spring 2022
+
+### Summary of Changes Since Last Time
+
+Several of the lecture videos were completely remade as a result of revisiting
+and revising large parts of some sections of the course. A few demanding quiz
+questions were also removed to lower the overall difficulty of the course.
+
+### Summary of Students' Evaluation of the Course
+
+Overall the student's responded favorably to the course. Out of the
+24 respondents' impressions, 16 were "excellent", 7 "very good" and 1 "good".
+Among the most highly valued parts of the course was the pre-recorded lectures
+and general quality of the content of the course. When it comes to things
+students thought would improve the course, students wished for a slightly lower
+overall course load, better course literature, and more content to support 
+more difficult parts of the course.
+
+### Summary of Teachers' Overall Assessment
+
+I thought the course went well overall and that the changes introduced all
+turned out quite well. The lowered difficulty and course load seem to have had
+some effect, with a higher proportion of students finishing the course. For
+some reason, however, the course activity on the course was lower than usual.
+For the last few workshop sessions, only a single person attended. There was also
+less activity on the course forum (slack workspace) than last time. 
+
+### Course Director's Reflections on the Course Implementation and Results
+
+There were a few areas where student's repeatedly struggled throughout the
+assignments, such as formatting figures properly: in particular, writing good
+captions and sizing figures correctly. It is also clear that quite a few
+students struggle or do not find time to deal with the last module that
+contains the more difficult parts of the course. This material is not
+handled in the assignments, which might create less incentive for students to
+finish. There were also a few errors in the quizzes, which created dismay for
+some students. Finally, it is clear that some students do not treat peer reviews
+seriously and miss obvious errors in the reports.
+
+### Course Director's Proposals for Changes
+
+- Lower the number of assignments from 4 to 3 but make sure that all of the
+  modules are covered in the assignments. 
+- Change course literature to Kieran Healy's book "Data Visualization"
+- Change grading of quizzes to having to complete every quiz (say minimum 50% of
+  points on each quiz) but increase the
+  number of trials.
+- Require a general comment from each peer reviewer in addition to filling out
+  the rubric.
+- Add additional material on writing good captions, but be less stringent about
+  captions when evaluating reports.
+
 ## Fall 2021
 
 ### Feedback

@@ -45,6 +45,7 @@
     </style>
 
 
+
 <style type="text/css">
   code {
     white-space: pre;
@@ -125,13 +126,20 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -166,6 +174,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -364,19 +375,20 @@ div.tocify {
 <p>Whenever you start working with new data, always start by taking a look at the data in raw form. The best first step is usually just to print the data to the console or by calling <code>head()</code> (to see the first few lines).</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>us_cars</span></code></pre></div>
 <pre><code>## # A tibble: 2,499 × 12
-##    price brand model  year title_status mileage color vin      lot state country
-##    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
-##  1  6300 toyo… crui…  2008 clean vehic…  274117 black jtez… 1.59e8 new … usa    
-##  2  2899 ford  se     2011 clean vehic…  190552 silv… 2fmd… 1.67e8 tenn… usa    
-##  3  5350 dodge mpv    2018 clean vehic…   39590 silv… 3c4p… 1.68e8 geor… usa    
-##  4 25000 ford  door   2014 clean vehic…   64146 blue  1ftf… 1.68e8 virg… usa    
-##  5 27700 chev… 1500   2018 clean vehic…    6654 red   3gcp… 1.68e8 flor… usa    
-##  6  5700 dodge mpv    2018 clean vehic…   45561 white 2c4r… 1.68e8 texas usa    
-##  7  7300 chev… pk     2010 clean vehic…  149050 black 1gcs… 1.68e8 geor… usa    
-##  8 13350 gmc   door   2017 clean vehic…   23525 gray  1gks… 1.68e8 cali… usa    
-##  9 14600 chev… mali…  2018 clean vehic…    9371 silv… 1g1z… 1.68e8 flor… usa    
-## 10  5250 ford  mpv    2017 clean vehic…   63418 black 2fmp… 1.68e8 texas usa    
-## # … with 2,489 more rows, and 1 more variable: condition &lt;chr&gt;</code></pre>
+##    price brand     model   year title…¹ mileage color vin      lot state country
+##    &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
+##  1  6300 toyota    cruis…  2008 clean …  274117 black jtez… 1.59e8 new … usa    
+##  2  2899 ford      se      2011 clean …  190552 silv… 2fmd… 1.67e8 tenn… usa    
+##  3  5350 dodge     mpv     2018 clean …   39590 silv… 3c4p… 1.68e8 geor… usa    
+##  4 25000 ford      door    2014 clean …   64146 blue  1ftf… 1.68e8 virg… usa    
+##  5 27700 chevrolet 1500    2018 clean …    6654 red   3gcp… 1.68e8 flor… usa    
+##  6  5700 dodge     mpv     2018 clean …   45561 white 2c4r… 1.68e8 texas usa    
+##  7  7300 chevrolet pk      2010 clean …  149050 black 1gcs… 1.68e8 geor… usa    
+##  8 13350 gmc       door    2017 clean …   23525 gray  1gks… 1.68e8 cali… usa    
+##  9 14600 chevrolet malibu  2018 clean …    9371 silv… 1g1z… 1.68e8 flor… usa    
+## 10  5250 ford      mpv     2017 clean …   63418 black 2fmp… 1.68e8 texas usa    
+## # … with 2,489 more rows, 1 more variable: condition &lt;chr&gt;, and abbreviated
+## #   variable name ¹​title_status</code></pre>
 <p>If you want to see more rows of the data than are printed by default, try to call <code>print()</code> with the <code>n</code> argument set to the number of rows you want, or use <code>head()</code> in the same way.</p>
 <p>Another useful function, particularly when there are many columns in the dataset, is <code>glimpse()</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(us_cars)</span></code></pre></div>
@@ -472,26 +484,27 @@ Tubercolosis cases in Afghanistan, Brazil, and China in 1999 and 2000.
 <p>Let’s say that we only wanted to look at cars from Tennessee from years 2015 and onward. Then we can use <code>filter()</code> in the following way.</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(us_cars, state <span class="sc">==</span> <span class="st">&quot;tennessee&quot;</span>, year <span class="sc">&gt;=</span> <span class="dv">2015</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 17 × 12
-##    price brand model  year title_status mileage color vin      lot state country
-##    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
-##  1 31900 chev… 1500   2018 clean vehic…   22909 black 3gcu… 1.68e8 tenn… usa    
-##  2 16500 buick enco…  2018 clean vehic…   20002 red   kl4c… 1.68e8 tenn… usa    
-##  3 19200 chev… 1500   2018 clean vehic…    2430 white 1gcn… 1.68e8 tenn… usa    
-##  4 30500 chev… 1500   2018 clean vehic…   30442 red   3gcu… 1.68e8 tenn… usa    
-##  5 19000 chev… mali…  2017 clean vehic…   18414 white 1g1z… 1.68e8 tenn… usa    
-##  6 27000 buick encl…  2017 clean vehic…   32107 no_c… 5gak… 1.68e8 tenn… usa    
-##  7 29400 bmw   x3     2017 clean vehic…   23765 black 5uxw… 1.68e8 tenn… usa    
-##  8  8500 ford  fusi…  2017 clean vehic…   78739 black 3fa6… 1.68e8 tenn… usa    
-##  9 30300 ford  f-150  2019 clean vehic…   31899 white 1fte… 1.68e8 tenn… usa    
-## 10 39200 ford  max    2019 clean vehic…   43617 black 1fmj… 1.68e8 tenn… usa    
-## 11 41200 ford  srw    2019 clean vehic…   25638 gray  1ft7… 1.68e8 tenn… usa    
-## 12 29000 ford  door   2017 clean vehic…   42291 black 1fte… 1.68e8 tenn… usa    
-## 13 14500 niss… rogue  2017 clean vehic…    8677 blue  knma… 1.68e8 tenn… usa    
-## 14 18200 niss… sport  2018 clean vehic…   28009 black jn1b… 1.68e8 tenn… usa    
-## 15 10900 niss… sent…  2018 clean vehic…   28880 silv… 3n1a… 1.68e8 tenn… usa    
-## 16 12600 niss… sent…  2017 clean vehic…   11837 gray  3n1a… 1.68e8 tenn… usa    
-## 17 12700 niss… door   2017 clean vehic…   17738 black 1n4a… 1.68e8 tenn… usa    
-## # … with 1 more variable: condition &lt;chr&gt;</code></pre>
+##    price brand     model   year title…¹ mileage color vin      lot state country
+##    &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
+##  1 31900 chevrolet 1500    2018 clean …   22909 black 3gcu… 1.68e8 tenn… usa    
+##  2 16500 buick     encore  2018 clean …   20002 red   kl4c… 1.68e8 tenn… usa    
+##  3 19200 chevrolet 1500    2018 clean …    2430 white 1gcn… 1.68e8 tenn… usa    
+##  4 30500 chevrolet 1500    2018 clean …   30442 red   3gcu… 1.68e8 tenn… usa    
+##  5 19000 chevrolet malibu  2017 clean …   18414 white 1g1z… 1.68e8 tenn… usa    
+##  6 27000 buick     encla…  2017 clean …   32107 no_c… 5gak… 1.68e8 tenn… usa    
+##  7 29400 bmw       x3      2017 clean …   23765 black 5uxw… 1.68e8 tenn… usa    
+##  8  8500 ford      fusion  2017 clean …   78739 black 3fa6… 1.68e8 tenn… usa    
+##  9 30300 ford      f-150   2019 clean …   31899 white 1fte… 1.68e8 tenn… usa    
+## 10 39200 ford      max     2019 clean …   43617 black 1fmj… 1.68e8 tenn… usa    
+## 11 41200 ford      srw     2019 clean …   25638 gray  1ft7… 1.68e8 tenn… usa    
+## 12 29000 ford      door    2017 clean …   42291 black 1fte… 1.68e8 tenn… usa    
+## 13 14500 nissan    rogue   2017 clean …    8677 blue  knma… 1.68e8 tenn… usa    
+## 14 18200 nissan    sport   2018 clean …   28009 black jn1b… 1.68e8 tenn… usa    
+## 15 10900 nissan    sentra  2018 clean …   28880 silv… 3n1a… 1.68e8 tenn… usa    
+## 16 12600 nissan    sentra  2017 clean …   11837 gray  3n1a… 1.68e8 tenn… usa    
+## 17 12700 nissan    door    2017 clean …   17738 black 1n4a… 1.68e8 tenn… usa    
+## # … with 1 more variable: condition &lt;chr&gt;, and abbreviated variable name
+## #   ¹​title_status</code></pre>
 </div>
 <div id="selecting" class="section level4">
 <h4>Selecting</h4>
@@ -532,19 +545,19 @@ Tubercolosis cases in Afghanistan, Brazil, and China in 1999 and 2000.
 <p>If you instead want to drop a particular column, you just preface it with <code>-</code> or <code>!</code>.</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">select</span>(us_cars, <span class="sc">!</span>brand, <span class="sc">-</span>model)</span></code></pre></div>
 <pre><code>## # A tibble: 2,499 × 10
-##    price  year title_status  mileage color  vin      lot state country condition
-##    &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;    
-##  1  6300  2008 clean vehicle  274117 black  jtez… 1.59e8 new … usa     10 days …
-##  2  2899  2011 clean vehicle  190552 silver 2fmd… 1.67e8 tenn… usa     6 days l…
-##  3  5350  2018 clean vehicle   39590 silver 3c4p… 1.68e8 geor… usa     2 days l…
-##  4 25000  2014 clean vehicle   64146 blue   1ftf… 1.68e8 virg… usa     22 hours…
-##  5 27700  2018 clean vehicle    6654 red    3gcp… 1.68e8 flor… usa     22 hours…
-##  6  5700  2018 clean vehicle   45561 white  2c4r… 1.68e8 texas usa     2 days l…
-##  7  7300  2010 clean vehicle  149050 black  1gcs… 1.68e8 geor… usa     22 hours…
-##  8 13350  2017 clean vehicle   23525 gray   1gks… 1.68e8 cali… usa     20 hours…
-##  9 14600  2018 clean vehicle    9371 silver 1g1z… 1.68e8 flor… usa     22 hours…
-## 10  5250  2017 clean vehicle   63418 black  2fmp… 1.68e8 texas usa     2 days l…
-## # … with 2,489 more rows</code></pre>
+##    price  year title_status  mileage color  vin        lot state country condi…¹
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;  
+##  1  6300  2008 clean vehicle  274117 black  jtezu1… 1.59e8 new … usa     10 day…
+##  2  2899  2011 clean vehicle  190552 silver 2fmdk3… 1.67e8 tenn… usa     6 days…
+##  3  5350  2018 clean vehicle   39590 silver 3c4pdc… 1.68e8 geor… usa     2 days…
+##  4 25000  2014 clean vehicle   64146 blue   1ftfw1… 1.68e8 virg… usa     22 hou…
+##  5 27700  2018 clean vehicle    6654 red    3gcpcr… 1.68e8 flor… usa     22 hou…
+##  6  5700  2018 clean vehicle   45561 white  2c4rdg… 1.68e8 texas usa     2 days…
+##  7  7300  2010 clean vehicle  149050 black  1gcsks… 1.68e8 geor… usa     22 hou…
+##  8 13350  2017 clean vehicle   23525 gray   1gks2g… 1.68e8 cali… usa     20 hou…
+##  9 14600  2018 clean vehicle    9371 silver 1g1zd5… 1.68e8 flor… usa     22 hou…
+## 10  5250  2017 clean vehicle   63418 black  2fmpk3… 1.68e8 texas usa     2 days…
+## # … with 2,489 more rows, and abbreviated variable name ¹​condition</code></pre>
 <p>Notice that, when you only have negative indexing, the function assumes that you want to keep all of the remaining columns.</p>
 <p>It can, however, be tedious to manually select every column, in which case you may use the <code>:</code> operator to specify a range instead.</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">select</span>(us_cars, title_status<span class="sc">:</span>state)</span></code></pre></div>
@@ -577,36 +590,37 @@ Tubercolosis cases in Afghanistan, Brazil, and China in 1999 and 2000.
 <p>Let’s start by example. Say that we want to convert the price of the cars in the <code>us_cars</code> dataset to Swedish kronor instead. Here’s how to do this:</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(us_cars, <span class="at">price =</span> price<span class="sc">*</span><span class="fl">8.92</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 2,499 × 12
-##      price brand     model    year title_status mileage color vin      lot state
-##      &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;
-##  1  56196  toyota    cruiser  2008 clean vehic…  274117 black jtez… 1.59e8 new …
-##  2  25859. ford      se       2011 clean vehic…  190552 silv… 2fmd… 1.67e8 tenn…
-##  3  47722  dodge     mpv      2018 clean vehic…   39590 silv… 3c4p… 1.68e8 geor…
-##  4 223000  ford      door     2014 clean vehic…   64146 blue  1ftf… 1.68e8 virg…
-##  5 247084  chevrolet 1500     2018 clean vehic…    6654 red   3gcp… 1.68e8 flor…
-##  6  50844  dodge     mpv      2018 clean vehic…   45561 white 2c4r… 1.68e8 texas
-##  7  65116  chevrolet pk       2010 clean vehic…  149050 black 1gcs… 1.68e8 geor…
-##  8 119082  gmc       door     2017 clean vehic…   23525 gray  1gks… 1.68e8 cali…
-##  9 130232  chevrolet malibu   2018 clean vehic…    9371 silv… 1g1z… 1.68e8 flor…
-## 10  46830  ford      mpv      2017 clean vehic…   63418 black 2fmp… 1.68e8 texas
-## # … with 2,489 more rows, and 2 more variables: country &lt;chr&gt;, condition &lt;chr&gt;</code></pre>
+##      price brand    model  year title…¹ mileage color vin      lot state country
+##      &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
+##  1  56196  toyota   crui…  2008 clean …  274117 black jtez… 1.59e8 new … usa    
+##  2  25859. ford     se     2011 clean …  190552 silv… 2fmd… 1.67e8 tenn… usa    
+##  3  47722  dodge    mpv    2018 clean …   39590 silv… 3c4p… 1.68e8 geor… usa    
+##  4 223000  ford     door   2014 clean …   64146 blue  1ftf… 1.68e8 virg… usa    
+##  5 247084  chevrol… 1500   2018 clean …    6654 red   3gcp… 1.68e8 flor… usa    
+##  6  50844  dodge    mpv    2018 clean …   45561 white 2c4r… 1.68e8 texas usa    
+##  7  65116  chevrol… pk     2010 clean …  149050 black 1gcs… 1.68e8 geor… usa    
+##  8 119082  gmc      door   2017 clean …   23525 gray  1gks… 1.68e8 cali… usa    
+##  9 130232  chevrol… mali…  2018 clean …    9371 silv… 1g1z… 1.68e8 flor… usa    
+## 10  46830  ford     mpv    2017 clean …   63418 black 2fmp… 1.68e8 texas usa    
+## # … with 2,489 more rows, 1 more variable: condition &lt;chr&gt;, and abbreviated
+## #   variable name ¹​title_status</code></pre>
 <p>In this instance we simply overwrote the <code>price</code> variable with a new value, but mutate can also be used to create new variables.</p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(us_cars, <span class="at">price_sek =</span> price<span class="sc">*</span><span class="fl">8.92</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 2,499 × 13
-##    price brand model  year title_status mileage color vin      lot state country
-##    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
-##  1  6300 toyo… crui…  2008 clean vehic…  274117 black jtez… 1.59e8 new … usa    
-##  2  2899 ford  se     2011 clean vehic…  190552 silv… 2fmd… 1.67e8 tenn… usa    
-##  3  5350 dodge mpv    2018 clean vehic…   39590 silv… 3c4p… 1.68e8 geor… usa    
-##  4 25000 ford  door   2014 clean vehic…   64146 blue  1ftf… 1.68e8 virg… usa    
-##  5 27700 chev… 1500   2018 clean vehic…    6654 red   3gcp… 1.68e8 flor… usa    
-##  6  5700 dodge mpv    2018 clean vehic…   45561 white 2c4r… 1.68e8 texas usa    
-##  7  7300 chev… pk     2010 clean vehic…  149050 black 1gcs… 1.68e8 geor… usa    
-##  8 13350 gmc   door   2017 clean vehic…   23525 gray  1gks… 1.68e8 cali… usa    
-##  9 14600 chev… mali…  2018 clean vehic…    9371 silv… 1g1z… 1.68e8 flor… usa    
-## 10  5250 ford  mpv    2017 clean vehic…   63418 black 2fmp… 1.68e8 texas usa    
-## # … with 2,489 more rows, and 2 more variables: condition &lt;chr&gt;,
-## #   price_sek &lt;dbl&gt;</code></pre>
+##    price brand     model   year title…¹ mileage color vin      lot state country
+##    &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
+##  1  6300 toyota    cruis…  2008 clean …  274117 black jtez… 1.59e8 new … usa    
+##  2  2899 ford      se      2011 clean …  190552 silv… 2fmd… 1.67e8 tenn… usa    
+##  3  5350 dodge     mpv     2018 clean …   39590 silv… 3c4p… 1.68e8 geor… usa    
+##  4 25000 ford      door    2014 clean …   64146 blue  1ftf… 1.68e8 virg… usa    
+##  5 27700 chevrolet 1500    2018 clean …    6654 red   3gcp… 1.68e8 flor… usa    
+##  6  5700 dodge     mpv     2018 clean …   45561 white 2c4r… 1.68e8 texas usa    
+##  7  7300 chevrolet pk      2010 clean …  149050 black 1gcs… 1.68e8 geor… usa    
+##  8 13350 gmc       door    2017 clean …   23525 gray  1gks… 1.68e8 cali… usa    
+##  9 14600 chevrolet malibu  2018 clean …    9371 silv… 1g1z… 1.68e8 flor… usa    
+## 10  5250 ford      mpv     2017 clean …   63418 black 2fmp… 1.68e8 texas usa    
+## # … with 2,489 more rows, 2 more variables: condition &lt;chr&gt;, price_sek &lt;dbl&gt;,
+## #   and abbreviated variable name ¹​title_status</code></pre>
 <p>Inside <code>mutate()</code>, you can basically use any operation that would work on a typical vector in R. You can, for instance, convert between different vector types, or use arbitrary functions (as long as they return a new vector).</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  us_cars,</span>
@@ -616,19 +630,20 @@ Tubercolosis cases in Afghanistan, Brazil, and China in 1999 and 2000.
 <span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">brand =</span> <span class="fu">fct_lump_prop</span>(brand, <span class="fl">0.1</span>) <span class="co"># lump together low-frequent brands</span></span>
 <span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>## # A tibble: 2,499 × 12
-##    price brand model  year title_status mileage color vin      lot state country
-##    &lt;dbl&gt; &lt;fct&gt; &lt;chr&gt; &lt;int&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
-##  1  6300 Other crui…  2008 clean vehic…  274117 black jtez… 1.59e8 NEW … usa    
-##  2  2900 ford  se     2011 clean vehic…  190552 silv… 2fmd… 1.67e8 TENN… usa    
-##  3  5400 dodge mpv    2018 clean vehic…   39590 silv… 3c4p… 1.68e8 GEOR… usa    
-##  4 25000 ford  door   2014 clean vehic…   64146 blue  1ftf… 1.68e8 VIRG… usa    
-##  5 27700 chev… 1500   2018 clean vehic…    6654 red   3gcp… 1.68e8 FLOR… usa    
-##  6  5700 dodge mpv    2018 clean vehic…   45561 white 2c4r… 1.68e8 TEXAS usa    
-##  7  7300 chev… pk     2010 clean vehic…  149050 black 1gcs… 1.68e8 GEOR… usa    
-##  8 13400 Other door   2017 clean vehic…   23525 gray  1gks… 1.68e8 CALI… usa    
-##  9 14600 chev… mali…  2018 clean vehic…    9371 silv… 1g1z… 1.68e8 FLOR… usa    
-## 10  5200 ford  mpv    2017 clean vehic…   63418 black 2fmp… 1.68e8 TEXAS usa    
-## # … with 2,489 more rows, and 1 more variable: condition &lt;chr&gt;</code></pre>
+##    price brand     model   year title…¹ mileage color vin      lot state country
+##    &lt;dbl&gt; &lt;fct&gt;     &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
+##  1  6300 Other     cruis…  2008 clean …  274117 black jtez… 1.59e8 NEW … usa    
+##  2  2900 ford      se      2011 clean …  190552 silv… 2fmd… 1.67e8 TENN… usa    
+##  3  5400 dodge     mpv     2018 clean …   39590 silv… 3c4p… 1.68e8 GEOR… usa    
+##  4 25000 ford      door    2014 clean …   64146 blue  1ftf… 1.68e8 VIRG… usa    
+##  5 27700 chevrolet 1500    2018 clean …    6654 red   3gcp… 1.68e8 FLOR… usa    
+##  6  5700 dodge     mpv     2018 clean …   45561 white 2c4r… 1.68e8 TEXAS usa    
+##  7  7300 chevrolet pk      2010 clean …  149050 black 1gcs… 1.68e8 GEOR… usa    
+##  8 13400 Other     door    2017 clean …   23525 gray  1gks… 1.68e8 CALI… usa    
+##  9 14600 chevrolet malibu  2018 clean …    9371 silv… 1g1z… 1.68e8 FLOR… usa    
+## 10  5200 ford      mpv     2017 clean …   63418 black 2fmp… 1.68e8 TEXAS usa    
+## # … with 2,489 more rows, 1 more variable: condition &lt;chr&gt;, and abbreviated
+## #   variable name ¹​title_status</code></pre>
 </div>
 <div id="rename" class="section level4">
 <h4>Rename</h4>
@@ -637,19 +652,20 @@ Tubercolosis cases in Afghanistan, Brazil, and China in 1999 and 2000.
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>us_cars <span class="sc">%&gt;%</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">vintage =</span> vin)</span></code></pre></div>
 <pre><code>## # A tibble: 2,499 × 12
-##    price brand     model    year title_status mileage color vintage    lot state
-##    &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt; &lt;chr&gt;
-##  1  6300 toyota    cruiser  2008 clean vehic…  274117 black jtezu1… 1.59e8 new …
-##  2  2899 ford      se       2011 clean vehic…  190552 silv… 2fmdk3… 1.67e8 tenn…
-##  3  5350 dodge     mpv      2018 clean vehic…   39590 silv… 3c4pdc… 1.68e8 geor…
-##  4 25000 ford      door     2014 clean vehic…   64146 blue  1ftfw1… 1.68e8 virg…
-##  5 27700 chevrolet 1500     2018 clean vehic…    6654 red   3gcpcr… 1.68e8 flor…
-##  6  5700 dodge     mpv      2018 clean vehic…   45561 white 2c4rdg… 1.68e8 texas
-##  7  7300 chevrolet pk       2010 clean vehic…  149050 black 1gcsks… 1.68e8 geor…
-##  8 13350 gmc       door     2017 clean vehic…   23525 gray  1gks2g… 1.68e8 cali…
-##  9 14600 chevrolet malibu   2018 clean vehic…    9371 silv… 1g1zd5… 1.68e8 flor…
-## 10  5250 ford      mpv      2017 clean vehic…   63418 black 2fmpk3… 1.68e8 texas
-## # … with 2,489 more rows, and 2 more variables: country &lt;chr&gt;, condition &lt;chr&gt;</code></pre>
+##    price brand    model  year title…¹ mileage color vintage    lot state country
+##    &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
+##  1  6300 toyota   crui…  2008 clean …  274117 black jtezu1… 1.59e8 new … usa    
+##  2  2899 ford     se     2011 clean …  190552 silv… 2fmdk3… 1.67e8 tenn… usa    
+##  3  5350 dodge    mpv    2018 clean …   39590 silv… 3c4pdc… 1.68e8 geor… usa    
+##  4 25000 ford     door   2014 clean …   64146 blue  1ftfw1… 1.68e8 virg… usa    
+##  5 27700 chevrol… 1500   2018 clean …    6654 red   3gcpcr… 1.68e8 flor… usa    
+##  6  5700 dodge    mpv    2018 clean …   45561 white 2c4rdg… 1.68e8 texas usa    
+##  7  7300 chevrol… pk     2010 clean …  149050 black 1gcsks… 1.68e8 geor… usa    
+##  8 13350 gmc      door   2017 clean …   23525 gray  1gks2g… 1.68e8 cali… usa    
+##  9 14600 chevrol… mali…  2018 clean …    9371 silv… 1g1zd5… 1.68e8 flor… usa    
+## 10  5250 ford     mpv    2017 clean …   63418 black 2fmpk3… 1.68e8 texas usa    
+## # … with 2,489 more rows, 1 more variable: condition &lt;chr&gt;, and abbreviated
+## #   variable name ¹​title_status</code></pre>
 <p>You can have spaces in your variable names if you want to, but this is bad practice because including special characters like <code>%</code>, <code>&amp;</code>, <code>$</code> in variable names can have undesired side-effects that you do best to avoid.</p>
 </div>
 </div>
@@ -662,19 +678,20 @@ Tubercolosis cases in Afghanistan, Brazil, and China in 1999 and 2000.
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">group_by</span>(us_cars, country)</span></code></pre></div>
 <pre><code>## # A tibble: 2,499 × 12
 ## # Groups:   country [2]
-##    price brand model  year title_status mileage color vin      lot state country
-##    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
-##  1  6300 toyo… crui…  2008 clean vehic…  274117 black jtez… 1.59e8 new … usa    
-##  2  2899 ford  se     2011 clean vehic…  190552 silv… 2fmd… 1.67e8 tenn… usa    
-##  3  5350 dodge mpv    2018 clean vehic…   39590 silv… 3c4p… 1.68e8 geor… usa    
-##  4 25000 ford  door   2014 clean vehic…   64146 blue  1ftf… 1.68e8 virg… usa    
-##  5 27700 chev… 1500   2018 clean vehic…    6654 red   3gcp… 1.68e8 flor… usa    
-##  6  5700 dodge mpv    2018 clean vehic…   45561 white 2c4r… 1.68e8 texas usa    
-##  7  7300 chev… pk     2010 clean vehic…  149050 black 1gcs… 1.68e8 geor… usa    
-##  8 13350 gmc   door   2017 clean vehic…   23525 gray  1gks… 1.68e8 cali… usa    
-##  9 14600 chev… mali…  2018 clean vehic…    9371 silv… 1g1z… 1.68e8 flor… usa    
-## 10  5250 ford  mpv    2017 clean vehic…   63418 black 2fmp… 1.68e8 texas usa    
-## # … with 2,489 more rows, and 1 more variable: condition &lt;chr&gt;</code></pre>
+##    price brand     model   year title…¹ mileage color vin      lot state country
+##    &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
+##  1  6300 toyota    cruis…  2008 clean …  274117 black jtez… 1.59e8 new … usa    
+##  2  2899 ford      se      2011 clean …  190552 silv… 2fmd… 1.67e8 tenn… usa    
+##  3  5350 dodge     mpv     2018 clean …   39590 silv… 3c4p… 1.68e8 geor… usa    
+##  4 25000 ford      door    2014 clean …   64146 blue  1ftf… 1.68e8 virg… usa    
+##  5 27700 chevrolet 1500    2018 clean …    6654 red   3gcp… 1.68e8 flor… usa    
+##  6  5700 dodge     mpv     2018 clean …   45561 white 2c4r… 1.68e8 texas usa    
+##  7  7300 chevrolet pk      2010 clean …  149050 black 1gcs… 1.68e8 geor… usa    
+##  8 13350 gmc       door    2017 clean …   23525 gray  1gks… 1.68e8 cali… usa    
+##  9 14600 chevrolet malibu  2018 clean …    9371 silv… 1g1z… 1.68e8 flor… usa    
+## 10  5250 ford      mpv     2017 clean …   63418 black 2fmp… 1.68e8 texas usa    
+## # … with 2,489 more rows, 1 more variable: condition &lt;chr&gt;, and abbreviated
+## #   variable name ¹​title_status</code></pre>
 <p>Okay, so not much happened! If you look closely, however, you’ll see that this tibble is now <strong>grouped</strong>—but what does this mean? Well, the truth is that grouping is only useful when combined with functions that modify the data, especially <code>summarize()</code>.</p>
 </div>
 <div id="summarizing" class="section level4">

@@ -1,7 +1,7 @@
 ---
-title: "Template"
-subtitle: "STAE04/DABN19: Data Visualization"
-author: "Your Name"
+title: "Assignment (Number)"
+subtitle: "(Course)"
+author: "(Your Name)"
 date: "`r Sys.Date()`"
 papersize: a4
 geometry: margin=4cm

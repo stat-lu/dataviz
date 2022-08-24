@@ -28,14 +28,14 @@ report. This report should be a written response to the tasks given in the
 assignment. It should respond to all the questions in the assignment in a
 **clear** and **succinct** manner.
 
-## Workflow: Two Approaches
+# Workflow: Two Approaches
 
 There are two approaches you can take when you write your report. The first of
 these is to use R Markdown; the second is to write your report in a WYSIWYG
 (what you see is what you get) software such as Libre Office, Google Docs, or
 Microsoft Word.
 
-### R Markdown
+## R Markdown
 
 R Markdown represents a way to write reproducible reports that can be rendered
 in a wide variety of formats and which allows you to interleave R code with
@@ -66,13 +66,13 @@ text.
   especially for Windows machines^[This is typically not a problem since you
   can export your document to a Word document instead of a PDF.].
 
-#### Getting Started with R Markdown
+### Getting Started with R Markdown
 
 To get you going with R Markdown, we have prepared an introduction that you can
 read
 [here](https://github.com/stat-lu/dataviz/raw/main/introduction-to-rmarkdown.pdf).
 
-### Template
+## Template
 
 We have provided an R Markdown template that we want you to use if you use R
 Markdown. Download it to `template.Rmd` in your working directory by calling
@@ -86,18 +86,18 @@ download.file(
 )
 ```
 
-### WYSIWYG Editors (Office Packages)
+# WYSIWYG Editors (Office Packages)
 
 If you prefer to use a WYSIWYG editor, please see the Figure Sizing section in
 [the text on figure formatting]() for information on how to export and size
 your figures appropriately.
 
-#### Pros
+## Pros
 
 * You probably already are familiar with Microsoft Word or Google Docs, so you
   can get going quickly.
 
-#### Cons
+## Cons
 
 * Modifying figures is a little bit of a hassle since you need to re-import the
   figure every time you modify the plot or make changes to its size.
@@ -105,15 +105,15 @@ your figures appropriately.
   using a mono-spaced font (such as Courier or Consolas), and will not get
   syntax highlighting.
 
-## Detailed Requirements
+# Detailed Requirements
 
-### Submissions
+## Submissions
 
 You need to submit a PDF with your work. If you'd like to, however, you are
 also free to include `.Rmd` and `.R` files with your submissions containing
 code to reproduce your work. Doing so, however, is not at all obligatory.
 
-### Writing
+## Writing
 
 Your report does not need to be verbose but it must be **clear** and
 **coherent**. Use full sentences and describe the steps you take and code
@@ -122,11 +122,11 @@ through the report. Someone who has not seen the assignment instructions but
 with the same background as you should be able to read and follow along
 reasonably well. Do not use a question: answer format in your report.
 
-### Figures
+## Figures
 
 Please see [x]() for detailed information about formatting figures.
 
-### Code
+## Code
 
 You only need to include code when you are explicitly instructed to do so. When
 you do include code, please avoid having it escape into the margin by using
@@ -136,7 +136,7 @@ a style guide such as [the tidyverse style
 guide](https://style.tidyverse.org/). R Studio can also format code for you if
 you select it and hit `Cmd/Ctrl + Alt + a`.
 
-## Peer Review and Examination
+# Peer Review and Examination
 
 For each assignment you will need to peer review **three other reports**. To
 complete these reviews, you need to fill out the **rubric** associated with the
@@ -148,14 +148,14 @@ to read more about peer-reviewing in canvas.
 
 Finally, please remember to provide **constructive** feedback.
 
-### Grading
+## Grading
 
 The assignments and project will be graded by an instructor or teaching
 assistant as **pass** or **fail**. To pass the course, **you need to pass each
 assignment**. If you fail any assignment (or the project), you will get an
 additional chance to hand in these after the conclusion of the course.
 
-## Hints
+# Hints
 
 - Functions in the tidyverse are well-documented. Students who are successful
   at these assignments often make good use of the help files for the various

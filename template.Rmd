@@ -66,7 +66,7 @@ presidential %>%
 To wrap up our investigation of US presidents, let's create a plot outlining
 the terms of some of the presidents (Figure 1).
 
-```{r plot1, fig.cap = "The terms of some presidents in the US.", fig.width = 5}
+```{r plot1, fig.cap = "The terms of some presidents in the US.", fig.width = 5.1}
 presidential %>%
   head(9) %>%
   mutate(order = 1:n(), name = reorder(name, order)) %>%

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>One Variable</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Johan Larsson" />
+    <script src="libs/header-attrs-2.15/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/styles.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: middle, center, title-slide
+
+.title[
+# One Variable
+]
+.subtitle[
+## Data Visualization
+]
+.author[
+### Johan Larsson
+]
+.institute[
+### The Department of Statistics, Lund University
+]
+
+---
+
+
+
+
+## Visualizing a Single Variable
+
+best place to start: continuous or discrete one-dimensional data
+
+--
+
+.pull-left[
+### Example
+
+time between eruptions of the Old Faithful geyser
+
+always start by thinking about what the data represents
+]
+
+.pull-right[
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="images/old-faithful.jpg" alt="The Old Faithful Geyser (Albert Bierstadt, Public domain, via Wikimedia Commons)" width="70%" /&gt;
+&lt;p class="caption"&gt;The Old Faithful Geyser (Albert Bierstadt, Public domain, via Wikimedia Commons)&lt;/p&gt;
+&lt;/div&gt;
+]
+
+---
+
+## Dot Plots
+
+good for small data sets
+
+
+```r
+library(tidyverse)
+
+ggplot(faithful, aes(waiting)) +
+* geom_dotplot(binwidth = 1) +
+  guides(y = "none") # default guide is incorrect
+```
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-2-1.png" alt="Duration between eruptions of the Old Faithful geyser." width="612" /&gt;
+&lt;p class="caption"&gt;Duration between eruptions of the Old Faithful geyser.&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+## Histograms
+
+separates data into bins and counts the number of observations
+
+choice of bin widths is critical
+
+.pull-left[
+
+```r
+faithful %&gt;%
+  ggplot(aes(waiting)) +
+* geom_histogram(binwidth = 1)
+```
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-3-1.png" alt="Too narrow bin width. (This is actually equivalent to a bar plot.)" width="360" /&gt;
+&lt;p class="caption"&gt;Too narrow bin width. (This is actually equivalent to a bar plot.)&lt;/p&gt;
+&lt;/div&gt;
+]
+
+.pull-right[
+
+```r
+faithful %&gt;%
+  ggplot(aes(waiting)) +
+* geom_histogram(binwidth = 3)
+```
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-4-1.png" alt="Reasonable bin width" width="360" /&gt;
+&lt;p class="caption"&gt;Reasonable bin width&lt;/p&gt;
+&lt;/div&gt;
+]
+
+---
+
+## Box Plots
+
+.pull-left[
+most common type:
+
+  - middle bar: **median** (2nd quartile)
+  - edges of box: 1st and 3rd **quartiles**
+  - whiskers: last observation within 1.5 times the
+    inter-quartile range (IQR)
+  - points: observations outside 1.5 times the IQR
+
+compact
+
+but not suitable for data with multiple modes
+]
+
+.pull-right[
+
+```r
+faithful %&gt;%
+  ggplot(aes(waiting)) +
+*   geom_boxplot()
+```
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-5-1.png" alt="Box plot of the Old Faithful data, which fails completely in accurately describing the distribution." width="360" /&gt;
+&lt;p class="caption"&gt;Box plot of the Old Faithful data, which fails completely in accurately describing the distribution.&lt;/p&gt;
+&lt;/div&gt;
+]
+
+---
+
+## Density Plots
+
+great when you have lots of data and the variable is continuous
+
+but sensitive to settings (type of kernel, bandwidth)
+
+.pull-left[
+
+```r
+faithful %&gt;%
+  ggplot(aes(waiting)) +
+*   geom_density(bw = 5)
+```
+
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-6-1.png" width="360" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+```r
+faithful %&gt;%
+  ggplot(aes(waiting)) +
+*   geom_density(bw = 10)
+```
+
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-7-1.png" width="360" style="display: block; margin: auto;" /&gt;
+]
+
+often good idea to add a **rug** layer (`geom_rug()`) to density plots
+
+
+
+---
+
+### How Does a Density Plot Work?
+
+We start with an empty canvas.
+
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-9-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+---
+
+### How Does a Density Plot Work?
+
+Then we mark the points with a rug layer (`geom_rug()`).
+
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-10-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+---
+
+### How Does a Density Plot Work?
+
+Next, we add a Gaussian (Normal) density kernel for each point.
+
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-11-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+---
+
+### How Does a Density Plot Work?
+
+Finally, we sum the kernels together.
+
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-12-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+The black line is our final density estimate.
+
+---
+
+## Violin Plots
+
+a type of density plot, often as an alternative to box plots when you have
+lots of (continuous) data
+
+
+```r
+faithful %&gt;%
+  ggplot(aes(waiting, y = 1)) +
+*   geom_violin()
+```
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-13-1.png" alt="geom_violin() does not work with a single variable, so we use the trick y = 1 here." width="468" /&gt;
+&lt;p class="caption"&gt;geom_violin() does not work with a single variable, so we use the trick y = 1 here.&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+## Combining Layers
+
+with ggplot, it's easy to combine layers
+
+
+```r
+faithful %&gt;%
+  ggplot(aes(waiting, y = 1)) +
+    geom_violin() +
+    geom_boxplot(width = 0.1, fill = "slategray2")
+```
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="one-variable_files/figure-html/unnamed-chunk-14-1.png" alt="A combined box and violin plot" width="468" /&gt;
+&lt;p class="caption"&gt;A combined box and violin plot&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+## Recap
+
+![](images/geom_dotplot.png) Few observations? Try a **dot plot**.
+
+![](images/geom_density.png) ![](images/geom_violin.png) Lots of data on a 
+continuous variable? **Density** and **violin** plots are great!
+
+![](images/geom_boxplot.png) The data is uni-modal and you only care about
+quartiles (e.g. the median) and extreme values? The **box plot** will fit the
+bill nicely.
+
+![](images/geom_histogram.png) In most other cases, a **histogram** is usually
+your best best.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

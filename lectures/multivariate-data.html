@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Multivariate Data</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Johan Larsson" />
+    <script src="libs/header-attrs-2.15/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <script src="libs/mark.js-8.11.1/mark.min.js"></script>
+    <link href="libs/xaringanExtra-search-0.0.1/search.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-search-0.0.1/search.js"></script>
+    <script>window.addEventListener('load', function() { window.xeSearch = new RemarkSearch({"position":"bottom-left","caseSensitive":false,"showIcon":true,"autoSearch":true}) })</script>
+    <link rel="stylesheet" href="assets/styles.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: middle, center, title-slide
+
+.title[
+# Multivariate Data
+]
+.subtitle[
+## Data Visualization
+]
+.author[
+### Johan Larsson
+]
+.institute[
+### The Department of Statistics, Lund University
+]
+
+---
+
+
+
+
+## Visualizing Multivariate Data
+
+visualizations often most intriguing when they show multiple variables
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="images/minard-migration.jpg" alt="The Emigrants of the World, Charles Joseph Minard, 1858." width="78%" /&gt;
+&lt;p class="caption"&gt;The Emigrants of the World, Charles Joseph Minard, 1858.&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+## 3D
+
+.pull-left-40[
+seems like a logical choice for a third continuous variable
+
+unfortunately, 3D visualizations are notoriously hard to read
+
+as a thumb rule, **avoid 3D visualizations**
+]
+
+.pull-right-60[
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="multivariate-data_files/figure-html/unnamed-chunk-2-1.png" alt="A 3D scatter plot." width="504" /&gt;
+&lt;p class="caption"&gt;A 3D scatter plot.&lt;/p&gt;
+&lt;/div&gt;
+]
+
+---
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="multivariate-data_files/figure-html/unnamed-chunk-3-1.png" alt="A particularly bad example of a 3D plot. 3D bar charts are never a good idea. Data shows death rates in Virginia in 1940." width="576" /&gt;
+&lt;p class="caption"&gt;A particularly bad example of a 3D plot. 3D bar charts are never a good idea. Data shows death rates in Virginia in 1940.&lt;/p&gt;
+&lt;/div&gt;
+
+
+---
+
+### 3D Visualizations Are Not All Bad!
+
+3D visualizations may be useful in a few situations:
+
+1. interactive or animated 3D plots
+2. multiple plots showing multiple perspectives
+3. only general pattern matters: reading individual points is not important
+4. data actually represents three-dimensional location data (topography)
+
+--
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="multivariate-data_files/figure-html/unnamed-chunk-4-1.png" alt="The topography of the Maunga Whau Volcano through different perspectives." width="720" /&gt;
+&lt;p class="caption"&gt;The topography of the Maunga Whau Volcano through different perspectives.&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+## Color
+
+Color is often a good choice, especially with categorical variables.
+
+
+```r
+mtcars &lt;- 
+  rownames_to_column(mtcars, "name") %&gt;%
+  mutate_at(vars(cyl, gear), as.factor)
+
+*ggplot(mtcars, aes(disp, hp, color = cyl)) +
+  geom_point()
+```
+
+&lt;img src="multivariate-data_files/figure-html/unnamed-chunk-5-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Color and Continuous Variables
+
+sometimes fine to map color to continuous variables, particularly when data is in
+a grid format
+
+
+
+
+
+```r
+# see source code for dataset
+ggplot(volcano_long, aes(longitude, latitude, fill = height)) + 
+  geom_tile() +
+  coord_fixed() # makes sense for latitude, longitude
+```
+
+&lt;img src="multivariate-data_files/figure-html/unnamed-chunk-7-1.png" width="540" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Scatter Plots
+
+Mapping a continuous variable to color in a scatter plot is less appealing.
+
+
+```r
+ggplot(mtcars, aes(disp, hp, color = mpg)) +
+  geom_point()
+```
+
+&lt;img src="multivariate-data_files/figure-html/unnamed-chunk-8-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Size
+
+Mapping to size only makes sense for continuous variables!
+
+.pull-left-40[
+### Area
+
+most common use case: bubble plots
+
+caveat: comparing areas is **hard**
+]
+
+.pull-right-60[
+
+```r
+ggplot(mtcars, 
+       aes(disp, hp, size = mpg)) +
+  geom_point()
+```
+
+&lt;img src="multivariate-data_files/figure-html/unnamed-chunk-9-1.png" width="396" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+### Width
+
+mapping to width can be useful but has few use cases
+
+
+
+
+```r
+# see source for dataset
+ggplot(troops, 
+       aes(long, lat, group = group, 
+           color = direction, size = survivors)) +
+  geom_path(lineend = "round")
+```
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="multivariate-data_files/figure-html/unnamed-chunk-11-1.png" alt="Basic reproduction of Minard's Napoleon chart." width="720" /&gt;
+&lt;p class="caption"&gt;Basic reproduction of Minard's Napoleon chart.&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+## Shape
+
+works OK for categorical variables, but usually not preferable over color
+
+mapping to line shapes is generally better than point shapes
+
+
+```r
+*ggplot(mtcars, aes(disp, hp, shape = cyl)) +
+  geom_point()
+```
+
+&lt;img src="multivariate-data_files/figure-html/unnamed-chunk-12-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Text
+
+often makes sense when each observation has a meaningful identity
+
+[ggrepel](https://CRAN.R-project.org/package=ggrepel) is a useful package when mapping
+to text (`geom_text_repel()`)
+
+.pull-left[
+
+```r
+library(ggrepel)
+
+head(msleep, 15) %&gt;%
+  ggplot(aes(brainwt, 
+             sleep_total, 
+             label = name)) +
+    geom_point() +
+*   geom_text_repel() +
+    scale_x_log10()
+```
+]
+
+.pull-right[
+&lt;img src="multivariate-data_files/figure-html/unnamed-chunk-13-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+## Facets
+
+splits and plots datasets in small multiples
+
+### Wrap
+
+use `facet_wrap()` when you have **one** variable to facet on.
+
+
+```r
+ggplot(mtcars, aes(disp, hp)) +
+  geom_point() +
+* facet_wrap(vars(cyl))
+```
+
+&lt;img src="multivariate-data_files/figure-html/unnamed-chunk-14-1.png" width="720" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Grid
+
+Use `facet_grid()` when you have **two** variables to facet on.
+
+
+```r
+ggplot(mtcars, aes(disp, hp)) +
+  geom_point() +
+* facet_grid(vars(cyl), vars(gear))
+```
+
+&lt;img src="multivariate-data_files/figure-html/unnamed-chunk-15-1.png" width="576" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Facets and Continuous Variables
+
+If sacrificing detail is OK, you can facet by transforming a continuous
+variable into an ordinal one.
+
+
+```r
+mtcars %&gt;%
+* mutate(hp_cat = cut_interval(hp, 3)) %&gt;%
+  ggplot(aes(mpg, disp)) +
+    geom_point() +
+    facet_wrap(vars(hp_cat))
+```
+
+&lt;img src="multivariate-data_files/figure-html/unnamed-chunk-16-1.png" width="720" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Combining Our Tools
+
+Putting together these building blocks allows us to create interesting and complex
+visualizations.
+
+
+```r
+tail(mtcars, 15) %&gt;%
+  ggplot(aes(hp, wt, color = cyl, label = name)) +
+    geom_point() +
+    geom_text_repel() +
+    facet_wrap(vars(gear))
+```
+
+&lt;img src="multivariate-data_files/figure-html/unnamed-chunk-17-1.png" width="720" style="display: block; margin: auto;" /&gt;
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

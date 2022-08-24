@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Color</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Johan Larsson" />
+    <script src="libs/header-attrs-2.15/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <script src="libs/mark.js-8.11.1/mark.min.js"></script>
+    <link href="libs/xaringanExtra-search-0.0.1/search.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-search-0.0.1/search.js"></script>
+    <script>window.addEventListener('load', function() { window.xeSearch = new RemarkSearch({"position":"bottom-left","caseSensitive":false,"showIcon":true,"autoSearch":true}) })</script>
+    <link rel="stylesheet" href="assets/styles.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: middle, center, title-slide
+
+.title[
+# Color
+]
+.subtitle[
+## Data Visualization
+]
+.author[
+### Johan Larsson
+]
+.institute[
+### The Department of Statistics, Lund University
+]
+
+---
+
+
+
+
+## Color in Visualizations
+
+How do we choose colors appropriately?
+
+need to pay attention to data type!
+
+--
+
+.pull-left[
+### Sequential Palette
+
+&lt;img src="color_files/figure-html/unnamed-chunk-1-1.png" width="360" style="display: block; margin: auto;" /&gt;
+
+imply order among values
+
+### Qualitative Palette
+
+&lt;img src="color_files/figure-html/unnamed-chunk-2-1.png" width="360" style="display: block; margin: auto;" /&gt;
+
+imply no ordering
+]
+
+.pull-right[
+### Diverging Palette
+
+&lt;img src="color_files/figure-html/unnamed-chunk-3-1.png" width="360" style="display: block; margin: auto;" /&gt;
+
+emphasis on low, mid, and high ends
+]
+
+---
+
+## Natural Color Mappings
+
+the type of data sometimes implies a natural color mapping: temperature, geographical features,
+political affiliation
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="images/europe-forest.png" alt="Forest cover in Europe (www.eea.europa.eu)." width="70%" /&gt;
+&lt;p class="caption"&gt;Forest cover in Europe (www.eea.europa.eu).&lt;/p&gt;
+&lt;/div&gt;
+
+
+---
+
+## ggplot2
+
+ggplot2 tries to **guess** which color palette to use
+
+- ordinal and numerical variables are mapped to a **sequential** palette
+- unordered categorical variables are mapped to a **qualitative** palette
+
+but ggplot2 never knows when to map a variable a **diverging** palette, or which
+direction of values indicate strongest intensity
+
+--
+
+### Applying a Color Palette in ggplot2
+
+- `scale_colour_*` for color mappings (`geom_point()`, `geom_line()` etc)
+- `scale_fill_*` for fill mappings (`geom_col()`, `geom_tile()` etc etc)
+
+---
+
+## Sequential Palettes
+
+typically used for data that is ordered from low to high
+
+varying lightness
+
+**examples:** population count, quality rating, size
+
+
+```r
+ggplot(diamonds, aes(price, fill = cut)) +
+  geom_histogram(binwidth = 1000) +
+* scale_fill_ordinal()
+```
+
+&lt;img src="color_files/figure-html/unnamed-chunk-5-1.png" width="648" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Diverging Palettes
+
+equal emphasis on middle and low and high ends of scale
+
+`scale_fill/color_gradient2()` in ggplot2
+
+**examples:** temperature (celsius), budget balance, correlations
+
+
+
+.pull-left[
+
+```r
+# see source for dataset
+mtcars_cor %&gt;%
+  ggplot(aes(var1, 
+             var2, 
+             fill = cor)) +
+  geom_tile() +
+* scale_fill_gradient2() +
+  labs(x = NULL, y = NULL)
+```
+]
+
+.pull-right[
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-7-1.png" alt="Heatmap of correlation matrix." width="345.6" /&gt;
+&lt;p class="caption"&gt;Heatmap of correlation matrix.&lt;/p&gt;
+&lt;/div&gt;
+
+]
+
+
+
+---
+
+## Qualitative Palettes
+
+colors should be as distinct as possible and not signal differences in magnitude
+
+**examples:** political party affiliation, gender
+
+
+```r
+ggplot(msleep, aes(bodywt, sleep_total, color = vore)) +
+  geom_point() +
+  scale_x_log10() +
+* scale_color_discrete()
+```
+
+&lt;img src="color_files/figure-html/unnamed-chunk-8-1.png" width="576" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Color Blindness
+
+.pull-left[
+red-green color blindness affects 8% of men and 0.5% of females&lt;sup&gt;1&lt;/sup&gt;
+
+several different types: 
+
+- protanotopia
+- deuteranopia
+- protanomaly 
+- deuteranomaly
+- tritanopia
+- tritanomaly
+]
+
+.pull-right[
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="images/ishihara.png" alt="Ishihara color test. What number do you see? (en.wikipedia.org/wiki/Color_blindness)" width="455" /&gt;
+&lt;p class="caption"&gt;Ishihara color test. What number do you see? (en.wikipedia.org/wiki/Color_blindness)&lt;/p&gt;
+&lt;/div&gt;
+
+]
+
+.footnote[
+&lt;sup&gt;1&lt;/sup&gt; Of people of Northern European descent.
+]
+
+---
+
+### Simulating Color Blindness
+
+
+```r
+library(colorBlindness)
+
+p &lt;- ggplot(mpg, aes(hwy, fill = drv)) + geom_density(alpha = 0.5)
+*cvdPlot(p)
+```
+
+&lt;img src="color_files/figure-html/unnamed-chunk-10-1.png" width="720" style="display: block; margin: auto;" /&gt;
+
+---
+
+## ColorBrewer
+
+based on work on color use in maps &lt;a name=cite-harrower2003&gt;&lt;/a&gt;([Harrower and Brewer, 2003](https://www.tandfonline.com/doi/abs/10.1179/000870403235002042)) but applicable to
+most types of plots
+
+sequential, diverging, and qualitative palettes, many tailored to individuals
+with color blindness
+
+requires [RColorBrewer](https://CRAN.R-project.org/package=RColorBrewer) package
+
+.pull-left[
+`scale_color_brewer()`: discrete (integer, categorical) data 
+
+`scale_color_distiller()`: continuous data
+
+
+```r
+p + 
+  scale_fill_brewer(
+    palette = "Accent"
+  )
+```
+
+]
+
+.pull-right[
+&lt;img src="color_files/figure-html/unnamed-chunk-11-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-12-1.png" alt="All the palettes in ColorBrewer." width="720" /&gt;
+&lt;p class="caption"&gt;All the palettes in ColorBrewer.&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+## Viridis
+
+**sequential** palettes created by Stéfan van der Walt and Nathaniel Smith for the 
+Python matplotlib library
+
+perceptually uniform and great for individuals with color blindness
+
+requires [viridis](https://CRAN.R-project.org/package=viridis) 
+(or [viridisLite](https://CRAN.R-project.org/package=viridisLite))
+
+.pull-left[
+- `scale_viridis_c`: continuous data
+- `scale_viridis_d`: discrete data
+
+
+```r
+tibble(x = rnorm(1e4), 
+       y = rnorm(1e4)) %&gt;%
+  ggplot(aes(x, y)) +
+  geom_hex() + 
+* scale_fill_viridis_c() +
+  coord_fixed()
+```
+]
+
+.pull-right[
+&lt;img src="color_files/figure-html/unnamed-chunk-13-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-14-1.png" alt="Palettes from the viridis package." width="576" /&gt;&lt;img src="color_files/figure-html/unnamed-chunk-14-2.png" alt="Palettes from the viridis package." width="576" /&gt;&lt;img src="color_files/figure-html/unnamed-chunk-14-3.png" alt="Palettes from the viridis package." width="576" /&gt;&lt;img src="color_files/figure-html/unnamed-chunk-14-4.png" alt="Palettes from the viridis package." width="576" /&gt;&lt;img src="color_files/figure-html/unnamed-chunk-14-5.png" alt="Palettes from the viridis package." width="576" /&gt;
+&lt;p class="caption"&gt;Palettes from the viridis package.&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+## Other Considerations
+
+### Greyscale
+
+color visualizations are still sometimes printed in greyscale; may be a good idea to
+use palettes that vary lightness
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-15-1.png" alt="The same plot in original colors and greyscale." width="720" /&gt;
+&lt;p class="caption"&gt;The same plot in original colors and greyscale.&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+### Aesthetics
+
+**subjective** and **fickle** but still important to consider
+
+beautiful visualizations will always attract more attention
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="color_files/figure-html/unnamed-chunk-16-1.png" alt="Which would you prefer?" width="720" /&gt;
+&lt;p class="caption"&gt;Which would you prefer?&lt;/p&gt;
+&lt;/div&gt;
+
+
+---
+
+## References
+
+&lt;a name=bib-harrower2003&gt;&lt;/a&gt;[Harrower, M. and C. A.
+Brewer](#cite-harrower2003) (2003). "ColorBrewer.Org: An Online Tool
+for Selecting Colour Schemes for Maps". In: _The Cartographic Journal_
+40.1, pp. 27-37. ISSN: 0008-7041. DOI:
+[10.1179/000870403235002042](https://doi.org/10.1179%2F000870403235002042).
+URL:
+[https://www.tandfonline.com/doi/abs/10.1179/000870403235002042](https://www.tandfonline.com/doi/abs/10.1179/000870403235002042)
+(visited on sep. 16, 2020).
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Statistical Models</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Johan Larsson" />
+    <script src="libs/header-attrs-2.15/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <script src="libs/mark.js-8.11.1/mark.min.js"></script>
+    <link href="libs/xaringanExtra-search-0.0.1/search.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-search-0.0.1/search.js"></script>
+    <script>window.addEventListener('load', function() { window.xeSearch = new RemarkSearch({"position":"bottom-left","caseSensitive":false,"showIcon":true,"autoSearch":true}) })</script>
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/styles.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: middle, center, title-slide
+
+.title[
+# Statistical Models
+]
+.subtitle[
+## Data Visualization
+]
+.author[
+### Johan Larsson
+]
+.institute[
+### The Department of Statistics, Lund University
+]
+
+---
+
+
+
+
+## Statistical Models
+
+most of our work so far: **exploratory** analysis
+
+but for analysis we often also want **diagnostic**,
+**prediction**, and **estimate plots**
+
+--
+
+.pull-left[
+
+For very simple models, `geom_smooth()` may be sufficient.
+
+
+```r
+ggplot(cars, 
+       aes(speed, dist)) +
+  geom_point() +
+* geom_smooth(method = "lm")
+```
+]
+
+.pull-right[
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="statistical-models_files/figure-html/unnamed-chunk-1-1.png" alt="Ordinary least squares regression visualized for speed and stopping distance of cars." width="345.6" /&gt;
+&lt;p class="caption"&gt;Ordinary least squares regression visualized for speed and stopping distance of cars.&lt;/p&gt;
+&lt;/div&gt;
+]
+
+---
+
+## Broom
+
+More complicated models usually call for more control.
+
+[broom](https://broom.tidymodels.org/) is a great tool for generating **tidy** output
+from models.
+
+
+```r
+library(broom)
+
+fit &lt;- lm(mpg ~ disp, data = mtcars)
+*augment(fit)
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; .rownames &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; mpg &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; disp &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; .fitted &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; .resid &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; .hat &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; .sigma &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; .cooksd &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; .std.resid &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mazda RX4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 23.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.042 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.009 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.630 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mazda RX4 Wag &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 23.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.042 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.009 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.630 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Datsun 710 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 22.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 108 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 25.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.35 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.063 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.28 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.019 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.746 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Hornet 4 Drive &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21.4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 258 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 19.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.43 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.033 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.27 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.010 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.761 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+## Case Study: Fertility in Switzerland
+
+
+```r
+# dichotomize the Catholic variable
+swiss2 &lt;- 
+  mutate(
+    swiss,
+    Catholic = ifelse(Catholic &gt; 50, "Catholic", "Protestant")
+  )
+
+# fit the linear model
+fit &lt;- lm(Fertility ~ ., data = swiss2)
+```
+
+
+```r
+# get some summary statistics with broom::glance()
+glance(fit)
+```
+
+&lt;table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; r.squared &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; adj.r.squared &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; sigma &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; statistic &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p.value &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; df &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; logLik &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; AIC &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; BIC &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; deviance &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; df.residual &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; nobs &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.671 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.631 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.59 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -159 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 331 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 344 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2362 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 41 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 47 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+### Diagnostic Plots
+
+Visualizations are great for diagnosing models!
+
+for `lm()` models usually need only standard `plot()` method
+
+.pull-left[
+#### Residual Plot
+
+useful standard diagnostic plot
+
+
+```r
+aug &lt;- augment(fit)
+
+ggplot(aug, 
+       aes(.fitted, 
+           .std.resid)) +
+  geom_hline(yintercept = 0, 
+             lty = 2) +
+  geom_point()
+```
+]
+
+.pull-right[
+&lt;img src="statistical-models_files/figure-html/unnamed-chunk-7-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+### Coefficient Plots
+
+Models often estimate parameters: linear regression fits return **coefficients**.
+
+Use `broom::tidy()` to extract summary statistics from the fit.
+
+
+```r
+tidy(fit, conf.int = TRUE)
+```
+
+&lt;table class="table" style="font-size: 20px; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption style="font-size: initial !important;"&gt;Output from broom::tidy().&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; term &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; std.error &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; statistic &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p.value &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; conf.low &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; conf.high &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 73.573 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11.626 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.33 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 50.094 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 97.052 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Agriculture &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.157 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.074 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.041 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.308 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.007 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Examination &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.376 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.279 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1.34 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.186 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.940 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.188 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Education &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.799 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.198 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4.04 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1.200 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.399 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; CatholicProtestant &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -6.009 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.306 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1.82 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.076 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -12.685 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.667 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Infant.Mortality &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.164 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.404 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.88 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.006 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.349 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.979 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+easy to pipe the `broom::tidy()` output into ggplot2 to create coefficient
+plots
+
+
+```r
+tidy(fit, conf.int = TRUE) %&gt;%
+  filter(term != "(Intercept)") %&gt;%
+  ggplot(aes(estimate, term)) +
+    geom_vline(xintercept = 0, lty = 2) +
+    geom_point() +
+    geom_linerange(aes(xmin = conf.low, xmax = conf.high))
+```
+
+&lt;img src="statistical-models_files/figure-html/unnamed-chunk-10-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+alternative: use `GGally::ggcoef()` directly on `fit`
+
+---
+
+### Prediction Plots
+
+first need to create a table of values to predict for
+
+`tidyr::expand()` generates combinations of variables in dataset.
+
+
+```r
+new_data &lt;-
+  expand(
+    swiss2, 
+    Agriculture = median(Agriculture), 
+    Examination = median(Examination),
+*   Education = full_seq(Education, 2, 1),
+*   Catholic,
+    Infant.Mortality = median(Infant.Mortality)
+  )
+```
+
+&lt;table class="table" style="font-size: 20px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; Agriculture &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Examination &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Education &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Catholic &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Infant.Mortality &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 54.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Catholic &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 54.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Protestant &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 54.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Catholic &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 54.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Protestant &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+Augment new data with predictions from the model using `broom::augment()`.
+
+
+```r
+aug &lt;- augment(fit, newdata = new_data, se_fit = TRUE)
+```
+
+
+&lt;table class="table" style="font-size: 20px; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption style="font-size: initial !important;"&gt;Predicted values, standard errors&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; Agriculture &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Examination &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Education &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Catholic &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Infant.Mortality &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; .fitted &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; .se.fit &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 54.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Catholic &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 81.5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.48 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 54.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Protestant &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 75.5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.99 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 54.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Catholic &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 79.9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.17 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 54.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Protestant &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 73.9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.78 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 54.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Catholic &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 78.3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.88 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 54.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Protestant &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 72.3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.65 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+then plot the predictions
+
+
+```r
+ggplot(aug, aes(Education, .fitted, 
+                fill = Catholic, color = Catholic)) +
+    geom_ribbon(aes(ymin = .fitted - .se.fit,
+                    ymax = .fitted + .se.fit),
+                color = "transparent",
+                alpha = 0.2) +
+    geom_line()
+```
+
+&lt;img src="statistical-models_files/figure-html/unnamed-chunk-15-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Predictions Across Two Numeric Variables
+
+Heatmaps (`geom_tile()`) allow us to vary one more variable.
+
+
+```r
+# create some new data to predict on
+new_data2 &lt;-
+  expand(
+    swiss2, 
+    Agriculture = median(Agriculture), 
+    Examination = median(Examination),
+*   Education = full_seq(Education, 2, 1),
+*   Catholic,
+*   Infant.Mortality = full_seq(Infant.Mortality, 1, 1)
+  )
+
+# augment with predictions
+aug2 &lt;- augment(fit, newdata = new_data2)
+```
+
+---
+
+
+```r
+ggplot(aug2, aes(Education, Infant.Mortality, fill = .fitted)) +
+  geom_tile() +
+  facet_wrap(vars(Catholic)) +
+  scale_fill_viridis_c() +
+  labs(fill = "Fertility")
+```
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="statistical-models_files/figure-html/unnamed-chunk-17-1.png" alt="Prediction heatmaps for fertility across variables examination, agriculture, and religion." width="720" /&gt;
+&lt;p class="caption"&gt;Prediction heatmaps for fertility across variables examination, agriculture, and religion.&lt;/p&gt;
+&lt;/div&gt;
+
+
+---
+
+## Good Practices
+
+- Start by tyding your data.
+- Explore the data with visualizations (and other summaries)
+- Spend ample time visualizing model diagnostics and predictions.
+- Use graphics **liberally** when presenting models.
+- Visualizations are easier to read than tables, but sometimes 
+  the exact numbers are also important.
+  
+--
+
+## Tidymodels
+
+.pull-left-60[
+Check out [tidymodels](https://tidymodels.org/) if you want to
+learn more about statistical modeling inside the tidyverse.
+]
+
+.pull-right-40[
+&lt;img src="images/tidymodels.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+]
+
+
+&lt;!-- --- --&gt;
+
+&lt;!-- ## References --&gt;
+
+
+&lt;!-- ```{r, results = "asis", echo=FALSE} --&gt;
+&lt;!-- PrintBibliography(bib) --&gt;
+&lt;!-- ``` --&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

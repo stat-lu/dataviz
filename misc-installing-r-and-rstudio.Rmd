@@ -1,7 +1,6 @@
 ---
 title: "Installing R and R Studio"
 author: "Johan Larsson"
-#date: "9/4/2020"
 output:
   html_document:
     toc: false
@@ -42,6 +41,9 @@ Windows
 Mac (OS) X
 : Click on *Download R for (Mac) OS X*, then under "Latest release"
   click on *R-X.X.X.pkg*.
+
+After this, you simply run the file you downloaded and follow the installation
+guide.
 
 ## R Studio
 

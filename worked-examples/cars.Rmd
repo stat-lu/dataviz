@@ -1,0 +1,601 @@
+---
+title: "Worked Example: Cars"
+author: "Johan Larsson"
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    highlight: pygments
+    global_numbering: true
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.width = 5,
+  fig.height = 4,
+  dev = "png"
+)
+options(scipen = 999)
+```
+
+# Installing Tidyverse
+
+If you haven't done so yet, you need to install the tidyverse collection
+of packages. To do so, simply call the following line.
+(Note that this will install several R-packages and
+take a lot of time if you haven't already installed these packages.)
+
+```{r, eval = FALSE}
+install.packages("tidyverse")
+```
+
+If you already have **tidyverse** installed, make sure that all of your packages
+are up to date, either by calling
+
+```{r, eval = FALSE}
+update.packages(ask = FALSE) # ask = FALSE is to avoid being prompted
+```
+
+or by going to the **Packages** tab in the lower-right R Studio pane and clicking
+on **Update**.
+
+# Importing Data into R
+
+R is extremely versatile when it comes to handling data of different
+formats and types. Much of this functionality is made available via R-packages,
+which let you import data into R from Microsoft Excel, Stata, SAS, or SPSS files in
+addition to standard file types such as comma-separated files (`.csv`)
+and tab-separated files (`.tsv`). In this course, most of the data sets we use will be
+available directly through R and R packages, but knowing how to import data directly is a
+useful skill.^[And this might very well come in handy for your project, where you will
+choose your data yourself.]
+
+First we need to find some data to import. Download the US Cars dataset
+that we have provided in the git repository for the course. The
+data is available
+[here](https://raw.githubusercontent.com/stat-lu/dataviz/main/data/us_cars.csv)
+(this link may not work if you're browsing this page from
+inside Canvas). Alternatively, you can call following lines of code to
+download the dataset.
+
+```{r}
+# check that we have a data folder in our working directory, and if not create
+# one
+if (!dir.exists("data")) {
+  dir.create("data")
+}
+
+# download the dataset to data/us_cars.csv
+download.file(
+  "https://raw.githubusercontent.com/stat-lu/dataviz/main/data/us_cars.csv",
+  file.path("data", "us_cars.csv"),
+  mode = "wb"
+)
+```
+
+Now we load this dataset into R via the **readr** package (part of tidyverse).
+This is a comma-separated file (note the file extension), so we use the
+`read_csv()` function^[There is a `read_csv2()` function as well, which is for
+semicolon-separated data.]
+
+```{r}
+library(tidyverse)
+us_cars <- read_csv(file.path("data", "us_cars.csv"))
+```
+
+When you call `read_csv()`, the **readr** package helpfully prints a message to your console
+with information about how the columns in the dataset were formatted when you
+imported the data. Take a look at this information---does everything look
+okay?
+
+An alternative to this approach is to use **readr** to read data directly
+from an URL into R. To do so, you simply use the URL instead of the file name
+in the call to `read_csv()`, like this.
+
+```{r}
+us_cars <- read_csv(
+  "https://raw.githubusercontent.com/stat-lu/dataviz/main/data/us_cars.csv")
+```
+
+## Taking a Glimpse
+
+Whenever you start working with new data, always start by taking a look at the
+data in raw form. The best first step is usually just to print the data to the
+console or by calling `head()` (to see the first few lines).
+
+```{r}
+us_cars
+```
+
+If you want to see more rows of the data than are printed by default, try to call
+`print()` with the `n` argument set to the number of rows you want, or use
+`head()` in the same way.
+
+Another useful function, particularly when there are many columns in the
+dataset, is `glimpse()`.
+
+```{r}
+glimpse(us_cars)
+```
+
+# Wrangling
+
+## Pivoting
+
+One of the most important data wrangling tools when it comes to data
+visualization is *pivoting*, which can be used to transform messy data into
+tidy data, which in turn will make visualization much easier for us.
+
+Let's see what this can entail by looking at a simple dataset, `table2` from
+the **tidyr** package, which contains information on Tuberculosis cases
+in a few countries from 1999 and 2000.
+
+```{r}
+table2
+```
+
+This data is *not* tidy---but why not? Take a moment to consider this for
+yourself before moving on.
+
+Did you figure it out? The problem is that `cases` and `population` are two
+different variables but don't have their own separate columns. To fix this, we
+need to reshape the data by pivoting it to a wider form using `pivot_wider()`.
+Before you continue, take a look at the documentation for the function by
+calling `help(pivot_wider)` (or `?pivot_wilder`) in R and see if you can make
+sense of the manual entry for the function.
+
+The function has many arguments but we only need to concern ourselves
+with `data`, `names_from`, and `values_from` right now. `names_from` should
+indicate which columns store the names of the variables we want to pivot,
+while  `values_from` should contain those variables' values. Putting this
+together, we get the following.
+
+```{r}
+table2_tidy <-
+  pivot_wider(
+    table2,
+    names_from = "type",
+    values_from = "count"
+  )
+
+table2_tidy
+```
+
+Now it's easy to visualize this data!
+
+```{r, fig.cap = "Tubercolosis cases in Afghanistan, Brazil, and China in 1999 and 2000"}
+ggplot(table2_tidy, aes(year, cases, fill = country)) +
+  geom_col(position = "dodge")
+```
+
+Sometimes it's necessary to pivot in the other direction: from wide to long, in
+which case we need to use `pivot_longer()` instead. `pivot_longer()` is exactly
+the inverse of `pivot_wider()`. Just like you did for `pivot_wider()`, read the
+documentation for `pivot_longer()` and then see if you can figure out by
+yourself how to pivot `table2_tidy` back into `table2`.
+
+When we use `pivot_longer()` we need to tell R what columns we want to stack,
+which we do through the `cols` argument. Here we simply specify the
+names of the columns (cases and population), and then use `names_to` and
+`values_to` with whatever names we think are appropriate.
+
+```{r}
+table2_messy <-
+  pivot_longer(
+    table2_tidy,
+    cols = c("cases", "population"),
+    names_to = "type",
+    values_to = "count"
+  )
+```
+
+## Manipulation
+
+In the tidyverse vocabulary, *filtering* refers to the process of selecting a
+subset of rows (observations if the data is tidy) from your dataset, whereas
+*selecting* means selecting a subset of columns (variables if the data is tidy).
+We use the aptly named `filter()` and `select()` respectively for these tasks.
+
+## Filtering
+
+`filter()` is used on a dataset (tidyverse functions typically always
+take data as its first argument) together with a number of logical expressions
+that specify which rows to keep in the dataset. Recall that a logical expression
+is a binary expression that relates the left-hand side to the right-hand side
+in some way, for instance to check equality or inequality, like so:
+
+```{r}
+c(1, 2, 3) < c(0.2, 0.5, 3.8)
+1:3 == 3:1
+c("a", "b", "c") %in% c("a", "c")
+```
+
+Let's say that we only wanted to look at cars from Tennessee from years
+2015 and onward. Then we can use `filter()` in the following way.
+
+```{r}
+filter(us_cars, state == "tennessee", year >= 2015)
+```
+
+## Selecting
+
+If you think of filtering as slicing a dataset horizontally, `select()` does the
+opposite, slicing a dataset *vertically*, by selecting a subset of the columns.
+The interface is similar to `filter()`'s. You begin with the data and then
+through various arguments select which columns it is you want to keep.
+
+There is a plethora of possibilities when it comes to `select()`. We'll try to
+cover some of the most common ones here, but see the documentation for
+`select()` if you want to learn more.
+
+The simplest option is simply to list the columns you want to keep.
+
+```{r}
+select(us_cars, brand, "model") # notice that you may omit quotation marks
+```
+
+When using `select()`, it's actually possible to change the names of the columns
+by using a `value = name` pair, like this:
+
+```{r}
+select(us_cars, vintage = vin, "price_in_dollars" = price)
+```
+
+If you instead want to drop a particular column, you just preface it with `-`
+or `!`.
+
+```{r}
+select(us_cars, !brand, -model)
+```
+
+Notice that, when you only have negative indexing, the function assumes that you
+want to keep all of the remaining columns.
+
+It can, however, be tedious to manually select every column, in which case you
+may use the `:` operator to specify a range instead.
+
+```{r}
+select(us_cars, title_status:state)
+```
+
+Finally, it can sometimes be useful to match columns by name in some way, for
+instance if a number of columns that you want to contains a specific word. To be
+able to do this, **tidyr** provides a set of helper functions, such as
+
+* `starts_with()`,
+* `ends_with()`, and
+* `contains()`.
+
+The manual entry for `select()` contains several examples using these helper
+functions, as does the individual entries for each function.
+
+Consider taking a little time to play around with `select()` and its helper
+functions on the `us_cars` dataset.
+
+## Mutating
+
+Frequently when visualizing data you will want to transform that data in some
+way. Perhaps you're more interested in the proportion than a number, want to
+convert a value to a different unit or you just need to change the names of some
+factor variables. In this cases, `mutate()` is your best friend.
+
+Let's start by example. Say that we want to convert the price of the cars
+in the `us_cars` dataset to Swedish kronor instead. Here's how to do this:
+
+```{r}
+mutate(us_cars, price = price*8.92)
+```
+
+In this instance we simply overwrote the `price` variable with a new value,
+but mutate can also be used to create new variables.
+
+```{r}
+mutate(us_cars, price_sek = price*8.92)
+```
+
+Inside `mutate()`, you can basically use any operation that would work on a
+typical vector in R. You can, for instance, convert between different vector
+types, or use arbitrary functions (as long as they return a new vector).
+
+```{r}
+mutate(
+  us_cars,
+  year = as.integer(year),          # convert year from a double to an integer
+  state = toupper(state),           # capitalize state names
+  price = round(price, -2),         # round to hundreds
+  brand = fct_lump_prop(brand, 0.1) # lump together low-frequent brands
+)
+```
+
+## Rename
+
+When you produce visualizations, you need to make sure that annotation in the
+plot, such as the axis titles, are legible. Many datasets, however, have
+variable (column) names that are not. You *can* always fix this when you
+set up your plot, but if you're producing visualizations it may become
+tedious to rename the axes with every plot.
+
+That is why it is often useful to rename your variables during the
+data wrangling step. This also has the benefit of making your data wrangling
+steps more readable. There are multiple ways to rename variables with
+the tidyverse approach. We've already seen that you can use `select()` to
+rename variables, but if you only want to rename and not select, it's
+you should instead use `rename()`.
+Just as with `select()`, you use a `new_name = old_name` pair to do so. Let's
+rename "vin" to "vintage".
+
+```{r}
+us_cars %>%
+  rename(vintage = vin)
+```
+
+You can have spaces in your variable names if you want to, but this is bad
+practice because including special characters
+like `%`, `&`, `$` in variable names can have undesired side-effects that you
+do best to avoid.
+
+## Grouping, Mutating, and Summarizing
+
+Another common operation in data-visualization is to group and summarize data.
+This is useful when you want to visualize a summary statistic rather than the
+raw data. Before taking this route in data visualization, however, make it a
+habit to ask yourself whether this aggregation is needed. If you are able to
+craft a visualization where you showcase **all** your data without sacrificing
+the communicative properties of the visualization, then this is always a
+better alternative.
+
+## Grouping
+
+To group data using the tidyverse methodology, we use `group_by()`
+(from **dplyr**). This is a very simple function. You simply list all the
+variables (columns) that you want to group by. Let's group the `us_cars` dataset
+by country (USA or Canada).
+
+```{r}
+group_by(us_cars, country)
+```
+
+Okay, so not much happened! If you look closely, however, you'll see that this
+tibble is now **grouped**---but what does this mean? Well, the truth is that
+grouping is only useful when combined with functions that modify the data,
+especially `summarize()`.
+
+## Summarizing
+
+`summarize()` takes a dataset---usually a *grouped* dataset---and a set of
+functions that takes vectors as input and returns summary statistics,
+such as
+
+* `mean()`,
+* `median()`,
+* `sum()`, or
+* `quantile(..., probs = 0.25)`.
+
+Let's see how this looks in practice by computing the median and mean prices
+of cars in USA and Canada.
+
+```{r}
+us_cars_grouped <- group_by(us_cars, country)
+
+summarize(
+  us_cars_grouped,
+  median_price = median(price),
+  mean_price = mean(price),
+  number_of_cars = n() # captures the size of the group
+)
+```
+
+Perfect! Note the use of the `n()` function that counts the number of
+observations in each group. In this case, it highlights the problem that
+can occur when we group, summarize, and plot, namely, that we lose information
+about the size of the groups. It would not be reasonable to
+draw conclusions about cars from Canada based on only seven observations.
+
+# Missing Data
+
+Missing data is an issue that is prevalent in much of the real-life data
+that you may encounter, particularly when it comes to data involving
+people. Dealing with missing data is an important topic but, as we said in
+the introduction, it is a topic that lies mostly
+outside the scope of this course. We do, however, recommend that you always take
+time to consider the reasons for why data may be missing and for the
+most part make it a habit to include missing data in your visualizations
+instead of simply removing it.
+
+What you do need to know, however, is that missing data (coded as `NA` in R)
+may interfere with your work in R. Let's say that you're working with
+sleep data on mammals using the `msleep` dataset from **gplot2**, and want
+to compute the mean number of hours in REM sleep:
+
+```{r}
+mean(msleep$sleep_rem)
+```
+
+The result here, `NA`, is a consequence of the presence of `NA` values in
+the column `sleep_rem` in `msleep` and this behavior is actually the default
+for many functions in R. To deal with this, you have
+two options: 1) directly remove the observations with `NA` values from the data
+set using `drop_na()` or 2) set `na.rm = TRUE` in the call to `mean()`, which
+excludes the `NA` observations in that particular function call.
+
+The second option is usually the best choice, since it means that
+you can still keep the `NA` values around when you want to produce
+visualizations, but in this course we'll sometimes do `na_drop()` to
+make working with the datasets a little bit smoother.
+
+# Pipes
+
+The pipe operator, `%>%`, is a staple in data science workflows because
+it makes the process of managing data much more manageable, modular, and
+readable. The pipe operator can be hard to get to grips with at first, but
+once you do, you will never want to go back.
+
+The pipe operator takes an object on its left-hand side (or line above)
+and *pipes* it through to an object (almost exclusively a function) on the
+right-hand side. The object on the left-hand side will enter
+the function on the right hand side as *the first argument of that function*,
+replacing (pushing back) any other argument that's already there.
+
+Let's say that we have the following function, `my_frac()`, which takes
+arguments `x` and `y` and returns `x/y`.
+
+```{r}
+my_frac <- function(x, y) {
+  x / y
+}
+```
+
+Now we can use this function on two numbers, like so:
+
+```{r}
+my_frac(2, 5)
+```
+
+If we were to do this with the pipe operator instead, it would look like this:
+
+```{r}
+# use the pipe operator
+2 %>% my_frac(5) # equivalent to my_frac(2, 5)
+
+# or we can do
+2 %>%
+  my_frac(5)
+```
+
+You're probably thinking that this doesn't seem very useful at all, given
+that we've now spent more code to accomplish exactly what `my_frac()`
+already accomplished very well without the pipe. Where the pipe operator
+comes into its own, however, is when we need to chain multiple functions.
+
+## Case Study using Pipes
+
+Let's say that we want to take our `us_cars` dataset and perform a set of
+options, namely:
+
+1. filter out all cars that are black,
+2. group cars by `state`,
+3. compute the mean mileage per state,
+4. sort the states by mean mileage, and
+5. plot a simple bar chart of state versus mean mileage.
+
+There are more or less three ways to do this:
+
+1. use intermediary objects,
+2. use function composition, or
+3. use pipes.
+
+## Intermediate Objects
+
+To solve this by storing temporary objects, here's what we would do:
+
+```{r}
+black_cars <- filter(us_cars, color == "black")
+black_cars_groupedby_states <- group_by(black_cars, state)
+black_cars_state_mileage <-
+  summarize(black_cars_groupedby_states, mean_mileage = mean(mileage))
+arrange(black_cars_state_mileage, mean_mileage)
+```
+
+The largest downside to this approach is that you're cluttering
+the workspace with names of intermediary objects that you need to keep track of
+and name with meaningful names, or alternatively name by incrementing a
+counter such as `cars1`, `cars2`, etc. This latter approach is actually
+what you'll often end up doing, and (at least for me) often leads to
+mixing up the counters and ending up with the wrong results.
+
+Storing intermediate results is sometimes precisely the right way to go
+about this, especially when you will later use the intermediary result,
+but in this case it leads to code that is hard to read and manage.
+
+## Function Composition
+
+An alternative is to use composite functions for our call. The code
+above then looks like this.
+
+```{r}
+arrange(
+  summarize(
+    group_by(
+      filter(us_cars, color == "black"),
+      state
+    ),
+    mean_mileage = mean(mileage)
+  ),
+  mean_mileage
+)
+```
+
+Code like this is incredibly hard to manage (and read). Simply keeping
+track of which argument belongs to which function is strenuous in itself.
+On top of that, imagine that you want to swap order of one of these operations
+or add another step somewhere, and it's easy to see why this is not an
+attractive approach.
+
+## Pipes
+
+With pipes, we get the following result:
+
+```{r}
+us_cars %>%
+  filter(color == "black") %>%
+  group_by(state) %>%
+  summarize(mean_mileage = mean(mileage)) %>%
+  arrange(mean_mileage)
+```
+
+The code is clean and expressive. If we want to switch the order of the steps
+or add another, it's only a matter of adding or removing a row of the
+code. On top of that, you don't need to name any intermediate objects (but
+remember that doing so is sometimes actually desirable).
+
+The **tidyverse** is designed specifically with the pipe operator in mind. The
+reason that it works so well with the tidyverse is that virtually all of the
+main functions in the tidyverse takes a data set as the first argument, so
+piping together functions like this becomes very natural. The base R functions
+and many other packages out there don't necessarily abide by this principle,
+however, so make sure you know what your functions are doing when you're using
+pipes or you may end up with unexpected (and undesirable) results.
+
+If you want to mix tidyverse functions with functions from packages that work
+differently, you can still do this with pipes, but then need to use a special
+`.` argument, which is a placeholder for the object that you are piping. We
+will not cover it here because it is not needed in the course, but if you are
+interested we recommend to take a look at [the piping
+section](https://r4ds.had.co.nz/pipes.html) of the R for Data Science book.
+
+Note that the pipe operator that we have so far (`%>%`) covered is not part of
+the base R distribution but is, however, included via all of the tidyverse
+packages. So simply calling `library(tidyverse)` or `library(dplyr)` will get
+you access to it. 
+
+## The Native Pipe Operator `|>`
+
+R has actually recently^[Since version 4.1] implemented its own native pipe
+operator, which you don't need any additional packages to use. It is written
+as `|>`. So in the last example we covered, you may as well have written
+the first two lines as the following.
+
+```{r}
+us_cars |>
+  filter(color == "black")
+```
+
+The native pipe operator does not work with the `.` 
+
+For all purposes that we use it for in this course, you may as
+well use the native pipe operator if you prefer to. `%>%` has a few extra
+tricks up its sleeve, but you will only find need for them in advanced use
+cases.
+
+Have fun piping in the tidyverse!
+
+# Source Code
+
+The source code for this document is available at
+<https://github.com/stat-lu/dataviz/blob/main/worked-example-working-with-data-in-r.Rmd>.

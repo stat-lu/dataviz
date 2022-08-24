@@ -24,16 +24,16 @@ This page contains slides for the courses STAE04 and DABN19: Data Visualization
 
 ### Worked Examples
 
-* [Hello, World!](worked-example-hello-world)
-* [Cars](worked-example-cars)
-* [First Steps with ggplot2](worked-example-first-steps-with-ggplot2)
-* [D-Rex](worked-example-drex)
-* [Air Quality](worked-example-airquality)
-* [Arthritis](worked-example-arthritis)
-* [Plants](worked-example-plants)
-* [Chile Plebiscite](worked-example-chile-plebiscite)
-* [Heavy Metal](worked-example-heavy-metal)
-* [Gapminder](worked-example-gapminder)
+* [Hello, World!](worked-examples/hello-world)
+* [Cars](worked-examples/cars)
+* [First Steps with ggplot2](worked-examples/first-steps-with-ggplot2)
+* [D-Rex](worked-examples/drex)
+* [Air Quality](worked-examples/airquality)
+* [Arthritis](worked-examples/arthritis)
+* [Plants](worked-examples/plants)
+* [Chile Plebiscite](worked-examples/chile-plebiscite)
+* [Heavy Metal](worked-examples/heavy-metal)
+* [Gapminder](worked-examples/gapminder)
 
 ### Submission Template
 

@@ -1,0 +1,366 @@
+---
+title: "Worked Example: Chile Plebiscite"
+author: "Johan Larsson"
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    highlight: pygments
+    global_numbering: true
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.width = 5,
+  fig.height = 4,
+  dev = "png"
+)
+options(scipen = 999)
+```
+
+# The 1988 Chilean Referendum
+
+The [1988 Chilean national plebiscite](https://en.wikipedia.org/wiki/1988_Chilean_national_plebiscite)
+ended the reign of Chile's then president (and former dictator) August Pinochet.
+Those in opposition to extend Pinochet's rule for another eight
+years won with 56% of the vote. In this worked example we'll try to probe
+the results of this plebiscite (referendum) by looking at a survey of voting
+intentions conducted a couple of months prior to the election.
+
+The dataset is available in the
+[carData](https://CRAN.R-project.org/package=carData) package. Start by
+installing it (if you haven't already).
+
+```{r, eval = FALSE}
+# install the carData package
+install.packages("carData")
+```
+
+Then load the dataset directly into your workspace by calling the
+`data()` function as shown next.
+
+```{r}
+data("Chile", package = "carData")
+```
+
+There are eight variables in this dataset:
+
+`region`
+: A factor with levels: C, Central; M, Metropolitan Santiago area; N, North; S,
+  South; SA, city of Santiago.
+
+`population`
+: population size of respondent's community
+
+`sex`
+: a factor with levels: F, female; M, male
+
+`age`
+: age (in years)
+
+`education`
+: a factor with levels (note: out of order): P, Primary; PS, Post-secondary;
+  S, Secondary
+
+`income`
+: monthly income (in Pesos)
+
+`statusquo`
+: scale of support for the status quo
+
+`vote`
+: a factor with levels: A, will abstain; N, will vote no (against Pinochet);
+  U, undecided; Y, will vote yes (for Pinochet).
+
+# Wrangling
+
+Before we start visualizing this dataset, we need to format it properly.
+The names of the variables are fine, but the factor levels are hard to
+decipher. The `education` variable is also not coded as an ordinal variable
+although it should be. We save the new dataset in a new object called `Chile2`.
+
+```{r}
+library(tidyverse)
+
+Chile2 <-
+  Chile %>%
+  as_tibble() %>%
+  mutate(
+    region = recode(
+      region,
+      "C" = "Central",
+      "M" = "Metropolitan Santiago",
+      "N" = "North",
+      "S" = "South",
+      "SA" = "City of Santiago"
+    ),
+    sex = recode(sex, "F" = "Women", "M" = "Men"),
+    education = recode_factor(
+      education,
+      "P" = "Primary",
+      "S" = "Secondary",
+      "PS" = "Post-Secondary",
+      .ordered = TRUE
+    ),
+    vote = recode(
+      vote,
+      "A" = "Abstain",
+      "N" = "No",
+      "U" = "Undecided",
+      "Y" = "Yes"
+    )
+  )
+
+Chile2
+```
+
+That looks much better.
+
+Now let's start by simply checking what the people in this survey actually
+intended to vote.
+
+```{r}
+ggplot(Chile2, aes(vote)) +
+  geom_bar()
+```
+
+As we can see the referendum seem to be engaging much of the population under
+study. The no voters lead by a slim margin here, but there are many who are
+yet undecided.
+
+# Age and Voting Intentions
+
+Let's try to see if we can flesh out these differences more in detail. We
+begin by studying age and voting intentions. Our first attempt is
+a proportional stacked density plot here, to
+focus on the proportions of voting intentions within each age group.
+
+But before we do so, we will switch to a better default color palette for
+categorical (discrete) data, since the default palette in ggplot2 is
+really not quite ideal. A good choice could for instance
+be the "Accent" palette from
+[RColorBrewer](https://CRAN.R-project.org/package=RColorBrewer),
+but to spice it up we'll go with a color palette inspired from
+The Darjeeling Limited by Wes Anderson that is available
+via the [wesanderson](https://github.com/karthik/wesanderson) package.^[Feel
+free to replace the palette with your favorite Wes Anderson movie palette.
+How about Moonrise Kingdom?]
+
+```{r}
+# install.packages("wesanderson")
+library(wesanderson)
+
+darjeeling_pal <- function(...) {
+  scale_fill_manual(
+    ...,
+    values = wes_palette("Darjeeling2"),     
+    na.value = "grey"
+  )
+}
+
+# this option replaces the default palette for all future ggplots
+options(ggplot2.discrete.fill = darjeeling_pal)
+```
+
+
+```{r, fig.cap = "Voting intentions and age.", fig.width = 6, fig.height = 3.2}
+ggplot(Chile2, aes(age, fill = vote)) +
+  geom_density(position = "fill", col = "white")
+```
+
+This is probably quite fine as a comparison between the different
+voting categories, but does make it very hard to see the *actual* age
+distribution within each category. An alternative could be to use
+the [ggridges](https://CRAN.R-project.org/package=ggridges) package, which
+lets us plot shifted density plots.
+
+```{r, fig.cap = "Distributions of age and voting intentions.", fig.width = 6, fig.height = 3.4}
+# install.packages("ggridges")
+library(ggridges)
+
+ggplot(Chile2, aes(age, vote, fill = vote)) +
+  geom_density_ridges2() +
+  theme(legend.position = "none") # we don't need the legend here
+```
+
+All of the distributions are to some extent right-skewed^[The nomenclature for
+skewness is confusing. When a distribution is said to be skewed to the
+right, it means that the *tail* is on the right side, even though
+it would probably make more sense to refer to the center of the distribution
+(and say that it was then left-skewed), but we need to stick to convention
+here. For more information, go to <https://en.wikipedia.org/wiki/Skewness>.]
+The problem with this plot, however, is that it does not really answer the
+question that we're interested in, which is to try to sift out to
+which degree various voter groups voted for the different options.
+
+Taken together, it's clear that those who are older are more prone to vote
+yes for another term form Pinochet, while no voters as well as people
+who intend to abstain are more frequent among the younger voters. One thing
+that is devious about these visualizations is that the missing data seems
+more prevalent from the plot types than is in fact the case. In the first plot,
+this happens because the `NA` values are relatively more frequent among
+the older ages and this part of the chart is enlarged in the proportional
+version of the chart due to fact that this age category is in minority. In
+the second, **ggridges** version, this happens simply because each geom
+shows the distribution within each category and all sum up to the same
+area.
+
+# Age and Sex
+
+We now continue to build our plot by introducing information on sex
+as well. The best way to do this is to use facets. When you are faceting
+on a single variable, you should mostly use `facet_wrap()` since it
+works better than `facet_grid()` when there are many levels.
+
+```{r, fig.cap = "Voting intentions across the ages and sexes.", fig.width = 7}
+ggplot(Chile2, aes(age, fill = vote)) +
+  geom_density(position = "fill", col = "white") +
+  geom_rug(alpha = 0.05) + # display marginal distribution
+  facet_wrap("sex")
+```
+
+Looking at this plot, it seems like there are a few differences between men
+and women, for instance that more women then men seem poised to vote
+yes among the younger population.
+
+Note that we've
+also included a rug geom in our plot (via `geom_rug()`), which displays
+the *marginal* distribution for sex. Rugs (or other geoms that display
+marginal distributions) are a good idea when you use proportional density
+plots since it indicates for the reader (and you)
+when they (or you) should be skeptical about the accuracy of the results.
+
+We can take this even one step further, by involving our variables
+on education, income, or population. Let's see if education matters.
+
+```{r, fig.cap = "Voting intentions across age, sex, and educational attainment.", fig.width = 8}
+Chile2 %>%
+  drop_na(education) %>% # very small groups
+  ggplot(aes(age, fill = vote)) +
+  geom_density(position = "fill", col = "white") +
+  geom_rug(alpha = 0.05) +
+  facet_grid(sex ~ education)
+```
+
+Education certainly seems to matter for voting intentions. You can
+for instance spot this among the youngest voters, where those with a
+secondary level of education seems less prone to vote yes and more uncertain
+too. Interestingly, the addition of education also seems too exacerbate
+the differences between the sexes in the younger population.
+
+One thing we really need to be very careful about is that we now have very
+little data in some regions of the plot, notably the older age groups
+that have post-secondary education (especially the women),
+which seem to be very few by considering
+the rug plot. For an even more clear demonstration of this, see the
+following plot where we've switched to a stacked non-proportional density
+plot.
+
+```{r, fig.cap = "Voting intentions across age, sex, and educational attainment. A standard stacked density plot.", fig.width = 8}
+Chile2 %>%
+  drop_na(education) %>% # very small groups
+  ggplot(aes(age, fill = vote)) +
+  geom_density(position = "stack", col = "white") +
+  facet_grid(sex ~ education)
+```
+
+This means that we should think again about our design. One possibility may be
+to cut age into age groups before plotting or to limit the range of data
+to regions where there are many observations.
+
+# Satisfaction with the Status Quo
+
+The survey also included a question on satisfaction regarding the
+current state of affairs, which is recorded in the `statusquo` variable.
+Let's take a look at this variable across age and region with a simple scatter
+plot.
+
+```{r fig.cap = "A simple (but unsuccessful) attempt to plot the satisfaction with the status quo in Chile against age and region."}
+Chile2 %>%
+  ggplot(aes(age, statusquo)) +
+  geom_point(alpha = 0.5) +
+  facet_wrap("region") +
+  ylab("Support for the Status Quo")
+```
+
+The results are not attractive. There clearly appears to be some kind of
+relationship between age, location, and support for the status quo, but
+this plot fails to make those relationships clear, despite trying to mitigate
+some of the issues of overlapping with opacity.
+
+Our next attempt is to try a hexagonal binning plot instead.
+
+```{r, fig.cap = "A hexagonal binning plot for the Chile survey data.", fig.width = 7, fig.height = 4.8}
+Chile2 %>%
+  ggplot(aes(age, statusquo)) +
+  geom_hex(bins = 10) +
+  facet_wrap("region") +
+  ylab("Support for the Status Quo")
+```
+
+This looks a little better. We now see that there appears to
+be a difference between the various regions and age groups. Support for the
+current regime seems to be weak in the City of Santiago, particularly for
+the younger age group. But there are at least two issues with
+these hexagon plots.
+
+One issue is that they put equal emphasis
+on both of the variables mapped to the x and y axes. When we are primarily
+interested in one of the variables---the support for the status quo here---this
+does not communicate this message effectively. To highlight the distribution
+of the status quo support, instead, it might therefore be more appropriate
+to use a different type of design.
+
+But most importantly, the measure of interest here is really the number of
+observations in each bin as a proportion of the number of observations
+in each region (facet). As it stands, the regions where there are few
+observations now have basically all their bins colored in a single color,
+which is not optimal. We could fix this relatively easily, but because
+of the previously mentioned issue, we'll try something different.
+
+What we'll do is to go back to the ridged density plots. We cut the
+age variable into categories before plotting. To top it off, we
+also try a more minimalist theme (`theme_minimal()`). Finally,
+please make note of the `labeller` argument in `facet_grid()`, which is
+important to remember whenever you have factor levels that are not
+self-explanatory (as here).
+
+```{r, fig.width = 5, fig.height = 7, fig.cap = "Gaussian density plots of satisfaction with the status quo in Chile in 1988 separated on age and region."}
+Chile2 %>%
+  drop_na(age) %>%
+  mutate(`Age group` = cut_interval(age, 4)) %>%
+  ggplot(aes(statusquo, region, fill = region)) +
+  facet_wrap(~`Age group`, nrow = 4, labeller = label_both) +
+  geom_density_ridges() +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(
+    y = "Region",
+    x = "Satisfaction with the Status Quo"
+  )
+```
+
+The plot is now a piece of work that we should be happy with.
+Yes, we did lose some information when we
+cut the age variable into categories, but the final plot does a much better
+job of highlighting the goal of the visualization, which is to show
+satisfaction with the current government in Chile ahead of the upcoming
+plebiscite.
+
+There remains some possible issues here. One is the use of density estimates
+here, which may not be appropriate for all of these categories, particularly
+not the *Metropolitan Santiago* region since it is small. An alternative could
+be to switch to histograms instead.^[See
+<https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html>
+for a guide on how to use histograms instead of density plots.]
+
+# Source Code
+
+The source code for this document is available at
+<https://github.com/stat-lu/dataviz/blob/main/worked-example-chile-plebiscite.Rmd>.

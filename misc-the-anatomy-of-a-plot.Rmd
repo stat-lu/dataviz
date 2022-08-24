@@ -1,13 +1,13 @@
 ---
 title: "The Anatomy of a Plot"
 author: "Johan Larsson"
-#date: "9/4/2020"
 output: 
-  html_document:
+  bookdown::html_document2:
     toc: true
     toc_float: true
     theme: united
     highlight: tango
+    global_numbering: true
 ---
 
 ```{r setup, include=FALSE}
@@ -39,16 +39,18 @@ knitr::include_graphics("images/anatomy.png")
 
 To produce the plot, simply run the following code.
 
-```{r anatomy, fig.cap = "Horsepower and fuel consumtion in miles per gallon for a set of motor cars in the 1974 Motor Trend US magazine.", eval = FALSE, echo = TRUE}
+```{r anatomy, fig.cap = "Horsepower and fuel consumption. Each dot represents a motor car from the 1974 Motor Trend US magazine.", eval = FALSE, echo = TRUE}
 library(tidyverse)
 
 mtcars %>%
   mutate(cyl = as.factor(cyl)) %>%
   ggplot(aes(hp, mpg, color = cyl)) +
   geom_point() +
-  labs(x = "Horsepower",
-       y = "Fuel Consumption (miles per US gallon)",
-       color = "Cylinders")
+  labs(
+    x = "Horsepower",
+    y = "Fuel Consumption (miles per US gallon)",
+    color = "Cylinders"
+  )
 ```
 
 ## The Canvas 
@@ -145,17 +147,3 @@ should also have a title. Some people like to use a main title (and even
 subtitle) for the visualization as well (using `ggtitle()` or 
 `labs(title = "some title")`), but this is usually not necessary and even
 frowned upon in some formal contexts.
-
-## Caption
-
-```{r}
-knitr::include_graphics("images/anatomy-caption.png")
-```
-
-When including a visualization in a report, it should always have a numbered 
-caption. The caption should make the entire visualization self-explanatory.
-Details should be provided in the main body of the text, but given the caption 
-and the visualization, any reader should be able to interpret the plot. 
-
-Note that the captions will be numbered automatically if you use R Markdown; 
-most WYSIWYG editors (such as Microsoft Word) are also able to number figures.

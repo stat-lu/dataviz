@@ -1,13 +1,12 @@
 ---
 title: "Instructions for the Assignments"
 author: "Johan Larsson"
-#date: "9/4/2020"
 output:
-  html_document:
+  bookdown::html_document2:
     toc: true
     toc_float: true
-    theme: united
     highlight: tango
+    global_numbering: true
 ---
 
 ```{r setup, include=FALSE}
@@ -87,99 +86,55 @@ download.file(
 )
 ```
 
-### WYSIWYG
+### WYSIWYG Editors (Office Packages)
 
-If you prefer to use a WYSIWYG editor, use
-`ggplot2::ggsave()` to save your plots to your hard drive and then input them
-manually into your document. Here is a simple example of how to do this:
-
-```{r, eval = FALSE}
-library(ggplot2)
-
-ggplot(mpg, aes(cty, hwy)) +
-  geom_point()
-
-ggsave("filename.png", width = 3, height = 2.3)
-```
-
-It may be tempting to use the built-in plot save function in R Studio, but we
-recommend against this because then you have to resize your figures manually
-each time you want to save the plot.
+If you prefer to use a WYSIWYG editor, please see the Figure Sizing section in
+[the text on figure formatting]() for information on how to export and size
+your figures appropriately.
 
 #### Pros
 
-* You probably already are familiar with Microsoft Word or Google Docs, so
-  you can get going quickly.
+* You probably already are familiar with Microsoft Word or Google Docs, so you
+  can get going quickly.
 
 #### Cons
 
-* Modifying figures is a little bit of a hassle since you need to re-import
-  the figure every time you modify the plot or make changes to its size.
+* Modifying figures is a little bit of a hassle since you need to re-import the
+  figure every time you modify the plot or make changes to its size.
 * When you want (or need) to include code, you need to format it yourself by
-  using a mono-spaced font (such as Courier or Consolas), and will not
-  get syntax highlighting.
+  using a mono-spaced font (such as Courier or Consolas), and will not get
+  syntax highlighting.
 
 ## Detailed Requirements
 
 ### Submissions
 
-You need to submit a PDF with your work. If you'd like to, however, you are also
-free to include `.Rmd` and `.R` files with your submissions containing code to
-reproduce your work. Doing so, however, is not at all obligatory.
+You need to submit a PDF with your work. If you'd like to, however, you are
+also free to include `.Rmd` and `.R` files with your submissions containing
+code to reproduce your work. Doing so, however, is not at all obligatory.
 
 ### Writing
 
 Your report does not need to be verbose but it must be **clear** and
-**coherent**. Use full sentences and describe the steps you take and code you've
-included. Use a walk-through approach, where you guide the reader through the
-report. Someone who has not seen the assignment instructions but with the same
-background as you should be able to read and follow along reasonably well. Do
-not use a question: answer format in your report.
+**coherent**. Use full sentences and describe the steps you take and code
+you've included. Use a walk-through approach, where you guide the reader
+through the report. Someone who has not seen the assignment instructions but
+with the same background as you should be able to read and follow along
+reasonably well. Do not use a question: answer format in your report.
 
 ### Figures
 
-Any figures you include should have descriptive labels and captions. If you are
-using R Markdown, please use the `fig.cap` argument in the R Markdown chunk
-header to provide a caption. Also make use of `fig.width` and `fig.height` to
-control the size of the figures. A code chunk for a figure might look something
-like this:
-
-````
-```{r, fig.cap = "Engine displacement and number of cylinders for 38 popular models of cars from <https://fueleconomy.gov>.", fig.width = 4.2, fig.height = 3.7}`r ''`
-library(tidyverse)
-
-mpg %>%
-  ggplot(aes(cyl, displ)) +
-  geom_point() +
-  labs(x = "Number of Cylinders", y = "Engine Displacement")
-```
-````
-
-```{r, fig.cap = "Engine displacement and number of cylinders for 38 popular models of cars from <https://fueleconomy.gov>.", echo = FALSE}
-library(tidyverse)
-
-mpg %>%
-  ggplot(aes(cyl, displ)) +
-  geom_point() +
-  labs(x = "Number of Cylinders", y = "Engine Displacement")
-```
-
-If you use a WYSIWYG editor, you need to first import your images into the
-editor and then right-click on them and choose `Insert Caption` (or some similar
-command). **Don't use `ggtitle()`, `labs(title = ...)`!**
-
-See [The Anatomy of a
-Plot](https://stat-lu.github.io/dataviz/misc-the-anatomy-of-a-plot) for examples
-and more instruction on how to format your figures.
+Please see [x]() for detailed information about formatting figures.
 
 ### Code
 
-Only include code when you are **instructed** to do so. When you do include
-code, please avoid having it escape into the margin by using multiple lines to
-separate code. Good code style is not a requirement in this course but is
-nevertheless good practice. It might be a good idea to conform to a style guide
-such as [the tidyverse style guide](https://style.tidyverse.org/). R Studio can
-also format code for you if you select it and hit `Cmd/Ctrl + Alt + a`.
+You only need to include code when you are explicitly instructed to do so. When
+you do include code, please avoid having it escape into the margin by using
+multiple lines to separate code. Good code style is not a requirement in this
+course but is nevertheless good practice. It might be a good idea to conform to
+a style guide such as [the tidyverse style
+guide](https://style.tidyverse.org/). R Studio can also format code for you if
+you select it and hit `Cmd/Ctrl + Alt + a`.
 
 ## Peer Review and Examination
 
@@ -204,7 +159,7 @@ additional chance to hand in these after the conclusion of the course.
 
 - Functions in the tidyverse are well-documented. Students who are successful
   at these assignments often make good use of the help files for the various
-  functions. (In RStudio simply place the cursor on the function name and hit
+  functions. (In R Studio simply place the cursor on the function name and hit
   F1).
 - To run code in R Studio inside a R Markdown document, highlight the code and
   hit `Ctrl/Cmd + Enter`. (There is no need to copy it directly into the

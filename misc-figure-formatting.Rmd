@@ -1,0 +1,252 @@
+---
+title: "Formatting Figures"
+author: "Johan Larsson"
+output: 
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    highlight: tango
+    global_numbering: true
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.width = 5,
+  fig.height = 4,
+  dev = "png"
+)
+options(scipen = 999)
+```
+
+
+# Captions
+
+Figures in a text document should always be accompanied by a *caption*: a 
+description (in text) of the visualization. Figure 1 shows an example of 
+a simple caption.
+
+```{r, fig.cap = "Horsepower and fuel consumption. Each dot represents a motor car from the 1974 Motor Trend US magazine."}
+library(tidyverse)
+
+mtcars %>%
+  mutate(cyl = as.factor(cyl)) %>%
+  ggplot(aes(hp, mpg, color = cyl)) +
+  geom_point() +
+  labs(
+    x = "Horsepower",
+    y = "Fuel Consumption (miles per US gallon)",
+    color = "Cylinders"
+  )
+```
+
+## Basics
+
+Captions should, at a minimum, give enough information for the reader to be
+able to understand *reasonably well* what the figure shows. Do not expect every
+reader to have followed along with your text and remembered the details as they
+consider your figures. But note that I write "reasonably well" here because
+some figures may just be too advanced to cover in a caption and therefore
+require the reader to read more of the text in order to grasp all details.
+It is also important to keep in mind that some readers actually *will* have
+read all of the text and do not deserve to have all this information repeated
+to them. 
+
+It helps to consider the caption and the visualization as a single entity. If
+you have, for instance, written the units of the variables on the axes in the
+axis titles, then you do need not to restate them in the caption. Similarly, if
+there is a guide (such as a legend) coupling color to a variable in the
+visualization, then there is no need to mention this (again) in the caption.
+
+### Titles
+
+A common and effective practice is to start the caption with a title that
+succinctly sums up what the figure is about. This title does not need to be a
+complete sentence. The caption in Figure 1 has exactly such a caption:
+"Horsepower and fuel consumption". You may be tempted to use `ggtitle()` or
+`labs(title = ...)` in ggplot2 to write your titles, but please refrain from
+doing so in this course. The titles you end up with using these functions are
+not appropriate for figures in text documents (although they are fine for
+infographics and presentations).
+
+## Formalities
+
+### Placement
+
+It is almost a universal standard that captions for figures go *below* the
+figure and we follow this standard in this course. The reason for this is
+that figures are considered to be read from below and up. Contrast this with
+tables, which are read from top down and for which captions should instead 
+go above the table.
+
+### Numbering
+
+Figures (and their captions) should be numbered sequentially. Doing so allows
+you to easily reference them in the text. This is especially important when
+figures do not appear directly before or after the text or change
+position as you edit the text (which can happen when you use R Markdown).
+
+## Practicalities
+
+Depending on how you are constructing your assignments for this course, there
+are several different options for adding captions to your figures.
+
+## Caption Styles
+
+Beyond the basics that we have now covered there is actually quite a bit of
+freedom when it comes to writing your captions. Some authors like to use
+captions to convey new information, highlighting aspects of the figures that
+may not be mentioned elsewhere in the text. Other authors prefer to only convey
+the formal aspects of the visualization in their captions, delegating analysis
+and discussion to the body text. Here it is up to you to choose how you want
+your captions.
+
+### R Markdown
+
+If you are using R Markdown, please use the `fig.cap` argument in the R
+Markdown chunk header to provide a caption. A code chunk for a figure
+might look something like this:
+
+````
+```{r, fig.cap = "Engine displacement and numbers of cylinders for 38 popular car models from <https://fueleconomy.gov>. Engine displacement is given in litres."}`r ''`
+library(tidyverse)
+
+mpg %>%
+  ggplot(aes(cyl, displ)) +
+  geom_point() +
+  labs(x = "Number of Cylinders", y = "Engine Displacement")
+```
+````
+
+```{r, fig.cap = "Engine displacement and numbers of cylinders for 38 popular car models from <https://fueleconomy.gov>. Engine displacement is given in litres.", echo = FALSE}
+library(tidyverse)
+
+mpg %>%
+  ggplot(aes(cyl, displ)) +
+  geom_point() +
+  labs(x = "Number of Cylinders", y = "Engine Displacement")
+```
+
+Again, we reiterate that you should *not* use `ggtitle()` or `labs(title =
+...)` to write your captions (or titles) in this course.
+
+### LibreOffice Writer
+
+Please see [this
+guide](https://help.libreoffice.org/latest/lo/text/swriter/guide/captions.html).
+
+### OpenOffice Writer
+
+Please see [this
+guide](https://wiki.openoffice.org/wiki/Documentation/OOoAuthors_User_Manual/Writer_Guide/Adding_captions_to_graphics).
+
+### Microsoft Word
+
+Please see [this
+guide](https://support.microsoft.com/en-us/office/insert-a-caption-for-a-picture-bb74994c-7f8b-457c-be85-92233177a356).
+
+
+# Guide Titles
+
+The guides (axes and legends) should almost always have titles. Titles should
+be informative and if it is not otherwise clear from the caption and they
+should also indicate the unit of measurement if it is not obvious from context.
+In Figure 1, for instance, the unit for fuel consumption is given in
+parentheses. In Figure 2, the unit of measurement is instead stated in the
+caption---which of the alternatives you choose is a matter of taste.
+
+Sometimes it is obvious what the variable is and you may omit the guide
+title completely. Consider for instance a legend with color markers for
+"men", "women", and "other". Here you may omit "gender" as title.
+
+How to format the titles varies depending on the publication. Title or sentence
+case are the two most common choices, but lower case is typically okay too.
+
+title case
+:   A Nice Title of Something Important
+
+sentence case
+:   A nice title of something important
+
+lower case
+:   a nice title of something important
+
+A title should not end with a period unless it is a full sentence (which you
+should typically avoid)
+
+# Figure Sizing
+
+It is vital to size your figures appropriately. In this course we have seen
+many examples of otherwise excellent visualizations that have been garbled
+by incorrect sizing. This is always a shame to see since the time it takes
+to size your figures is a small fraction of the overall time it takes to
+construct a visualization.
+
+There is no *one size fits all* for figures. Some figures need to be large,
+maybe even covering half or all of a page, while some figures can be kept much
+smaller. It usually depends on the complexity of the figures and the
+amount of ink you need to put on your canvas to visualize your data
+effectively.
+
+## Too Small
+
+Making figures too small is the most common problem. If you have a lot of
+information, for instance a lot of observations to show or a multi-facet
+figure, then the more space you give your figure, the easier it will be to read
+it. You will even, to some extent, avoid overlapping between points that are
+near (but not on top of) each other. Many times you'll benefit for allowing your
+figures to be as wide as the width of the text. (The only reason not to do so
+is really an aesthetic one, which, however, doesn't make it invalid.)
+
+## Too Large
+
+Making visualizations too large is possibly as common as making them too small
+and also has detrimental consequences---albeit for a different reason. The 
+problem is usually that figures are made wider than the text width and to
+fit they (along with all text and markers) are shrunk to fit. The consequence
+of this is that the text can become illegible, which may in the worst case
+make the visualization altogether useless.
+
+To combat this, always start with a figure width that is narrower than the
+text width. Then if you need you can increase the width incrementally until you
+reach the text width. If you use the R Markdown template we provide for the
+course, then you should never make your figures wider than 5.1 (inches).
+If you use one of the Office packages, then you can often right-click on the
+figure and check if the figure has been downsized, in which case you need to
+re-export with different settings.
+
+## How to Size your Figures
+
+### R Markdown
+
+The size of figures can be controlled using the `fig.width` and `fig.height`
+options in the code chunk header. Below we show how to use these
+options in a R Markdown code chunk.
+
+````
+```{r, fig.cap = "A nice caption", fig.width = 4, fig.height = 3}`r ''`
+ggplot(...)
+```
+````
+
+### Office Packages (WYSIWYG Editors)
+
+If you do not use R Markdown you need to first call `ggplot2::ggsave()` to save
+your plots to your hard drive and then input them manually into your document.
+First write the code for the plot and directly afterwards you call
+`ggsave()` as in the code below.
+
+```{r, eval = FALSE}
+ggplot(...)
+
+ggsave("filename.png", width = 3, height = 2.3)
+```
+
+It may be tempting to use the built-in plot save function in R Studio, but we
+recommend against this because then you have to resize your figures manually
+each time you want to save the plot.

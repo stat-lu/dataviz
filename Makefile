@@ -30,10 +30,10 @@ clean:
 	rm -f $(EXAMPLES_OUT) $(LECTURES_OUT) $(PAGES_OUT)
 
 $(EXAMPLES_DIR)%.html:$(EXAMPLES_DIR)%.Rmd
-	Rscript -e 'rmarkdown::render("$<")'
+	Rscript -e 'rmarkdown::render("$<", output_format = "all")'
 
 $(LECTURES_DIR)%.html:$(LECTURES_DIR)%.Rmd
-	Rscript -e 'rmarkdown::render("$<")'
+	Rscript -e 'rmarkdown::render("$<", output_format = "all")'
 
 $(PAGES_DIR)%.html:$(PAGES_DIR)%.Rmd
-	Rscript -e 'rmarkdown::render("$<")'
+	Rscript -e 'rmarkdown::render("$<", output_format = "all")'

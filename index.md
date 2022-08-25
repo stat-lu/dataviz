@@ -46,7 +46,7 @@ This page contains slides for the courses STAE04 and DABN19: Data Visualization
 * [Air Quality](worked-examples/airquality)
 * [Arthritis](worked-examples/arthritis)
 * [Plants](worked-examples/plants)
-* [Chile Plebiscite](worked-examples/chile-plebiscite)
+* [Food for Thought](worked-examples/food-for-thought)
 * [Heavy Metal](worked-examples/heavy-metal)
 * [Gapminder](worked-examples/gapminder)
 

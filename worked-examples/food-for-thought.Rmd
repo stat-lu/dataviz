@@ -1,0 +1,244 @@
+---
+title: "Worked Example: Food for Thought"
+author: "Johan Larsson"
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    highlight: pygments
+    global_numbering: true
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = TRUE, message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.width = 5,
+  fig.height = 4,
+  dev = "png"
+)
+options(scipen = 999)
+```
+
+# Budget Share of Food for Spanish Households
+
+In this worked example we will try to make use of our newfound tools to handle
+a big data set. The data set that we will be looking at consists of house
+expenditures on food from Spanish households in 1980. The objective of our
+study will be to explore how food expenditure is related to the various
+other variables in the data set.
+
+The data set is available in the
+[Ecdat](https://CRAN.R-project.org/package=Ecdat) package. Start by installing
+it (if you haven't already).
+
+```{r, eval = FALSE}
+# install the Ecdat package
+install.packages("Ecdat")
+```
+
+Then load the data set directly into your workspace by calling the `data()`
+function as we show next.
+
+```{r}
+data("BudgetFood", package = "Ecdat")
+```
+
+There are 23,972 observations and six variables in this dataset:
+
+`wfood`
+: Percentage of total expenditure which the household has spend on food
+
+`totexp`
+: Total expenditure of the household
+
+`age`
+: Age of reference person in the household
+
+`size`
+: Size of the household
+
+`town`
+: An ordered factor of the size of the town where the household is placed.
+  1 for small towns and 5 for big ones.
+
+`sex`
+: sex of reference person (man, woman)
+
+# Wrangling
+
+Before we start visualizing this data set, we need to format it properly.
+The names of the variables are fine, but the `town` variable
+should be formatted as an ordered factor and `age` and `size` should 
+be formatted as integers.
+
+```{r}
+library(tidyverse)
+
+budget_food <- 
+  BudgetFood %>%
+  mutate(
+    age = as.integer(age),
+    size = as.integer(size),
+    town = factor(town, ordered = TRUE),
+  )
+```
+
+# Food and Total Expenditure
+
+Let's start naively, trying out a simple scatter plot of food expenditure
+versus total expenditure.
+
+```{r foodexp-naive, fig.cap = "A scatter plot of total expenditure versus expenditure on food as a fraction of total expenditure"}
+ggplot(budget_food, aes(totexp, wfood)) +
+  geom_point() +
+  labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
+```
+
+Despite the large amount of overlap, we can still glean a few insights. First
+off, food expenditure as a proportion of total expenditure increases with total
+expenditure. This speaks to our intuition. Second, there is a number of
+observations that report no food expenditure whatsoever. These observations are
+likely outliers, perhaps people living in elderly care centers or something
+similar. Let's remove these observations from the data set.
+
+```{r remove-outliers}
+budget_food_cleaned <- 
+  budget_food %>%
+  filter(wfood > 0)
+```
+
+At this point we could try to combat the overlap by reducing opacity, but
+another trick that is sometimes overlooked is to instead try a scale
+transformation. Instead of a linear scale for total expenditure, we could use a
+logarithmic scale.
+
+```{r logplot, fig.cap = "A scatter plot of total expenditure versus expenditure on food with total expenditure on a logarithmic scale"}
+ggplot(budget_food_cleaned, aes(totexp, wfood)) +
+  scale_x_log10() +
+  geom_point() + 
+  labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
+```
+
+But since we have just learned a few new tools, let's try to make use of them
+now. In this case, we are going to try a hexbin plot.
+
+```{r hexplot, fig.cap = "A hexbin plot of total expenditure versus expenditure on food as a fraction of total expenditure"}
+ggplot(budget_food_cleaned, aes(totexp, wfood)) +
+  geom_hex() + 
+  labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
+```
+
+This plot definitely works better, showing the relationship in a clear fashion.
+
+# Household Size
+
+Now that we have managed to sort out of plot of food and total expenditure,
+we'll see if we can find a relationship with the size of the household too.
+Before we look at the complete picture, it is a good idea to first
+check what the overall relationship between household size and food expenditure
+is. To do so, we first construct a boxplot.
+
+```{r boxplot, fig.cap = "A boxplot of food expenditure as a fraction of total expenditure versus household size"}
+ggplot(budget_food_cleaned, aes(as.factor(size), wfood)) +
+  geom_boxplot() + 
+  labs(x = "Household Size", y = "Food Expenditure")
+```
+
+In general, food expenditure seems to be higher with larger households, which
+is probably what one would expect. But this is not the case for households
+with one or two members. Take a minute to figure out if that makes sense to you.
+
+Let's return to our hexbin plot design, but now introduce household size
+as facets.
+
+```{r hexbin-size, fig.cap = "A hexbin plot of total expenditure versus expenditure on food across household sizes", fig.width = 8, fig.height = 6}
+ggplot(budget_food_cleaned, aes(totexp, wfood)) +
+  geom_hex() +
+  facet_wrap("size", labeller = labeller(size = label_both)) + 
+  labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
+```
+
+This plot looks promising but is crippled by the fact that some of the groups
+are small, which creates problems for the hexbin plot. In fact, hexbin plots
+are generally problematic when the number of observations if facets
+differ because all the facets share the same scale (binning).
+
+To get around this problem, we are going to lump all of the households of
+size 6 or larger into one level, using `fct_other()`, a function from the
+**forcats** package. We specify the levels we want to *keep* using the
+`keep` argument, and all of the others are lumped together.
+
+```{r hexbin-binned, fig.cap = "A hexbin plot of total expenditure versus expenditure on food across household sizes. The 6+ category represents household sizes of 6 or more people.", fig.width=8, fig.height = 5}
+budget_food_binned <- 
+  budget_food_cleaned %>%
+  mutate(
+    size = as.factor(size),
+    size = fct_other(size, keep = c(1:5), other_level = "+6")
+  )
+
+ggplot(budget_food_binned, aes(totexp, wfood)) +
+  geom_hex() +
+  facet_wrap("size", labeller = labeller(size = label_both)) +
+  labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
+```
+
+This is now starting to look quite interesting.
+
+# Smoothers
+
+As an alternative to the hexbin plots, we could instead use a smoother to look
+at the relationship between total expenditure and food expenditure. 
+
+Smoothers work particularly well when you expect there to be some kind of
+causal relationship between two variables. They also help when you have a
+smaller (but still sufficiently large) number of observations in the upper and
+lower ranges of the variable on the x axis.
+
+Let's try a smoother using a LOESS model, which makes few assumptions about the
+data and is relatively robust to outliers.
+
+```{r smoother, fig.cap = "A scatter plot of total expenditure, expenditure on food as a fraction of total expenditure, and household size. A LOESS smoother, including approximate 95% confidence intervals, is used.", fig.width = 8, fig.height = 4.5}
+ggplot(budget_food_binned, aes(totexp, wfood)) +
+  geom_point(alpha = 0.05) +
+  geom_smooth(method = "loess") +
+  facet_wrap("size", labeller = labeller(size = label_both)) +
+  labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
+```
+
+The problem with this plot is of course that the smoothers are clearly
+inappropriate for the extreme values of total expenditure. To work around
+this problem, we can create a separate data set to use in the
+`geom_smooth()` function only.
+
+To do so, we create a new data set that we first group by the 
+variable we are faceting on, `size`, and then filter the data set such
+that only the observations of `totexp` (total expenditure) large than
+the 0.05 quantile and smaller than the 0.95 quantile remain in the data set.
+
+Then we use this data in the `data` argument to `geom_smooth()`.
+
+```{r smoother-fixed, fig.cap = "A hexbin plot of total expenditure versus expenditure on food", fig.width = 8, fig.height = 4.5}
+budget_food_smoother_data <-
+  budget_food_binned %>%
+  group_by(size) %>%
+  filter(totexp > quantile(totexp, 0.05) & totexp < quantile(totexp, 0.95))
+
+ggplot(budget_food_binned, aes(totexp, wfood)) +
+  geom_point(alpha = 0.1) +
+  geom_smooth(method = "loess", data = budget_food_smoother_data) +
+  facet_wrap("size", labeller = labeller(size = label_both)) +
+  labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
+```
+
+Go ahead and see if you can figure out ways to improve this plot further.
+Consider using the scale transformation we touch on earlier and see how
+that works together with the smoothers and hex binning.
+
+# Source Code
+
+The source code for this document is available at
+<https://github.com/stat-lu/dataviz/blob/main/worked-examples/chile-plebiscite.Rmd>.

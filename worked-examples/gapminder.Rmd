@@ -30,7 +30,7 @@ Do you remember the animated plots we produced in the introductory
 lecture for this course based on the Gapminder Hans Rosling
 animated visualization?
 
-<iframe width="560" height="315" src="https://youtube.com/embed/jbkSRLYSojo?rel=0" frameborder="0" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/jbkSRLYSojo" frameborder="0"></iframe>
 
 In this worked example, we'll work out how to
 reproduce that plot as both an animated an interactive visualization.

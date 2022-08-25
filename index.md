@@ -1,7 +1,7 @@
 
-## Data Visualization
+# Data Visualization
 
-### Slides
+## Slides
 
 This page contains slides for the courses STAE04 and DABN19: Data Visualization
 
@@ -37,7 +37,7 @@ This page contains slides for the courses STAE04 and DABN19: Data Visualization
   ([source](https://github.com/stat-lu/dataviz/blob/main/lectures/animated-and-interactive-visualizations.Rmd))
 * [Wrapping Up](lectures/wrapping-up)
 
-### Worked Examples
+## Worked Examples
 
 * [Hello, World!](worked-examples/hello-world)
 * [Cars](worked-examples/cars)
@@ -50,12 +50,12 @@ This page contains slides for the courses STAE04 and DABN19: Data Visualization
 * [Heavy Metal](worked-examples/heavy-metal)
 * [Gapminder](worked-examples/gapminder)
 
-### Submission Template
+## Submission Template
 
 * [R Markdown Template](
    https://raw.githubusercontent.com/stat-lu/dataviz/main/template.Rmd)
 
-### Miscellaneous
+## Miscellaneous
 
 * [Introduction to R Markdown](pages/introduction-to-rmarkdown)
 * [The Anatomy of a Plot](pages/the-anatomy-of-a-plot)
@@ -63,7 +63,7 @@ This page contains slides for the courses STAE04 and DABN19: Data Visualization
 * [Summaries of Previous Course Evaluations](pages/feedback)
 * [History of Changes](pages/changelog)
 
-### Source code
+## Source code
 
 The source code for all material here can be found at
 <https://github.com/stat-lu/dataviz>.

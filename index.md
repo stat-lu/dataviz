@@ -58,6 +58,7 @@ This page contains slides for the courses STAE04 and DABN19: Data Visualization
 ## Miscellaneous
 
 * [Introduction to R Markdown](pages/introduction-to-rmarkdown)
+* [Formatting Figures](pages/formatting-figures)
 * [The Anatomy of a Plot](pages/the-anatomy-of-a-plot)
 * [Instructions for the Assignments](pages/instructions-for-the-assignments)
 * [Summaries of Previous Course Evaluations](pages/feedback)

@@ -2,11 +2,10 @@
 title: "Worked Example: Gapminder"
 author: "Johan Larsson"
 output:
-  bookdown::html_document2:
+  html_document:
     toc: true
     toc_float: true
     highlight: pygments
-    global_numbering: true
 ---
 
 ```{r setup, include=FALSE}
@@ -30,7 +29,9 @@ Do you remember the animated plots we produced in the introductory
 lecture for this course based on the Gapminder Hans Rosling
 animated visualization?
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/jbkSRLYSojo" frameborder="0"></iframe>
+```{r rosling, echo = FALSE, out.extra='style="border: none;"', out.width="100%"}
+knitr::include_url("https://www.youtube.com/embed/jbkSRLYSojo")
+```
 
 In this worked example, we'll work out how to
 reproduce that plot as both an animated an interactive visualization.

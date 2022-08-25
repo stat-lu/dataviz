@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 options(scipen = 999)
 ```
 
-## Gapminder
+# Gapminder
 
 Do you remember the animated plots we produced in the introductory
 lecture for this course based on the Gapminder Hans Rosling
@@ -35,7 +35,7 @@ animated visualization?
 In this worked example, we'll work out how to
 reproduce that plot as both an animated an interactive visualization.
 
-## Animated Visualization
+# Animated Visualization
 
 The dataset that we'll use is available via the
 [gapminder](https://CRAN.R-project.org/package=gapminder) package. So go
@@ -70,9 +70,11 @@ gapminder %>%
   scale_size(range = c(2, 12)) +
   scale_x_log10() +
   facet_wrap("years") +
-  labs(y = "Life Expectancy",
-       x = "GDP per Capita",
-       size = "population")
+  labs(
+    y = "Life Expectancy",
+    x = "GDP per Capita",
+    size = "population"
+  )
 ```
 
 Just as we said in the first lecture, this visualization is not (yet) working
@@ -107,10 +109,12 @@ ggplot(gapminder,  aes(gdpPercap, lifeExp, size = pop, color = continent)) +
   geom_point(alpha = 0.5) +
   scale_size(range = c(2, 12)) +
   scale_x_log10() +
-  labs(title = "Year: {frame_time}", # special glue syntax
-       y = "Life Expectancy",
-       x = "GDP per Capita",
-       size = "population") +
+  labs(
+    title = "Year: {frame_time}", # special glue syntax,
+    y = "Life Expectancy",
+    x = "GDP per Capita",
+    size = "population"
+  ) +
   transition_time(year)
 ```
 
@@ -125,9 +129,11 @@ ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, color = country)) +
   scale_size(range = c(2, 12)) +
   scale_x_log10() +
   facet_wrap(~continent) +
-  labs(title = "Year: {frame_time}",
-       x = "GDP per capita",
-       y = "Life expectancy") +
+  labs(
+    title = "Year: {frame_time}",
+    x = "GDP per capita",
+    y = "Life expectancy"
+  ) +
   transition_time(year)
 ```
 
@@ -163,8 +169,7 @@ Then we filter the original dataset to create a separate dataset for our
 labels.
 
 ```{r}
-large_countries <-
-  filter(gapminder, country %in% large_country_names)
+large_countries <- filter(gapminder, country %in% large_country_names)
 ```
 
 Now we put everything together; this time we also change the
@@ -193,14 +198,16 @@ ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, color = country)) +
   scale_size(range = c(2, 12)) +
   scale_x_log10() +
   facet_wrap(~continent) +
-  labs(title = "Year: {frame_time}",
-       x = "GDP per capita",
-       y = "Life expectancy") +
+  labs(
+    title = "Year: {frame_time}",
+    x = "GDP per capita",
+    y = "Life expectancy"
+  ) +
   transition_time(year) +
   ease_aes("cubic-in-out")
 ```
 
-## Interactive Visualization
+# Interactive Visualization
 
 Interactive visualizations are often effective, particularly when
 we want to visualize a complicated dataset such as this one.
@@ -231,8 +238,7 @@ p <- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, color = country)) +
   scale_size(range = c(2, 12)) +
   scale_x_log10() +
   facet_wrap(~continent) +
-  labs(x = "GDP per capita",
-       y = "Life expectancy")
+  labs(x = "GDP per capita", y = "Life expectancy")
 
 ggplotly(p)
 ```
@@ -240,7 +246,7 @@ ggplotly(p)
 Notice how seamless the conversion of ggplots into interactive plots can be
 with the help of plotly.
 
-## Source Code
+# Source Code
 
 The source code for this document is available at
-<https://github.com/stat-lu/dataviz/blob/main/worked-example-gapminder.Rmd>.
+<https://github.com/stat-lu/dataviz/blob/main/worked-examples/gapminder.Rmd>.

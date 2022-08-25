@@ -4,7 +4,6 @@ subtitle: "Data Visualization"
 author: "Johan Larsson"
 institute: "The Department of Statistics, Lund University"
 date: ""
-bibliography: "assets/references.bib"
 output:
   xaringan::moon_reader:
     css: [default, "assets/styles.css"]
@@ -44,10 +43,12 @@ kable <- function(x, ...) {
 }
 
 library(RefManageR)
-BibOptions(check.entries = FALSE, 
-           bib.style = "authoryear",
-           style = "markdown",
-           dashed = TRUE)
+BibOptions(
+  check.entries = FALSE,
+  bib.style = "authoryear",
+  style = "markdown",
+  dashed = TRUE
+)
 bib <- ReadBib("assets/references.bib")
 
 theme_set(theme_bw())

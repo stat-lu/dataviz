@@ -4,7 +4,6 @@ subtitle: "Data Visualization"
 author: "Johan Larsson"
 institute: "The Department of Statistics, Lund University"
 date: ""
-bibliography: "assets/references.bib"
 output:
   xaringan::moon_reader:
     css: [default, "assets/styles.css"]
@@ -39,13 +38,6 @@ library(kableExtra)
 kable <- function(x, ...) {
   knitr::kable(x, escape = FALSE, linesep = "", booktabs = TRUE)
 }
-
-library(RefManageR)
-BibOptions(check.entries = FALSE, 
-           bib.style = "authoryear",
-           style = "markdown",
-           dashed = TRUE)
-bib <- ReadBib("assets/references.bib")
 
 theme_set(theme_grey())
 
@@ -223,12 +215,3 @@ have a look at [shiny](https://shiny.rstudio.com/).
 knitr::include_graphics("videos/shiny-animation1.gif")
 ```
 
-
-<!-- --- -->
-
-<!-- ## References -->
-
-
-<!-- ```{r, results = "asis", echo=FALSE} -->
-<!-- PrintBibliography(bib) -->
-<!-- ``` -->

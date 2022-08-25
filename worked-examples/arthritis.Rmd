@@ -244,5 +244,5 @@ modify the plot now by faceting on the type of treatment.
 # Source Code
 
 The source code for this document is available at
-<https://github.com/stat-lu/dataviz/blob/main/worked-example-arthritis.Rmd>.
+<https://github.com/stat-lu/dataviz/blob/main/worked-examples/arthritis.Rmd>.
 

@@ -305,7 +305,11 @@ Here's an example where we've gone a bit crazy with these settings.
 ```{r}
 ggplot(mtcars, aes(disp, mpg)) +
   geom_point() +
-  scale_x_reverse(breaks = c(5, 10, 15), minor_breaks = 7, position = "top") +
+  scale_x_reverse(
+    breaks = c(5, 10, 15),
+    minor_breaks = 7,
+    position = "top"
+  ) +
   scale_y_log10()
 ```
 
@@ -434,7 +438,7 @@ are interested, we recommend you check out
 # Source Code
 
 The source code for this document is available at
-<https://github.com/stat-lu/dataviz/blob/main/worked-example-first-steps-with-ggplot2.Rmd>.
+<https://github.com/stat-lu/dataviz/blob/main/worked-examples/first-steps-with-ggplot2.Rmd>.
 
 [^1]: You'll find out more about redundant ink later on in the course.
 [^2]: For a full list, see

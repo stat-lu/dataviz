@@ -363,4 +363,4 @@ for a guide on how to use histograms instead of density plots.]
 # Source Code
 
 The source code for this document is available at
-<https://github.com/stat-lu/dataviz/blob/main/worked-example-chile-plebiscite.Rmd>.
+<https://github.com/stat-lu/dataviz/blob/main/worked-examples/chile-plebiscite.Rmd>.

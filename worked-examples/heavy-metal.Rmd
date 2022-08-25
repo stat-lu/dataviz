@@ -306,4 +306,4 @@ ggmap(meuse_raster) +
 # Source Code
 
 The source code for this document is available at
-<https://github.com/stat-lu/dataviz/blob/main/worked-example-chile-plebiscite.Rmd>.
+<https://github.com/stat-lu/dataviz/blob/main/worked-examples/heavy-metal.Rmd>.

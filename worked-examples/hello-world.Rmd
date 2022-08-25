@@ -484,4 +484,4 @@ help(mean) # or ?mean
 ## Source Code
 
 The source code for this document is available at
-<https://github.com/stat-lu/dataviz/blob/main/worked-example-hello-world.Rmd>.
+<https://github.com/stat-lu/dataviz/blob/main/worked-examples/hello-world.Rmd>.

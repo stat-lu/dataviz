@@ -221,4 +221,4 @@ What is the take-home message here? Well, it's twofold:
 # Source Code
 
 The source code for this document is available at
-<https://github.com/stat-lu/dataviz/blob/main/worked-example/drex.Rmd>.
+<https://github.com/stat-lu/dataviz/blob/main/worked-examples/drex.Rmd>.

@@ -14,7 +14,7 @@ LECTURES_OUT = $(LECTURES_SRC:.Rmd=.html)
 
 KNIT = Rscript -e "require(rmarkdown); render('$<')"
 
-all: pages
+all: pages lectures examples
 	echo All files are now up to date
 
 pages: $(PAGES_OUT)
@@ -27,7 +27,7 @@ examples: $(EXAMPLES_OUT)
 	echo All files are now up to date
 
 clean:
-	rm -f $(EXAMPLES_OUT) $(LECTURES_OUT)
+	rm -f $(EXAMPLES_OUT) $(LECTURES_OUT) $(PAGES_OUT)
 
 $(EXAMPLES_DIR)%.html:$(EXAMPLES_DIR)%.Rmd
 	Rscript -e 'rmarkdown::render("$<")'

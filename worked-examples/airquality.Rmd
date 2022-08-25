@@ -216,4 +216,4 @@ variables in the data set too.
 # Source Code
 
 The source code for this document is available at
-<https://github.com/stat-lu/dataviz/blob/main/worked-example-airquality.Rmd>.
+<https://github.com/stat-lu/dataviz/blob/main/worked-examples/airquality.Rmd>.

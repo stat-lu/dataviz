@@ -598,4 +598,4 @@ Have fun piping in the tidyverse!
 # Source Code
 
 The source code for this document is available at
-<https://github.com/stat-lu/dataviz/blob/main/worked-example-working-with-data-in-r.Rmd>.
+<https://github.com/stat-lu/dataviz/blob/main/worked-examples/working-with-data-in-r.Rmd>.

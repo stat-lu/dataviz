@@ -70,7 +70,7 @@ text.
 
 To get you going with R Markdown, we have prepared an introduction that you can
 read
-[here](https://github.com/stat-lu/dataviz/raw/main/introduction-to-rmarkdown.pdf).
+[here](https://github.com/stat-lu/dataviz/raw/main/pages/introduction-to-rmarkdown.pdf).
 
 ## Template
 
@@ -80,7 +80,7 @@ the following lines of code.
 
 ```{r eval = FALSE}
 download.file(
-  "https://raw.githubusercontent.com/stat-lu/dataviz/main/template.Rmd",
+  "https://raw.githubusercontent.com/stat-lu/dataviz/main/resources/template.Rmd",
   "template.Rmd", # filename for the file (which you can replace if you want)
   mode = "wb"
 )
@@ -124,7 +124,9 @@ reasonably well. Do not use a question: answer format in your report.
 
 ## Figures
 
-Please see [x]() for detailed information about formatting figures.
+Please see [Formatting
+Figures](https://stat-lu.github.io/dataviz/pages/formatting-figures) for
+detailed information about formatting figures.
 
 ## Code
 

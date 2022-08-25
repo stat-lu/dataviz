@@ -25,15 +25,15 @@ knitr::opts_chunk$set(
 options(scipen = 999)
 ```
 
-## Spring 2022
+# Spring 2022
 
-### Summary of Changes Since Last Time
+## Summary of Changes Since Last Time
 
 Several of the lecture videos were completely remade as a result of revisiting
 and revising large parts of some sections of the course. A few demanding quiz
 questions were also removed to lower the overall difficulty of the course.
 
-### Summary of Students' Evaluation of the Course
+## Summary of Students' Evaluation of the Course
 
 Overall the student's responded favorably to the course. Out of the
 24 respondents' impressions, 16 were "excellent", 7 "very good" and 1 "good".
@@ -43,7 +43,7 @@ students thought would improve the course, students wished for a slightly lower
 overall course load, better course literature, and more content to support 
 more difficult parts of the course.
 
-### Summary of Teachers' Overall Assessment
+## Summary of Teachers' Overall Assessment
 
 I thought the course went well overall and that the changes introduced all
 turned out quite well. The lowered difficulty and course load seem to have had
@@ -52,7 +52,7 @@ some reason, however, the course activity on the course was lower than usual.
 For the last few workshop sessions, only a single person attended. There was also
 less activity on the course forum (slack workspace) than last time. 
 
-### Course Director's Reflections on the Course Implementation and Results
+## Course Director's Reflections on the Course Implementation and Results
 
 There were a few areas where student's repeatedly struggled throughout the
 assignments, such as formatting figures properly: in particular, writing good
@@ -64,7 +64,7 @@ finish. There were also a few errors in the quizzes, which created dismay for
 some students. Finally, it is clear that some students do not treat peer reviews
 seriously and miss obvious errors in the reports.
 
-### Course Director's Proposals for Changes
+## Course Director's Proposals for Changes
 
 - Lower the number of assignments from 4 to 3 but make sure that all of the
   modules are covered in the assignments. 
@@ -77,9 +77,9 @@ seriously and miss obvious errors in the reports.
 - Add additional material on writing good captions, but be less stringent about
   captions when evaluating reports.
 
-## Fall 2021
+# Fall 2021
 
-### Feedback
+## Feedback
 
 Out of 19 respondents, one gave the course a "satisfactory" score,
 5 "very good", and 13 "excellent". As before, most of the respondents
@@ -92,16 +92,16 @@ that people thought the course was too demanding for the amount of credits.
 There were other suggestions and feedback as well, but none of it was
 shared between the participants.
 
-### Changes in Response to Feedback
+## Changes in Response to Feedback
 
 Several of the more demanding quiz questions have now been removed and 
 others have been simplified. A few smaller parts of the course have been
 altogether removed. As a result, several of the lecture videos have been
 revised.
 
-## Spring 2021
+# Spring 2021
 
-### Feedback
+## Feedback
 
 Among the 19 respondents, one gave the course a "sufficient" score, 4 "very
 good", and 14 "excellent". Most of the respondents were equally positive for
@@ -120,19 +120,19 @@ thought might improve the course:
 - better overview of course content, and
 - less assignments and quizzes in general.
 
-### Changes in Response to Feedback
+## Changes in Response to Feedback
 
 Several coding videos were added and also a course overview. Some of the
 quiz questions were simplified or removed. One assignment was completely
 remade and another majorly revised.
 
-## Fall 2020
+# Fall 2020
 
 Feedback on the course was positive across all items in the course evaluation.
 We received one specific request, which was to make the workshops (help 
 sessions) weekly instead of bi-weekly.
 
-### Changes in Response to Feedback
+## Changes in Response to Feedback
 
 The workshops have been changed to be held on a weekly basis instead. Many
 small changes to the course content and fixes to errors in the quizzes.

@@ -52,7 +52,7 @@ mtcars %>%
   )
 ```
 
-## The Canvas 
+# The Canvas 
 
 ```{r}
 knitr::include_graphics("images/anatomy-canvas.png")
@@ -67,7 +67,7 @@ in a visualization. We'll discuss facets in detail later, but for now it's
 sufficient that you think of facets as multiple plots that you line up one after
 the other.
 
-## Grid
+# Grid
 
 ```{r}
 knitr::include_graphics("images/anatomy-grid.png")
@@ -81,7 +81,7 @@ observations in a visualization.
 Grids often have major and minor gridlines, which is also true for this plot,
 although the difference is slight.
 
-## Geoms
+# Geoms
 
 ```{r}
 knitr::include_graphics("images/anatomy-geoms.png")
@@ -90,7 +90,7 @@ knitr::include_graphics("images/anatomy-geoms.png")
 The geoms in the plot are geometrical shapes that are used to draw data. Here we
 are using points as our geoms.
 
-## Axes
+# Axes
 
 ```{r}
 knitr::include_graphics("images/anatomy-axes.png")
@@ -103,7 +103,7 @@ pattern of points and not the values these points represent.
 On each axis there are numbers or words and they are connected via *ticks* or
 *tickmarks* to the gridlines.
 
-## Legends
+# Legends
 
 ```{r}
 knitr::include_graphics("images/anatomy-legend.png")
@@ -115,7 +115,7 @@ cylinders.
 
 The legend is sometimes also called a *key*.
 
-## Guide Titles
+# Guide Titles
 
 ```{r}
 knitr::include_graphics("images/anatomy-titles.png")

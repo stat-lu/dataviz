@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 options(scipen = 999)
 ```
 
-## R
+# R
 
 Installing R is easy. Simply go to <https://cloud.r-project.org/> and download
 the appropriate version of R depending on your operating system:
@@ -45,7 +45,7 @@ Mac (OS) X
 After this, you simply run the file you downloaded and follow the installation
 guide.
 
-## R Studio
+# R Studio
 
 After you're done installing R, it's time to install R Studio. Simply go to
 <https://rstudio.com/products/rstudio/download/#download> and pick a suitable

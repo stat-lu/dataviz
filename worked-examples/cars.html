@@ -1002,17 +1002,11 @@ code. On top of that, you don’t need to name any intermediate objects (but
 remember that doing so is sometimes actually desirable).</p>
 <p>The <strong>tidyverse</strong> is designed specifically with the pipe operator in mind. The
 reason that it works so well with the tidyverse is that virtually all of the
-main functions in the tidyverse takes a data set as the first argument, so
-piping together functions like this becomes very natural. The base R functions
-and many other packages out there don’t necessarily abide by this principle,
-however, so make sure you know what your functions are doing when you’re using
-pipes or you may end up with unexpected (and undesirable) results.</p>
-<p>If you want to mix tidyverse functions with functions from packages that work
-differently, you can still do this with pipes, but then need to use a special
-<code>.</code> argument, which is a placeholder for the object that you are piping. We
-will not cover it here because it is not needed in the course, but if you are
-interested we recommend to take a look at <a href="https://r4ds.had.co.nz/pipes.html">the piping
-section</a> of the R for Data Science book.</p>
+main functions in the tidyverse take a data set as the first argument, which
+means that piping always works. The base R functions and many other packages
+out there don’t necessarily abide by this principle, however, so make sure you
+know what your functions are doing when you’re using pipes or you may end up
+with unexpected (and undesirable) results.</p>
 <p>Note that the pipe operator that we have so far (<code>%&gt;%</code>) covered is not part of
 the base R distribution but is, however, included via all of the tidyverse
 packages. So simply calling <code>library(tidyverse)</code> or <code>library(dplyr)</code> will get
@@ -1041,11 +1035,12 @@ the first two lines as the following.</p>
 ## 10 12520 gmc       door    2017 clean …   28972 black 1gks… 1.68e8 cali… usa    
 ## # … with 506 more rows, 1 more variable: condition &lt;chr&gt;, and abbreviated
 ## #   variable name ¹​title_status</code></pre>
-<p>The native pipe operator does not work with the <code>.</code></p>
 <p>For all purposes that we use it for in this course, you may as
-well use the native pipe operator if you prefer to. <code>%&gt;%</code> has a few extra
-tricks up its sleeve, but you will only find need for them in advanced use
-cases.</p>
+well use the native pipe operator if you prefer to. <code>%&gt;%</code> has a bit of
+additional functionality, but we will not need it in this course.</p>
+<p>If you want to read more about pipes or just need a longer introduction, we
+recommend to take a look at <a href="https://r4ds.had.co.nz/pipes.html">the piping
+section</a> of the R for Data Science book.</p>
 <p>Have fun piping in the tidyverse!</p>
 </div>
 </div>

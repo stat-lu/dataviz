@@ -375,12 +375,13 @@ You write text (including R code) in a standard text document with the ending
 <p>In addition, R Markdown documents can be compiled into a wide variety of
 formats, including PDFs, Word Documents, and HTML pages (and much more) without
 having to change the content on your document.</p>
-<p>This document has in fact been rendered as both a <a href="https://github.com/stat-lu/dataviz/raw/main/introduction-to-rmarkdown.pdf">PDF
+<p>This document has in fact been rendered as both a <a href="https://github.com/stat-lu/dataviz/raw/main/pages/introduction-to-rmarkdown.pdf">PDF
 document</a>
-and <a href="https://stat-lu.github.io/dataviz/introduction-to-rmarkdown">html page</a>.
-You can choose any of these when following this guide, but we recommend reading
-the PDF version to get a sense of what your output actually will look like
-(since you’ll be handing in PDF documents in this course).</p>
+and <a href="https://stat-lu.github.io/dataviz/pages/introduction-to-rmarkdown">html
+page</a>. You
+can choose any of these when following this guide, but we recommend reading the
+PDF version to get a sense of what your output actually will look like (since
+you’ll be handing in PDF documents in this course).</p>
 <p>Authoring your documents using R Markdown facilitates reproducibility. Because
 you need to supply all the code used to produce your paper in the <code>.Rmd</code> file,
 this makes it much easier for other people to re-run your analysis and use your
@@ -388,7 +389,7 @@ code. It also means that your paper is now automated. Should you need to update
 or modify your data, for instance, you will typically be able to generate your
 final document simply by re-knitting it after having made your changes.</p>
 <p>As you proceed though this document, consider taking a look at the
-<a href="https://github.com/stat-lu/dataviz/blob/main/introduction-to-rmarkdown.Rmd">R Markdown source code for this document</a>
+<a href="https://github.com/stat-lu/dataviz/blob/main/pages/introduction-to-rmarkdown.Rmd">R Markdown source code for this document</a>
 too, to get a better feel for what R Markdown documents look like.</p>
 </div>
 <div id="getting-started" class="section level1" number="2">
@@ -397,7 +398,7 @@ too, to get a better feel for what R Markdown documents look like.</p>
 <h2><span class="header-section-number">2.1</span> Installation</h2>
 <p>To get started, you are going to need two packages: <strong>rmarkdown</strong> and <strong>knitr</strong>.
 Run the following line of code to install these now. If you happen to be looking
-at <a href="https://github.com/stat-lu/dataviz/blob/main/introduction-to-rmarkdown.Rmd">the source
+at <a href="https://github.com/stat-lu/dataviz/blob/main/pages/introduction-to-rmarkdown.Rmd">the source
 code</a>
 as you read this, you can simply highlight the text and hit <code>Ctrl/Cmd + Enter</code>
 or put the cursor inside the code chunk below and hit <code>Ctrl/Cmd + Shift + Enter</code>
@@ -422,7 +423,7 @@ Studio.</p>
 defaults for your documents than the built-in one. You can download it your
 current working directory in R by calling the following lines.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;https://raw.githubusercontent.com/stat-lu/dataviz/main/template.Rmd&quot;</span>,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;https://raw.githubusercontent.com/stat-lu/dataviz/main/resources/template.Rmd&quot;</span>,</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;template.Rmd&quot;</span>, <span class="co"># destination, you can replace this if you want</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">&quot;wb&quot;</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>

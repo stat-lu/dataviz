@@ -69,11 +69,12 @@ formats, including PDFs, Word Documents, and HTML pages (and much more) without
 having to change the content on your document.
 
 This document has in fact been rendered as both a [PDF
-document](https://github.com/stat-lu/dataviz/raw/main/introduction-to-rmarkdown.pdf)
-and [html page](https://stat-lu.github.io/dataviz/introduction-to-rmarkdown).
-You can choose any of these when following this guide, but we recommend reading
-the PDF version to get a sense of what your output actually will look like
-(since you'll be handing in PDF documents in this course).
+document](https://github.com/stat-lu/dataviz/raw/main/pages/introduction-to-rmarkdown.pdf)
+and [html
+page](https://stat-lu.github.io/dataviz/pages/introduction-to-rmarkdown). You
+can choose any of these when following this guide, but we recommend reading the
+PDF version to get a sense of what your output actually will look like (since
+you'll be handing in PDF documents in this course).
 
 Authoring your documents using R Markdown facilitates reproducibility. Because
 you need to supply all the code used to produce your paper in the `.Rmd` file,
@@ -84,7 +85,7 @@ final document simply by re-knitting it after having made your changes.
 
 As you proceed though this document, consider taking a look at the
 [R Markdown source code for this document](
-https://github.com/stat-lu/dataviz/blob/main/introduction-to-rmarkdown.Rmd)
+https://github.com/stat-lu/dataviz/blob/main/pages/introduction-to-rmarkdown.Rmd)
 too, to get a better feel for what R Markdown documents look like.
 
 # Getting Started
@@ -94,7 +95,7 @@ too, to get a better feel for what R Markdown documents look like.
 To get started, you are going to need two packages: **rmarkdown** and **knitr**.
 Run the following line of code to install these now. If you happen to be looking
 at [the source
-code](https://github.com/stat-lu/dataviz/blob/main/introduction-to-rmarkdown.Rmd)
+code](https://github.com/stat-lu/dataviz/blob/main/pages/introduction-to-rmarkdown.Rmd)
 as you read this, you can simply highlight the text and hit `Ctrl/Cmd + Enter`
 or put the cursor inside the code chunk below and hit `Ctrl/Cmd + Shift + Enter`
 to run the command (and install the packages).
@@ -127,7 +128,7 @@ current working directory in R by calling the following lines.
 
 ```{r template, eval = FALSE}
 download.file(
-  "https://raw.githubusercontent.com/stat-lu/dataviz/main/template.Rmd",
+  "https://raw.githubusercontent.com/stat-lu/dataviz/main/resources/template.Rmd",
   "template.Rmd", # destination, you can replace this if you want
   mode = "wb"
 )

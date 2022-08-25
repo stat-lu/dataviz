@@ -25,6 +25,19 @@ knitr::opts_chunk$set(
 options(scipen = 999)
 ```
 
+# Fall 2022
+
+- The Chile Plebiscite worked example was removed and replaced with a new
+  worked example called "Food for Thought", which is about food expenditure
+  for Spanish households.
+- A new page about figure formatting has been included in the course, which
+  primarily covers good practices when it comes to writing captions.
+- The course repository on github was completely reorganized to make it
+  easier to navigate.
+- All of the worked examples and pages were re-designed with better syntax
+  highlighting among other things.
+- Several typos were corrected throughout the material.
+
 # Spring 2022
 
 - Three of the lecture videos have been replaced

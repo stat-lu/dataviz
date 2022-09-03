@@ -28,27 +28,7 @@ options(scipen = 999)
 
 Let's get started working with R! In this worked example, we will learn how
 to install and use packages in R as well as perform some basic operations on
-vectors, matrices, and data frames. First off, if you're familiar with
-other programming languages since before, you will notice that
-R is an *interpreted* language, which means that you don't need to compile
-anything.^[R actually does a bit of just-in-time compiling for you, but you
-will hardly notice.]
-
-That means it's very easy to write and run an R program. You simply put some R
-code in a text file with the ending `.R`, and then you can run that program
-using a terminal or a graphical user interface like R Studio. So,
-let's say we have a script called [`helloworld.R`](helloworld.R). Then it's just
-a matter of calling `Rscript`^[`Rscript` is a helper application that is
-installed alongside R to make it easy to run scripts.] on that scripts, like
-this.
-
-```{bash}
-Rscript helloworld.R
-```
-
-This is just to showcase that R is really just a program that reads and
-interprets text files. The `.R` (and `.Rmd`) files that you will be
-working with are just that: text.
+vectors, matrices, and data frames. 
 
 # Objects in R
 

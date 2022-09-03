@@ -234,7 +234,7 @@ is `"https://cloud.r-project.org"`.
 
 To use a package in R, you can call the `library(<package-name>)` function,
 after which all of that packages functions---and often also its
-datasets---will be available to you directly in your working environment.
+data sets---will be available to you directly in your working environment.
 
 Load the **ggplot2** package we just installed by calling the following.
 
@@ -439,7 +439,7 @@ c("a", "b", "c") %in% "a"
 ```
 
 This is very useful for checking which observations on a variable belong to
-a set of levels. Here we re-use the `d` dataset from above to check which
+a set of levels. Here we re-use the `d` data set from above to check which
 persons are vegans or vegetarians.
 
 ```{r}

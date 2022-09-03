@@ -166,8 +166,10 @@ Matrices are two-dimensional arrays. Just like vectors, they can only contain a
 single type of values.
 
 ```{r}
-m <- rbind(c(1, 2),
-           c(3, NA))
+m <- rbind(
+  c(1, 2),
+  c(3, NA)
+)
 m
 ```
 

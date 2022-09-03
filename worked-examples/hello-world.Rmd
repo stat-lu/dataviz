@@ -86,7 +86,7 @@ c(1, 10) * 2       # 2 is multiplied with each element
 c(NA, 3.123, pi)^2 # pi is an object that's always available
 ```
 
-If you combine two vectors thare are of different length but where the
+If you combine two vectors there are of different length but where the
 shorter vector's length is a *multiple* of the longer vector's length, then
 R will *recycle* the shorter vector.
 

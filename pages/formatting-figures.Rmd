@@ -241,7 +241,7 @@ your plots to your hard drive and then input them manually into your document.
 First write the code for the plot and directly afterwards you call
 `ggsave()` as in the code below.
 
-```{r, eval = FALSE}
+```{r, eval = FALSE, echo = TRUE}
 ggplot(...)
 
 ggsave("filename.png", width = 3, height = 2.3)

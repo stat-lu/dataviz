@@ -135,8 +135,13 @@ you do include code, please avoid having it escape into the margin by using
 multiple lines to separate code. Good code style is not a requirement in this
 course but is nevertheless good practice. It might be a good idea to conform to
 a style guide such as [the tidyverse style
-guide](https://style.tidyverse.org/). R Studio can also format code for you if
-you select it and hit `Cmd/Ctrl + Alt + a`.
+guide](https://style.tidyverse.org/). 
+
+If you want to format code automatically, we suggest you install the
+[styler package](https://styler.r-lib.org/). After installing the package,
+you can click on *Addins* in the toolbar in R Studio followed by
+*Style active file* (under the Styler header) to format the 
+current file using the tidyverse style.
 
 # Peer Review and Examination
 

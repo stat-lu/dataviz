@@ -60,14 +60,14 @@ function is usually your best option; it simply displays the first few rows of
 the data.
 
 ```{r}
-head(cars)
+head(mtcars)
 ```
 
 The second argument of `head()` decides how many rows to show. Modify this
 value to show the first 10 cars of the dataset.
 
 `glimpse()` is very useful when you have more variables (since it is more
-compact). Call `glimpse()` on `cars` and notice that it lists the variables in a
+compact). Call `glimpse()` on `mtcars` and notice that it lists the variables in a
 table along with the first values of each variable.
 
 ## `mapping`

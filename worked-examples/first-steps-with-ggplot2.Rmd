@@ -1,5 +1,6 @@
 ---
-title: "Worked Example: First Steps with ggplot2"
+title: "Introduction to ggplot2"
+subtitle: "Exercises"
 author: "Johan Larsson"
 output:
   bookdown::html_document2:
@@ -9,9 +10,7 @@ output:
     global_numbering: true
 ---
 
-```{r setup, include=FALSE}
-
-knitr::opts_chunk$set(
+```{r setup, include=FALSE}  knitr::opts_chunk$set(
   echo = TRUE,
   message = FALSE,
   warning = FALSE,
@@ -64,7 +63,7 @@ the data.
 head(cars)
 ```
 
-The second argument of `heads()` decides how many rows to show. Modify this
+The second argument of `head()` decides how many rows to show. Modify this
 value to show the first 10 cars of the dataset.
 
 `glimpse()` is very useful when you have more variables (since it is more

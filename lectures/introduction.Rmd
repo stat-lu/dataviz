@@ -17,15 +17,20 @@ output:
 ---
 
 ```{r setup, include = FALSE}
+knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
+
 knitr::opts_chunk$set(
   echo = FALSE,
   warning = FALSE,
   message = FALSE,
   cache = FALSE,
-  dev = "svg",
-  fig.width = 7,
-  fig.height = 5,
-  fig.align = "center"
+  dev = "png",
+  fig.width = 8,
+  fig.height = 6,
+  fig.align = "center",
+  fig.retina = 3,
+  dev.args = list(pointsize = 16),
+  crop = TRUE
 )
 
 library(tidyverse)
@@ -47,7 +52,7 @@ BibOptions(
 bib <- ReadBib("assets/references.bib")
 
 if (!interactive()) {
-  theme_set(theme_grey(base_size = 14))
+  theme_set(theme_grey(base_size = 16))
 }
 
 xaringanExtra::use_search(show_icon = TRUE)
@@ -62,11 +67,15 @@ class: section-title
 ---
 class: middle, center
 
-```{r, fig.height = 5}
-d <- tibble(x = c(2010:2018, 2018:2025),
-            y = c(2, 5, 6.5, 9, 12.5, 15.5, 18, 26, 33,
-                  33, 41, 50.5, 64.5, 79.5, 101, 129.5, 175),
-            type = as.factor(rep(c("true", "projected"), c(9, 8)))) %>%
+```{r}
+d <- tibble(
+  x = c(2010:2018, 2018:2025),
+  y = c(
+    2, 5, 6.5, 9, 12.5, 15.5, 18, 26, 33,
+    33, 41, 50.5, 64.5, 79.5, 101, 129.5, 175
+  ),
+  type = as.factor(rep(c("true", "projected"), c(9, 8)))
+) %>%
   mutate(type = relevel(type, "true"))
 
 ggplot(d, aes(x = x, y = y, lty = type)) +
@@ -84,7 +93,7 @@ ggplot(d, aes(x = x, y = y, lty = type)) +
 ---
 class: center, middle
 
-```{r, fig.cap = "Interest in data visualization as a fraction of the maximum interest recorderd (using Google Trends). The blue line represents a moving average.", fig.height = 5}
+```{r, fig.cap = "Interest in data visualization as a fraction of the maximum interest recorderd (using Google Trends). The blue line represents a moving average."}
 d <- read_csv("data/dataviz-trends.csv") %>%
   mutate(date = as.Date(paste0(date, "-01")))
 ggplot(d, aes(x = date, y = interest)) +
@@ -129,7 +138,7 @@ tmp[!duplicated(tmp), ] %>%
 class: center, middle
 
 .pull-right[
-```{r, fig.width = 4, fig.height = 6}
+```{r, fig.width = 4.5, fig.height = 8}
 ggplot(swe_employment, aes(long, lat, group = region, fill = employment)) +
   geom_polygon() +
   scale_fill_continuous(name = "employment (%)") +
@@ -149,15 +158,15 @@ class: section-title
 
 ## First attempt
 
-```{r}
+```{r, fig.width = 9, fig.height = 7}
 library(gapminder)
 
 gapminder %>%
   pivot_longer(c("lifeExp", "gdpPercap")) %>%
   ggplot(aes(year, value, colour = country)) +
-    geom_line(show.legend = FALSE) +
-    scale_colour_manual(values = country_colors) +
-    labs(x = "year", y = "value") +
+  geom_line(show.legend = FALSE) +
+  scale_colour_manual(values = country_colors) +
+  labs(x = "year", y = "value") +
   facet_wrap(vars(name), scales = "free_y")
 ```
 
@@ -165,7 +174,7 @@ gapminder %>%
 
 ## Transforming the axis
 
-```{r}
+```{r, fig.width = 9, fig.height = 7}
 gapminder %>%
   pivot_longer(c("lifeExp", "gdpPercap")) %>%
   ggplot(aes(year, value, colour = country)) +
@@ -180,28 +189,31 @@ gapminder %>%
 
 ## Grouping time, adding population
 
-```{r}
+```{r, fig.width = 9, fig.height = 7}
 gapminder %>%
   mutate(year = cut(year, 9)) %>%
   ggplot(aes(gdpPercap,
-             lifeExp,
-             colour = country,
-             group = country,
-             size = pop)) +
-  stat_summary(fun = "mean", geom = "point", show.legend = FALSE,
-               alpha = 0.5) +
+    lifeExp,
+    colour = country,
+    group = country,
+    size = pop
+  )) +
+  stat_summary(
+    fun = "mean", geom = "point", show.legend = FALSE,
+    alpha = 0.5
+  ) +
   scale_x_log10() +
   scale_colour_manual(values = country_colors) +
   facet_wrap(vars(year)) +
-  xlab("median life expectancy") +
-  ylab("mean GDP per capita")
+  ylab("median life expectancy") +
+  xlab("mean GDP per capita")
 ```
 
 ---
 
 ## Animated plots (using **gganimate**)
 
-```{r, dev = "png", fig.height = 7, fig.width = 9, res = 296, pointsize =10}
+```{r}
 library(gganimate)
 
 ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, color = continent)) +
@@ -209,9 +221,11 @@ ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, color = continent)) +
   geom_point(alpha = 0.6) +
   scale_size("population", limits = range(gapminder$pop)) +
   scale_x_log10(limits = range(gapminder$gdpPercap)) +
-  labs(title = 'Year: {frame_time}',
-       x = 'GDP per capita',
-       y = 'life expectancy') +
+  labs(
+    title = "Year: {frame_time}",
+    x = "GDP per capita",
+    y = "life expectancy"
+  ) +
   theme_classic() +
   transition_time(year) +
   ease_aes()
@@ -299,32 +313,6 @@ the assignment and project will be reviewed through peer-feedback
 knitr::include_graphics("images/feedback.jpg")
 ```
 ]
-
----
-
-.pull-left[
-## Course literature
-
-* Data visualization: Charts, Maps, and Interactive Graphics
-  `r Citep(bib, "grant2018")`. Available through LUBsearch.
-* A Layered Grammar of Graphics `r Citep(bib, "wickham2010")`. Available
-  online for free.
-]
-
-.pull-right[
-```{r, out.width = "70%"}
-knitr::include_graphics("images/grant-book.jpg")
-```
-]
-
---
-
-## Other resources
-
-* [stackoverflow.com](https://stackoverflow.com/) (tag: ggplot2)
-* R Graphics Cookbook `r Citep(bib, "chang2013")`. Abbreviated version
-  available online at <http://www.cookbook-r.com/Graphs/>, but
-  it might be somewhat outdated.
 
 ---
 

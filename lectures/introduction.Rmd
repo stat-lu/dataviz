@@ -302,32 +302,6 @@ knitr::include_graphics("images/feedback.jpg")
 
 ---
 
-.pull-left[
-## Course literature
-
-* Data visualization: Charts, Maps, and Interactive Graphics
-  `r Citep(bib, "grant2018")`. Available through LUBsearch.
-* A Layered Grammar of Graphics `r Citep(bib, "wickham2010")`. Available
-  online for free.
-]
-
-.pull-right[
-```{r, out.width = "70%"}
-knitr::include_graphics("images/grant-book.jpg")
-```
-]
-
---
-
-## Other resources
-
-* [stackoverflow.com](https://stackoverflow.com/) (tag: ggplot2)
-* R Graphics Cookbook `r Citep(bib, "chang2013")`. Abbreviated version
-  available online at <http://www.cookbook-r.com/Graphs/>, but
-  it might be somewhat outdated.
-
----
-
 class: section-title
 
 # Good luck!

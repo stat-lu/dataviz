@@ -25,6 +25,64 @@ knitr::opts_chunk$set(
 options(scipen = 999)
 ```
 
+# Fall 2022
+
+## Summary of Changes Since Last Time
+
+A new worked example was introduced, one of the assignments was revamped, and
+quizzes were tweaked.
+
+## Summary of Students' Evaluation of the Course
+
+Roughly half of the students enrolled responded in the evaluation.
+The overall impression was favorable, with around 80% of students reporting
+the course to be "excellent". Student's valued the structure of the course,
+including the self-paced aspects and well-produced video lectures.
+
+Suggestions for improvement included more worked examples, more focus on
+business data, and a suggested schedule for following the course.
+
+## Summary of Teachers' Overall Assessment
+
+The course is quite stable now and worked well in general. One aspect which
+I have mixed feelings about is the peer review component. Some students
+take peer reviews seriously and provide detailed feedback and point out
+mistakes and issues that even I as a teacher missed. But many students do
+not seem to put an effort into their peer reviews. 
+
+## Course Director's Reflections on the Course Implementation and Results
+
+I am happy about most parts of the course, except for the course literature,
+and possibly some of the assignments.
+
+## Course Director's Proposals for Changes
+
+- Change course literature for the next iteration.
+  This change has already been set in motion.
+- Switch from R Markdown to Quarto instead.
+
+# Fall 2021
+
+## Feedback
+
+Out of 19 respondents, one gave the course a "satisfactory" score,
+5 "very good", and 13 "excellent". As before, most of the respondents
+were equally positive for most of the other questions. The students
+reported that they spent, on average, 13.1 hours of work each week on the
+course.
+
+As far as constructive feedback goes, the most common issue was
+that people thought the course was too demanding for the amount of credits.
+There were other suggestions and feedback as well, but none of it was
+shared between the participants.
+
+## Changes in Response to Feedback
+
+Several of the more demanding quiz questions have now been removed and 
+others have been simplified. A few smaller parts of the course have been
+altogether removed. As a result, several of the lecture videos have been
+revised.
+
 # Spring 2022
 
 ## Summary of Changes Since Last Time

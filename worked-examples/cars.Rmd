@@ -10,7 +10,6 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-
 knitr::opts_chunk$set(
   echo = TRUE,
   message = FALSE,
@@ -100,7 +99,8 @@ in the call to `read_csv()`, like this.
 
 ```{r}
 us_cars <- read_csv(
-  "https://raw.githubusercontent.com/stat-lu/dataviz/main/data/us_cars.csv")
+  "https://raw.githubusercontent.com/stat-lu/dataviz/main/data/us_cars.csv"
+)
 ```
 
 ## Taking a Glimpse
@@ -289,14 +289,14 @@ Let's start by example. Say that we want to convert the price of the cars
 in the `us_cars` dataset to Swedish kronor instead. Here's how to do this:
 
 ```{r}
-mutate(us_cars, price = price*8.92)
+mutate(us_cars, price = price * 8.92)
 ```
 
 In this instance we simply overwrote the `price` variable with a new value,
 but mutate can also be used to create new variables.
 
 ```{r}
-mutate(us_cars, price_sek = price*8.92)
+mutate(us_cars, price_sek = price * 8.92)
 ```
 
 Inside `mutate()`, you can basically use any operation that would work on a
@@ -306,9 +306,9 @@ types, or use arbitrary functions (as long as they return a new vector).
 ```{r}
 mutate(
   us_cars,
-  year = as.integer(year),          # convert year from a double to an integer
-  state = toupper(state),           # capitalize state names
-  price = round(price, -2),         # round to hundreds
+  year = as.integer(year), # convert year from a double to an integer
+  state = toupper(state), # capitalize state names
+  price = round(price, -2), # round to hundreds
   brand = fct_lump_prop(brand, 0.1) # lump together low-frequent brands
 )
 ```
@@ -426,7 +426,7 @@ excludes the `NA` observations in that particular function call.
 
 The second option is usually the best choice, since it means that
 you can still keep the `NA` values around when you want to produce
-visualizations, but in this course we'll sometimes do `na_drop()` to
+visualizations, but in this course we'll sometimes do `drop_na()` to
 make working with the datasets a little bit smoother.
 
 # Pipes

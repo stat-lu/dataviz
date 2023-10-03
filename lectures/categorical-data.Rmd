@@ -184,7 +184,7 @@ again need to use a new package:
 [waffle](https://CRAN.R-project.org/package=waffle)
 
 ```{r, echo = FALSE, fig.width = 7, fig.height = 5, fig.cap = "A waffle plot of the happiness data. Every square represents approximately 10 people. The code is quite complicated (see the source code)."}
-# devtools::install_github("hrbrmstr/waffle")
+# install.packages("waffle")
 library(waffle)
 
 happiness_counts <-

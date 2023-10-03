@@ -161,26 +161,8 @@ newspapers. They are, as we mentioned in the lecture, at their best when some of
 the categories are so small that their sizes are hard to estimate in a
 bar chart or mosaic plot.
 
-There is a great package for mosaic plots that interact well with ggplot2 called
-[waffle](https://CRAN.R-project.org/package=waffle). Unfortunately, the current
-version on CRAN is outdated^[Feel free to voice your support for a CRAN update
-at <https://github.com/hrbrmstr/waffle/issues/72>.] and much of the new
-functionality that makes it work well with ggplot is only available from the
-[development version at GitHub](https://github.com/hrbrmstr/waffle).
-
-For that reason, waffle plots are not compulsory material in this course and
-will instead serve as bonus material for those who are interested.
-
-To download development versions of R packages from GitHub, you need the 
-[remotes](https://CRAN.R-project.org/package=remotes) package or the
-[devtools](https://CRAN.R-project.org/package=devtools) package.
-
 ```{r, eval = FALSE}
-# install remotes
-install.packages("remotes")
-
-# install waffle
-remotes::install_github("hrbrmstr/waffle") # or devtools::install_github()
+# install.packages("waffle") # if you haven't already instead it
 ```
 
 The waffle package requires that our data contains counts of the categories, so

@@ -12,14 +12,14 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  echo = TRUE,
-  message = FALSE,
-  warning = FALSE,
-  cache = FALSE,
-  fig.align = "center",
-  fig.width = 5,
+  echo       = TRUE,
+  message    = FALSE,
+  warning    = FALSE,
+  cache      = FALSE,
+  fig.align  = "center",
+  fig.width  = 5,
   fig.height = 4,
-  dev = "png"
+  dev        = "png"
 )
 options(scipen = 999)
 ```

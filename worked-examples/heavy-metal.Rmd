@@ -10,7 +10,6 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-
 knitr::opts_chunk$set(
   echo = TRUE,
   message = FALSE,
@@ -58,7 +57,7 @@ RDH coordinates have the EPSG code 28992. So we use that as input.
 ```{r}
 library(sf)
 
-meuse_sf <- 
+meuse_sf <-
   meuse %>%
   st_as_sf(coords = c("x", "y"), crs = 28992) %>%
   st_transform(crs = 4326)
@@ -158,6 +157,8 @@ library(ggmap)
 To download a map, we need to call `get_stamenmap()` and specify a bounding
 box. Fortunately for us, we already computed the bounding box of the points in
 the last step, so let's use that.
+
+**Note: Stamen Maps have been incorporated into Stadia maps and `get_stamenmap()` is currently returning brown warning tiles occasionally and will stop working completely after October 31. So you may not see the same result here if you follow along.**
 
 ```{r}
 # extend the ranges slightly
@@ -259,7 +260,7 @@ and addresses that you want to geocode.
 library(tidygeocoder)
 
 addresses <- tribble(
-  ~ name,          ~ address,
+  ~name,          ~address,
   "Kasteel Stein", "Kasteel Stein, Netherlands"
 )
 ```
@@ -272,9 +273,9 @@ function, so we need to specify which function to use with `::` here.]
 kasteel_stein <-
   addresses %>%
   tidygeocoder::geocode(
-    address,       # map to address
+    address, # map to address
     method = "osm" # for Nominatim API
-  ) 
+  )
 
 kasteel_stein
 ```

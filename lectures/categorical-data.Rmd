@@ -1,7 +1,9 @@
 ---
 title: "Categorical Data"
 subtitle: "Data Visualization"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 institute: "The Department of Statistics, Lund University"
 date: ""
 bibliography: "assets/references.bib"
@@ -58,10 +60,10 @@ options(digits = 3)
 
 ## Visualizing Categorical Data
 
-usually, the real aim is to visualize **proportions**
+Usually, the real aim is to visualize **proportions**.
 
 .pull-left[
-### Example
+### Example:
 
 happiness data from the US in 2006
 
@@ -108,7 +110,9 @@ ggplot(happiness, aes(happy)) +
 
 ## Grouped Bar Charts
 
-good when counts are what matters or when you have small data sets
+Grouped bar chart is good 
+- when counts are what matters or 
+- when you have small data sets
 
 ```{r, fig.width = 9, fig.height = 5}
 ggplot(happiness, aes(gender, fill = happy)) +
@@ -119,7 +123,7 @@ ggplot(happiness, aes(gender, fill = happy)) +
 
 ## Stacked Bar Charts
 
-compact way to visualize counts, but seldom preferable over grouped bar chart
+Stacked bar chart is compact way to visualize counts, but seldom preferable over grouped bar chart.
 
 ```{r, fig.width = 7, fig.height = 5}
 ggplot(happiness, aes(gender, fill = happy)) +
@@ -130,9 +134,9 @@ ggplot(happiness, aes(gender, fill = happy)) +
 
 ## Proportional Grouped Bar Charts
 
-good default choice for bar charts (when you have enough data)
-
-but need to summarize data before plotting!
+Proportional grouped bar chart is 
+- good default choice for bar charts (when you have enough data),
+- but need to summarize data before plotting!
 
 ```{r, fig.width = 7, fig.height = 3.5}
 happiness_props <- group_by(happiness, gender, happy) %>%
@@ -147,10 +151,11 @@ ggplot(happiness_props, aes(gender, prop, fill = happy)) +
 
 ## Proportional Stacked Bar Charts
 
-compact way to visualize proportions
+Proportional stacked bar chart is 
+- compact way to visualize proportions.
+- slightly more intuitive than grouped proportional bar charts, 
+- but harder to read.
 
-slightly more intuitive than grouped proportional bar charts, but harder to
-read
 ```{r, fig.width = 6}
 ggplot(happiness, aes(gender, fill = happy)) +
   geom_bar(position = "fill", col = "black") + #<<
@@ -161,10 +166,9 @@ ggplot(happiness, aes(gender, fill = happy)) +
 
 ## Mosaic Plots
 
-a type of stacked bar chart that maps category size to
-the width of bars
+Mosaic plot is a type of stacked bar chart that maps category size to the width of bars.
 
-need to use another package for this:
+- need to use another package for this:
 [ggmosaic](https://CRAN.R-project.org/package=ggmosaic)
 
 ```{r, fig.width = 6}
@@ -178,9 +182,9 @@ ggplot(happiness) +
 
 ## Waffle Plots
 
-suitable when there are large differences between categories
+Waffle plot is suitable when there are large differences between categories.
 
-again need to use a new package:
+- again need to use a new package:
 [waffle](https://CRAN.R-project.org/package=waffle)
 
 ```{r, echo = FALSE, fig.width = 7, fig.height = 5, fig.cap = "A waffle plot of the happiness data. Every square represents approximately 10 people. The code is quite complicated (see the source code)."}
@@ -205,7 +209,7 @@ ggplot(happiness_counts, aes(fill = happy, values = n)) +
 
 ## What About Pie Charts?
 
-okay in a few instances, but avoid as a thumb rule
+Pie chart is OK in a few instances, but avoid as a thumb rule.
 
 .pull-left[
 ```{r fig.width = 4, fig.height = 6, echo = FALSE}
@@ -249,7 +253,7 @@ ggplot(happiness_bins, aes(work, n, fill = work)) +
 
 ## Pay Attention to Mappings
 
-choice of mappings is critical when dealing with categorical data!
+The choice of mappings is critical when dealing with categorical data!
 
 ```{r, fig.width = 7, fig.height = 4}
 ggplot(happiness, aes(happy, fill = gender)) + #<<
@@ -261,9 +265,8 @@ ggplot(happiness, aes(happy, fill = gender)) + #<<
 
 ## Ordering
 
-if variable is ordinal: just format it as an ordered factor
-
-if variable is **not** ordinal: consider ordering it manually!
+- if the variable is ordinal, format it as an ordered factor.
+- if the variable is **not** ordinal, consider ordering it manually!
 
 ```{r, fig.width = 10, fig.height = 3.5}
 # no ordering
@@ -278,9 +281,8 @@ happiness %>%
 
 ## Ordering
 
-if variable is ordinal: just format it as an ordered factor
-
-if variable is **not** ordinal: consider ordering it manually!
+- if the variable is ordinal, format it as an ordered factor.
+- if the variable is **not** ordinal, consider ordering it manually!
 
 ```{r, fig.width = 10, fig.height = 3.5}
 happiness %>%

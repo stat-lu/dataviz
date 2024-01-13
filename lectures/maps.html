@@ -4,7 +4,8 @@
     <title>Maps</title>
     <meta charset="utf-8" />
     <meta name="author" content="Johan Larsson" />
-    <script src="libs/header-attrs-2.15/header-attrs.js"></script>
+    <meta name="author" content="Behnaz Pirzamanbein" />
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link rel="stylesheet" href="assets/styles.css" type="text/css" />
   </head>
@@ -20,6 +21,9 @@ class: middle, center, title-slide
 ]
 .author[
 ### Johan Larsson
+]
+.author[
+### Behnaz Pirzamanbein
 ]
 .institute[
 ### The Department of Statistics, Lund University
@@ -38,7 +42,7 @@ If you find spatial data, your first urge should be to map it!
 
 ### Themes for Maps
 
-the default ggplot2 theme is not suitable for maps
+The default ggplot2 theme is not suitable for maps.
 
 
 ```r
@@ -47,7 +51,7 @@ library(tidyverse)
 theme_set(theme_void())
 ```
 
-`theme_bw()` is also a good choice, particularly if you need coordinates
+`theme_bw()` is also a good choice, particularly if you need coordinates.
 
 
 
@@ -55,7 +59,7 @@ theme_set(theme_void())
 
 ## Mapping with ggplot2: Two Methods
 
-### Native ggplot2
+### 1. Native ggplot2
 
 - `geom_polygon()` and `coord_map()`
 - no external dependencies
@@ -64,9 +68,9 @@ theme_set(theme_void())
 --
 
 .pull-left[
-### Simple Features
+### 2. Simple Features
 
-what we will use instead
+What we will use instead
 
 - `geom_sf()` and `coord_sf()`
 - much more powerful
@@ -117,9 +121,9 @@ Visualizations can combine these types however you like.
 
 ## Vector Data
 
-often have separate data sources: one for the map, one for the data of interest
+We often have separate data sources: one for the map and one for the data of interest.
 
-often need to merge these data sets together
+We often need to merge these data sets together.
 
 Simple features are compatible with most tidyverse operations: `filter()`,
 `select()`, `mutate()`, `group_by()`, `*_join()` etc.
@@ -156,13 +160,13 @@ ggplot(usa_arr, aes(fill = Murder)) +
 
 &lt;img src="maps_files/figure-html/unnamed-chunk-7-1.png" width="648" style="display: block; margin: auto;" /&gt;
 
-easy to read, but area of region influences visual impression
+It is easy to read, but the area of the region influences the visual impression.
 
 ---
 
 ### Choropleth Alternatives
 
-use **sf** package to get centroid of each state and plot bubbles
+We can use **sf** package to get centroid of each state and plot bubbles
 
 
 ```r
@@ -175,7 +179,7 @@ ggplot(usa) +
 
 &lt;img src="maps_files/figure-html/unnamed-chunk-8-1.png" width="648" style="display: block; margin: auto;" /&gt;
 
-harder to read, but visual impression is no longer influenced by area
+It is harder to read, but the visual impression is no longer influenced by area.
 
 ---
 
@@ -192,8 +196,8 @@ airports_raw &lt;- read_tsv(
 )
 ```
 
-if we want to be able to use projections, we need to convert this
-data to a simple features object
+If we want to be able to use projections, we need to convert this
+data to a simple features object.
 
 
 ```r
@@ -214,7 +218,7 @@ Original data is from &lt;https://slcladal.github.io/data/airports.txt&gt;.
 
 ### Stacking Layers
 
-easy to stack layers of different geometries (here: polygons and points)
+It is easy to stack layers of different geometries (here: polygons and points).
 
 
 ```r
@@ -229,7 +233,9 @@ ggplot() +
 
 ### Airports in Skåne
 
-first filter the data
+&lt;ol&gt;
+&lt;li&gt; filter the data
+&lt;/ol&gt;
 
 
 ```r
@@ -244,7 +250,9 @@ skane_air &lt;- st_intersection(airports_sweden, skane_map)
 --
 
 .pull-left[
-then plot it!
+&lt;ol start = 2&gt; 
+&lt;li&gt; plot it!
+&lt;/ol&gt;
 
 
 ```r
@@ -306,9 +314,9 @@ bbox &lt;- c(
   top    = 29.78400
 )
 
-map &lt;- get_stamenmap(
+map &lt;- get_stadiamap(
   bbox, 
-  maptype = "toner", 
+  maptype = "stamen_toner", 
   zoom = 14
 )
 
@@ -329,7 +337,7 @@ ggmap(map)
 robberies &lt;- filter(crime, offense == "robbery")
 ```
 
-stacking layers on raster maps is also easy
+Stacking layers on raster maps is also easy.
 
 .pull-left[
 
@@ -387,7 +395,7 @@ This example was adapted from &lt;https://github.com/dkahle/ggmap/&gt;.
 
 Geocoding converts addresses or names of places into **coordinates**.
 
-many options available; here we use the
+Many options are available; here we use the
 [tidygeocoder package](https://CRAN.R-project.org/package=tidygeocoder):
 
 
@@ -435,7 +443,7 @@ in one (or several) of the following aspects:
 - directions
 - distances
 
-The larger the scale of the map is, the worse the distortion becomes
+The larger the scale of the map is, the worse the distortion becomes.
 
 Every map projection is a compromise.
 ]
@@ -475,7 +483,7 @@ world_map &lt;-
 
 ### Conformal
 
-preserves angles (shapes) locally
+- preserves angles (shapes) locally
 
 
 ```r
@@ -492,7 +500,7 @@ world_map + coord_sf(crs = st_crs("EPSG:3857"))
 
 ### Equal-Area
 
-preserves area measure
+- preserves area measure
 
 
 ```r
@@ -508,7 +516,7 @@ world_map + coord_sf(crs = st_crs("ESRI:54009"))
 
 ### Equidistant
 
-preserves distance between any two points
+- preserves distance between any two points
 
 
 ```r
@@ -525,7 +533,7 @@ world_map + coord_sf(crs = st_crs("ESRI:54032"))
 
 ### Compromises
 
-tries to compromise distortions among the various aspects
+- tries to compromise distortions among the various aspects
 
 
 ```r

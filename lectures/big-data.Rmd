@@ -1,7 +1,9 @@
 ---
 title: "Big Data"
 subtitle: "Data Visualization"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 institute: "The Department of Statistics, Lund University"
 date: ""
 output:
@@ -59,11 +61,11 @@ options(digits = 3)
 
 ## Big Data
 
-big data: many variables **and/or** observations
+Big Data: many variables **and/or** observations
 
-here we consider the case of many observations
+Here, we consider the case of many observations.
 
-the problem with many observations is usually **overlap**
+The problem with many observations is usually the **overlap** of data points.
 
 .pull-left[
 ```{r diamonds1, eval = FALSE}
@@ -82,7 +84,7 @@ ggplot(diamonds,
 
 ## Aesthetics
 
-simple, but not always effective, solutions: modify aesthetics (size, opacity)
+Simple, but not always effective, solutions: modify aesthetics (size, opacity)
 
 .pull-left[
 ```{r}
@@ -104,7 +106,7 @@ ggplot(diamonds,
 
 ## Facets
 
-sometimes enough to split data into facets
+Sometimes it is enough to split data into facets.
 
 ```{r, fig.width = 10, fig.height = 5}
 ggplot(diamonds, aes(carat, price)) +
@@ -119,18 +121,17 @@ ggplot(diamonds, aes(carat, price)) +
 The bin-summarize-smooth framework `r Citep(bib, "wickham2013a")` is a principled
 methodology to handle large data.
 
-**Binning** is the process of grouping values into *bins*; **summarizing** is the
-act of computing a summary statistics (count, mean) inside each bean.
+- **Binning** is the process of grouping values into *bins*; **summarizing** is the act of computing a summary statistics (count, mean) inside each bean.
 
-**Smoothing** smooths out noisy data, revealing hard-to-see patterns.
+- **Smoothing** smooths out noisy data, revealing hard-to-see patterns.
 
-already encountered binning for one variable: histograms
+We have already encountered binning for one variable: histograms
 
 ---
 
 ## Binning
 
-simple, but not very sophisticated, idea
+Binning is simple, but not very sophisticated, idea.
 
 ```{r, fig.width = 10, fig.height = 2}
 trees <- tsibble::as_tsibble(treering)
@@ -147,9 +148,9 @@ ggplot(trees, aes(index, value)) + geom_line(alpha = 0.2) +
 
 ---
 
-### Two-Dimensional Binning
+### 1. Two-Dimensional Binning
 
-a type of two-dimensional histogram, mapping counts to color instead of height
+A type of two-dimensional histogram, mapping counts to color instead of height
 and binning into a two-dimensional geometric shape
 
 ```{r, fig.width = 7, fig.height = 4.8}
@@ -160,10 +161,10 @@ ggplot(diamonds, aes(carat, price)) +
 
 ---
 
-### Hexagonal Binning
+### 2. Hexagonal Binning
 
-rectangles may obscure information for some data and it is therefore usually better
-to use hexagons instead, via `geom_hex()`
+Rectangles may obscure information for some data and it is therefore usually better
+to use hexagons instead, via `geom_hex()`.
 
 ```{r, fig.width = 7, fig.height = 4.8}
 ggplot(diamonds, aes(carat, price)) +
@@ -175,9 +176,9 @@ ggplot(diamonds, aes(carat, price)) +
 
 ## Smoothing
 
-powerful transformation for noisy data
+Smoothing is a powerful transformation for noisy data.
 
-equivalent to applying a statistical model to the data
+It is equivalent to applying a statistical model to the data.
 
 ```{r, fig.width = 10, fig.height = 4}
 ggplot(trees, aes(index, value)) +
@@ -190,7 +191,7 @@ ggplot(trees, aes(index, value)) +
 
 ### Smoothers are Sensitive
 
-thumb rule: stick with smoothers that you understand
+Thumb rule: stick with smoothers that you understand
 
 ```{r, echo = FALSE}
 p <- tsibble::as_tsibble(Nile) %>%
@@ -223,7 +224,7 @@ p + geom_smooth(
 
 Two-dimensional density plots is a type of two-dimensional **smoothing**.
 
-uses a density kernel, which is sensitive to parameters
+It uses a density kernel, which is sensitive to parameters.
 
 ```{r, fig.width = 8, fig.height = 5}
 ggplot(diamonds, aes(carat, price)) +
@@ -232,7 +233,7 @@ ggplot(diamonds, aes(carat, price)) +
 
 ---
 
-for other data, a density plot may work well
+- For other data, a density plot may work well.
 
 ```{r, fig.width = 8, fig.height = 5}
 ggplot(faithful, aes(eruptions, waiting)) +
@@ -240,7 +241,7 @@ ggplot(faithful, aes(eruptions, waiting)) +
   geom_point()
 ```
 
-Hexagonal binning is in general a **safer bet**.
+- Hexagonal binning is in general a **safer bet**.
 
 ---
 

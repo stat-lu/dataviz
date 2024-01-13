@@ -1,7 +1,9 @@
 ---
 title: "Introduction"
 subtitle: "Data Visualization"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 institute: "The Department of Statistics, Lund University"
 date: ""
 bibliography: "assets/references.bib"
@@ -305,7 +307,7 @@ class: section-title
 .pull-left[
 ### Peer feedback
 
-the assignment and project will be reviewed through peer-feedback
+The assignment and project will be reviewed through peer-feedback.
 ]
 
 .pull-right[

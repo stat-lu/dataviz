@@ -1,7 +1,9 @@
 ---
 title: "Data-Ink"
 subtitle: "Data Visualization"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 institute: "The Department of Statistics, Lund University"
 date: ""
 bibliography: "assets/references.bib"
@@ -142,7 +144,7 @@ ggplot(mpg2, aes(cyl)) +
 
 ## Redundant Data-Ink
 
-**redundant** data-ink: ink displaying information already shown by other ink
+**Redundant** data-ink: ink displaying information already shown by other ink.
 
 .pull-left[
 ```{r, fig.cap = "lots of redundant ink", echo = FALSE, fig.height = 4.5}
@@ -165,14 +167,14 @@ ggplot(mpg2, aes(cyl)) +
 ```
 ]
 
-**note:** redundancy is not always bad
+**Note:** redundancy is not always bad.
 
 ---
 
 ## ggthemes
 
 **ggthemes** `r Citep(bib, "arnold2019")` provides a theme and some custom
-plots for ggplot2
+plots for ggplot2.
 
 .pull-left[
 ```{r, fig.height = 3.5}

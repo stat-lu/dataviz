@@ -1,6 +1,8 @@
 ---
 title: "The Anatomy of a Plot"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 output: 
   bookdown::html_document2:
     toc: true
@@ -24,10 +26,7 @@ knitr::opts_chunk$set(
 options(scipen = 999)
 ```
 
-To reason about visualizations we need to know a little bit about the anatomy of 
-a plot and in this text we'll talk about some of the fundamental parts of a plot
-so that you know the lingo that we'll be using extensively throughout this 
-course.
+To understand visualizations effectively, it's important to be familiar with the anatomy of a plot. In this text, we will discuss some of the fundamental parts of a plot, acquainting you with the terminology that will be extensively used throughout this course.
 
 To get going, we first need a plot to focus on. We'll use a simple plot of
 horsepower versus fuel consumption from the `mtcars` dataset.
@@ -58,14 +57,9 @@ mtcars %>%
 knitr::include_graphics("images/anatomy-canvas.png")
 ```
 
-The canvas, also called the plot area, is the area on which the data is drawn. 
-Everything outside of the canvas will be annotations and usually don't display
-data directly.
+The canvas, also called the plot area, is the area where the data is drawn. Everything outside of the canvas consists of annotations, which usually do not display data directly.
 
-If you use facets in your plot, you might have several canvasses
-in a visualization. We'll discuss facets in detail later, but for now it's
-sufficient that you think of facets as multiple plots that you line up one after
-the other.
+If you use facets in your plot, your visualization might contain several canvases. We'll discuss facets in detail later, but for now, it's sufficient to think of facets as multiple plots arranged in sequence, one after the other.
 
 # Grid
 
@@ -78,8 +72,7 @@ by a grid. A grid often makes it easier to compare data points, especially when
 they are far apart. Grids are particularly useful when there are few 
 observations in a visualization.
 
-Grids often have major and minor gridlines, which is also true for this plot,
-although the difference is slight.
+Grids often have major and minor gridlines, and this plot is no exception, although the difference between them is slight.
 
 # Geoms
 
@@ -87,7 +80,7 @@ although the difference is slight.
 knitr::include_graphics("images/anatomy-geoms.png")
 ```
 
-The geoms in the plot are geometrical shapes that are used to draw data. Here we
+The geoms in the plot are geometrical shapes that are used to draw data. Here, we
 are using points as our geoms.
 
 # Axes
@@ -96,12 +89,11 @@ are using points as our geoms.
 knitr::include_graphics("images/anatomy-axes.png")
 ```
 
-The axes is a guide for the connection between the coordinates of the geoms
+The axes are guides for the connection between the coordinates of the geoms
 and the variables they are mapped to. Without the axes, we would only see the 
 pattern of points and not the values these points represent.
 
-On each axis there are numbers or words and they are connected via *ticks* or
-*tickmarks* to the gridlines.
+On each axis, there are numbers or words, and these are connected to the gridlines through *ticks* or *tickmarks* .
 
 # Legends
 
@@ -109,9 +101,7 @@ On each axis there are numbers or words and they are connected via *ticks* or
 knitr::include_graphics("images/anatomy-legend.png")
 ```
 
-A legend is a guide that helps you read an aesthetic mapped to a variable
-in the plot. The legend in this plot links a color scale to the number of 
-cylinders.
+A legend is a guide that helps you interpret an aesthetic element mapped to a variable in the plot. In this plot, the legend associates a color scale with the number of cylinders.
 
 The legend is sometimes also called a *key*.
 

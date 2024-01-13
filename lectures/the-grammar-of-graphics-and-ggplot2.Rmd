@@ -1,7 +1,9 @@
 ---
 title: "The Grammar of Graphics and ggplot2"
 subtitle: "Data Visualization"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 institute: "The Department of Statistics, Lund University"
 date: ""
 output:
@@ -65,13 +67,13 @@ options(digits = 3)
 ## The Grammar of Graphics
 
 .pull-left[
-  visualizations can be complicated and difficult to describe 
+Visualizations can be complicated and difficult to describe.
   
-  Leland Wilkinson `r Citep(bib, "wilkinson2005")` 
-  **The Grammar of Graphics**: an attempt to formalize the basic principles
-  of visualizations
+Leland Wilkinson `r Citep(bib, "wilkinson2005")` 
+**The Grammar of Graphics**: an attempt to formalize the basic principles
+of visualizations
   
-  we will use Hadley Wickham's *Layered Grammar of Graphics* `r Citep(bib, "wickham2010")`
+We will use Hadley Wickham's *Layered Grammar of Graphics* `r Citep(bib, "wickham2010")`
 ]
 
 .pull-right[
@@ -170,15 +172,14 @@ mpg %>%
 ## Layers: Stats
 
 .pull-left-40[
-Statistical transformations modify or summarize data.
+Statistical transformations 
+- modify or summarize, and
+- can be used to smooth data.
 
-can be used to smooth, summarize, or modify
-
-A stat can add **new** variables.
-
-Stats have names of the form `stat_*`.
-
-can also be specified directly in `geom_*` functions
+**Stats**
+- can add **new** variables.
+- have names of the form `stat_*`.
+- can also be specified directly in `geom_*` functions.
 ]
 
 .pull-right-60[
@@ -196,9 +197,9 @@ ggplot(faithful,
 ## Layers: Geoms
 
 .pull-left[
-**Geoms** decide what geometrical objects are used when plotting.
-
-Geoms have names of the form `geom_*`.
+**Geoms** 
+- decide what geometrical objects are used when plotting.
+- have names of the form `geom_*`.
 
 ```{r economics, eval = FALSE}
 # construct base plot
@@ -224,8 +225,7 @@ p + geom_area()
 
 ## Layers: Position Adjustments
 
-sometimes need to modify positions of geoms, such as stacking bar geoms side-by-side
-or jittering points that overlap
+Sometimes, we need to modify the positions of geoms, such as by stacking bar geoms side-by-side or jittering points to avoid overlap.
 
 .pull-left[
 
@@ -254,7 +254,7 @@ ggplot(mpg, aes(hwy, drv)) +
 
 ## Scales
 
-controls **how** variables are mapped to aesthetics
+Scale controls **how** variables are mapped to aesthetics.
 
 **Guides** is the inverse of a scale, showing how to read the scale.
 
@@ -282,7 +282,7 @@ p + scale_x_log10()
 ## Coordinate Systems (coord)
 
 .pull-left-60[
-coordinate systems controls the position of objects on the plot
+Coordinate systems control the position of objects on the plot.
 
 ```{r, eval = FALSE}
 # cartesian coordinates (bar chart)
@@ -329,9 +329,9 @@ mutate(mpg, cyl = factor(cyl)) %>%
 
 ## Faceting
 
-powerful tool that divide visualizations into small multiples
+Facet is a powerful tool that divide visualizations into small multiples.
 
-ggplot2 provides `facet_grid()` and `facet_wrap()`
+ggplot2 provides `facet_grid()` and `facet_wrap()`.
 
 ```{r}
 d <- as_tibble(Titanic) %>%
@@ -362,10 +362,9 @@ ggplot(
 ## A Hierarchy of Defaults
 
 .pull-left[
-having to supply all the 
-parts of the grammar with each plot would be **very** tiresome
+Having to supply all the parts of the grammar with each plot would be **very** tiresome.
 
-thankfully, the grammar of graphics (and ggplot2) comes with a **hierarchy of defaults**
+Thankfully, the grammar of graphics (and ggplot2) comes with a **hierarchy of defaults**.
 
 ```{r, echo = FALSE}
 ggplot(diamonds, 
@@ -406,11 +405,11 @@ ggplot(diamonds,
 
 ## Using the Grammar
 
-Understanding the grammar of graphics is the key to understanding ggplot2.
+Understanding the grammar of graphics 
+- is the key to understanding ggplot2, and
+- makes it easy to make large changes to the plot
 
 Avoid thinking about visualizations as a bag of tricks.
-
-makes it easy to make large changes to the plot
 
 --
 

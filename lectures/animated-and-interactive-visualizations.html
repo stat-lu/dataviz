@@ -4,7 +4,8 @@
     <title>Animated and Interactive Visualizations</title>
     <meta charset="utf-8" />
     <meta name="author" content="Johan Larsson" />
-    <script src="libs/header-attrs-2.15/header-attrs.js"></script>
+    <meta name="author" content="Behnaz Pirzamanbein" />
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <script src="libs/mark.js-8.11.1/mark.min.js"></script>
     <link href="libs/xaringanExtra-search-0.0.1/search.css" rel="stylesheet" />
@@ -25,6 +26,9 @@ class: middle, center, title-slide
 .author[
 ### Johan Larsson
 ]
+.author[
+### Behnaz Pirzamanbein
+]
 .institute[
 ### The Department of Statistics, Lund University
 ]
@@ -36,10 +40,10 @@ class: middle, center, title-slide
 
 ## Animated Visualizations
 
-offers an extra aesthetic that we can map
-variables to
+Animated Visualization
+- offers an extra aesthetic that we can map variables to.
 
-very useful in **presentations**
+- is very useful in **presentations**.
 
 Animating works best when mapping to time or similar process.
 
@@ -71,8 +75,9 @@ Start with some data.
 ```r
 # aggregate over years
 tx &lt;- select(txhousing, city, year, sales:inventory) %&gt;%
+  drop_na() %&gt;%
   group_by(city, year) %&gt;%
-  summarize_all(mean, na.rm = TRUE)
+  summarize_all(mean, na.rm = TRUE) 
 ```
 
 .pull-left[
@@ -127,7 +132,7 @@ anim # same as animate(anim)
 
 ### Labeling
 
-uses special **glue** syntax inside `labs()`
+Labeling uses special **glue** syntax inside `labs()`.
 
 
 ```r
@@ -147,7 +152,7 @@ Use `animate()` directly for more control over the animation.
 
 
 ```r
-*animate(anim2, duration = 20, nframes = 150)
+*animate(anim2, duration = 20, nframes = 200)
 ```
 
 &lt;img src="animated-and-interactive-visualizations_files/figure-html/unnamed-chunk-6-1.gif" width="60%" style="display: block; margin: auto;" /&gt;
@@ -156,17 +161,17 @@ Use `animate()` directly for more control over the animation.
 
 ## Interactive Visualizations
 
-great for most datasets, particularly complicated datasets, but can
-only really be used on webpages
+Interactive visualization 
+- works well with most datasets, especially complex ones, but is primarily suited for webpages.
 
-often useful in tandem with carefully designed static visualizations
+- is often useful in tandem with carefully designed static visualizations.
 
 .pull-left[
 ### plotly
 
 Simple interactive visualizations can be achieved easily using [plotly](https://plotly.com/).
 
-two alternatives: 
+Two alternatives: 
 
 - call `plot_ly()` directly
 - use `ggplotly()` on a plot built in ggplot2

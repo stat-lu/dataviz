@@ -4,7 +4,8 @@
     <title>Big Data</title>
     <meta charset="utf-8" />
     <meta name="author" content="Johan Larsson" />
-    <script src="libs/header-attrs-2.15/header-attrs.js"></script>
+    <meta name="author" content="Behnaz Pirzamanbein" />
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <script src="libs/mark.js-8.11.1/mark.min.js"></script>
     <link href="libs/xaringanExtra-search-0.0.1/search.css" rel="stylesheet" />
@@ -25,6 +26,9 @@ class: middle, center, title-slide
 .author[
 ### Johan Larsson
 ]
+.author[
+### Behnaz Pirzamanbein
+]
 .institute[
 ### The Department of Statistics, Lund University
 ]
@@ -36,11 +40,11 @@ class: middle, center, title-slide
 
 ## Big Data
 
-big data: many variables **and/or** observations
+Big Data: many variables **and/or** observations
 
-here we consider the case of many observations
+Here, we consider the case of many observations.
 
-the problem with many observations is usually **overlap**
+The problem with many observations is usually the **overlap** of data points.
 
 .pull-left[
 
@@ -62,7 +66,7 @@ ggplot(diamonds,
 
 ## Aesthetics
 
-simple, but not always effective, solutions: modify aesthetics (size, opacity)
+Simple, but not always effective, solutions: modify aesthetics (size, opacity)
 
 .pull-left[
 
@@ -90,7 +94,7 @@ ggplot(diamonds,
 
 ## Facets
 
-sometimes enough to split data into facets
+Sometimes it is enough to split data into facets.
 
 
 ```r
@@ -108,18 +112,17 @@ ggplot(diamonds, aes(carat, price)) +
 The bin-summarize-smooth framework &lt;a name=cite-wickham2013a&gt;&lt;/a&gt;([Wickham, 2013](https://vita.had.co.nz/papers/bigvis.pdf)) is a principled
 methodology to handle large data.
 
-**Binning** is the process of grouping values into *bins*; **summarizing** is the
-act of computing a summary statistics (count, mean) inside each bean.
+- **Binning** is the process of grouping values into *bins*; **summarizing** is the act of computing a summary statistics (count, mean) inside each bean.
 
-**Smoothing** smooths out noisy data, revealing hard-to-see patterns.
+- **Smoothing** smooths out noisy data, revealing hard-to-see patterns.
 
-already encountered binning for one variable: histograms
+We have already encountered binning for one variable: histograms
 
 ---
 
 ## Binning
 
-simple, but not very sophisticated, idea
+Binning is simple, but not very sophisticated, idea.
 
 
 ```r
@@ -142,9 +145,9 @@ ggplot(trees, aes(index, value)) + geom_line(alpha = 0.2) +
 
 ---
 
-### Two-Dimensional Binning
+### 1. Two-Dimensional Binning
 
-a type of two-dimensional histogram, mapping counts to color instead of height
+A type of two-dimensional histogram, mapping counts to color instead of height
 and binning into a two-dimensional geometric shape
 
 
@@ -158,10 +161,10 @@ ggplot(diamonds, aes(carat, price)) +
 
 ---
 
-### Hexagonal Binning
+### 2. Hexagonal Binning
 
-rectangles may obscure information for some data and it is therefore usually better
-to use hexagons instead, via `geom_hex()`
+Rectangles may obscure information for some data and it is therefore usually better
+to use hexagons instead, via `geom_hex()`.
 
 
 ```r
@@ -176,9 +179,9 @@ ggplot(diamonds, aes(carat, price)) +
 
 ## Smoothing
 
-powerful transformation for noisy data
+Smoothing is a powerful transformation for noisy data.
 
-equivalent to applying a statistical model to the data
+It is equivalent to applying a statistical model to the data.
 
 
 ```r
@@ -194,7 +197,7 @@ ggplot(trees, aes(index, value)) +
 
 ### Smoothers are Sensitive
 
-thumb rule: stick with smoothers that you understand
+Thumb rule: stick with smoothers that you understand
 
 
 
@@ -228,7 +231,7 @@ p + geom_smooth(
 
 Two-dimensional density plots is a type of two-dimensional **smoothing**.
 
-uses a density kernel, which is sensitive to parameters
+It uses a density kernel, which is sensitive to parameters.
 
 
 ```r
@@ -240,7 +243,7 @@ ggplot(diamonds, aes(carat, price)) +
 
 ---
 
-for other data, a density plot may work well
+- For other data, a density plot may work well.
 
 
 ```r
@@ -251,7 +254,7 @@ ggplot(faithful, aes(eruptions, waiting)) +
 
 &lt;img src="big-data_files/figure-html/unnamed-chunk-14-1.png" width="576" style="display: block; margin: auto;" /&gt;
 
-Hexagonal binning is in general a **safer bet**.
+- Hexagonal binning is in general a **safer bet**.
 
 ---
 
@@ -260,7 +263,7 @@ Hexagonal binning is in general a **safer bet**.
 &lt;a name=bib-wickham2013a&gt;&lt;/a&gt;[Wickham, H.](#cite-wickham2013a) (2013).
 _Bin-Summarise-Smooth: A Framework for Visualising Large Data_. URL:
 [https://vita.had.co.nz/papers/bigvis.pdf](https://vita.had.co.nz/papers/bigvis.pdf)
-(visited on sep. 16, 2020).
+(visited on Sep. 16, 2020).
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

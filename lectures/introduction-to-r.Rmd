@@ -1,7 +1,9 @@
 ---
 title: "Introduction to R"
 subtitle: "Data Visualization"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 institute: "The Department of Statistics, Lund University"
 date: ""
 bibliography: "assets/references.bib"
@@ -126,15 +128,15 @@ background-size: contain
 
 ## Everything in R is an Object
 
-use the `<-` operator to assign values from the right-hand to the left-hand
-side
+Use the `<-` operator to assign values from the right-hand to the left-hand
+side.
 
 ```{r, echo = TRUE}
 x <- c(1, 9)
 x
 ```
 
-objects can be copied or modified in place
+Objects can be copied or modified in place.
 
 ```{r, echo = TRUE}
 # copy the contents of x to create a new variable y
@@ -149,7 +151,7 @@ y
 
 ## Data Classes in R
 
-represents the type of storage
+Data classes in R represents the type of storage.
 
 * **numeric**: quantitative data
 * **logical**: yes or no
@@ -163,21 +165,22 @@ z <- c("foo", "bar") # character
 
 --
 
-other types of classes exist: **integer**, **double**, and **factor**, but
-are not (very) important for us
+Other types of classes, such as **integer**, **double**, and **factor**, exist but
+are not (very) important for us.
 
 ---
 
 ## Data Structures in R
 
-objects of the various **data classes** may be stored into
+Objects of the various **data classes** may be stored into
 **data structures**, such as
 
-* **vector**: one-dimensional list
-* **matrix**: two-dimensional table; elements must have **same** data class
-* **data.frame**: two-dimensional table; elements can have **different** data
-  classes
-* **list**: list of items (data frames, matrices, vectors) of potentially
+- **vector**: one-dimensional list,
+- **matrix**: two-dimensional table, 
+  - elements must have **same** data class
+- **data.frame**: two-dimensional table, 
+  - elements can have **different** data classes
+- **list**: list of items (data frames, matrices, vectors) of potentially
   different lengths.
 
 ---
@@ -192,9 +195,9 @@ knitr::include_graphics("images/data-structures.svg")
 
 ### Vectors
 
-all elements must be of the same type
+All elements of vectors must be of the same type.
 
-can be constructed using `c()`
+It can be constructed using `c()`.
 
 ```{r, echo = TRUE}
 c(1.3, 4, 5)         # numeric
@@ -207,7 +210,7 @@ c(1, "3", TRUE)      # mix (converted to character)
 
 ### Accessing Elements in Vectors
 
-access with `[` operator
+Access elements in vectors with `[` operator.
 
 ```{r, echo = TRUE}
 x <- c("a", "b", "c")
@@ -216,7 +219,7 @@ x[1] # access first element
 
 --
 
-access several elements by indexing with vector of integers
+Access several elements of vectors by indexing with vector of integers.
 
 ```{r, echo = TRUE}
 x[c(1, 2)] # or x[1:2]
@@ -226,7 +229,7 @@ x[c(1, 2)] # or x[1:2]
 
 ### Matrices
 
-create matrices with `matrix()`, `cbind()`, and `rbind()`
+Create matrices with `matrix()`, `cbind()`, and `rbind()`.
 
 ```{r, echo = TRUE}
 A <- cbind(c(1, 2), c(2, 3)) # numeric matrix
@@ -235,7 +238,7 @@ A
 
 --
 
-access elements, rows, and columns using `[` operator
+Access elements of matrices, rows, and columns using `[` operator.
 
 ```{r, echo = TRUE}
 A[2, 2]  # lower right element
@@ -246,7 +249,7 @@ A[1, ]   # first row, A[, 2] accesses second column
 
 ### Data Frames
 
-like matrices, but columns may have different classes
+Data frames are like matrices, but columns may have different classes.
 
 ```{r, echo = TRUE}
 d <- data.frame(x = c(1, 2),
@@ -256,7 +259,7 @@ d
 
 --
 
-access using `[` or `$` operator
+Access elements of data frames using `[` or `$` operator.
 
 ```{r, echo = TRUE}
 d[, 1] # first column (x)
@@ -267,7 +270,7 @@ d$x    # same as above!
 
 ### Lists
 
-a collection of objects of **any kind** (of any dimensions)
+Lits are a collection of objects of **any kind** (of any dimensions).
 
 ```{r, echo = TRUE}
 # <name> = <element> syntax
@@ -278,7 +281,7 @@ x
 
 --
 
-a data frame is in fact a special type of list
+A data frame is in fact a special type of list.
 
 ---
 
@@ -306,8 +309,8 @@ my_function(1, 3)
 
 --
 
-- the last line of the function decides what the function returns,
-  unless `return()` is used somewhere inside the function
+- The last line of the function decides what the function returns,
+  unless `return()` is used somewhere inside the function.
 
 ---
 
@@ -323,7 +326,7 @@ my_function(y = 1, x = 3) # by name
 --
 
 In `my_function()`, both arguments are **mandatory**, but this is not
-always the case. Here we let give `y` a **default** value.
+always the case. Here we give `y` a **default** value.
 
 ```{r, echo = TRUE}
 my_other_function <- function(x, y = 3) {
@@ -350,15 +353,15 @@ my_other_function(1)
 
 ## Packages
 
-more than 16,000 packages on [CRAN](https://cran.r-project.org/web/packages/)
+There are more than 16,000 packages on [CRAN](https://cran.r-project.org/web/packages/).
 
-easy to install!
+It is easy to install!
 
 ```{r eval = FALSE}
 install.packages("ggplot2")
 ```
 
-load the package by calling `library()`
+Load the package by calling `library()`.
 
 ```{r eval = FALSE}
 library(ggplot2)
@@ -366,7 +369,7 @@ library(ggplot2)
 
 --
 
-even more packages available via [bioconductor](https://www.bioconductor.org) and
+There are even more packages available via [bioconductor](https://www.bioconductor.org) and
 git repositories on [github](https://github.com/) and similar sites.
 
 ```{r eval = FALSE}
@@ -374,7 +377,7 @@ git repositories on [github](https://github.com/) and similar sites.
 remotes::install_github("hrbrmstr/waffle")
 ```
 
-But in this course we will **only** use CRAN packages
+But in this course we will **only** use CRAN packages.
 
 ---
 

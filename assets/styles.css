@@ -137,6 +137,26 @@ body {
   width: 57%;
 }
 
+.pull-left-45 {
+  float: left;
+  width: 42%;
+}
+
+.pull-right-55 {
+  float: right;
+  width: 52%;
+}
+
+.pull-left-55 {
+  float: left;
+  width: 52%;
+}
+
+.pull-right-45 {
+  float: right;
+  width: 42%;
+}
+
 .pull-right + * {
   clear: both;
 }

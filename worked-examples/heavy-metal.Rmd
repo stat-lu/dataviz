@@ -1,6 +1,8 @@
 ---
 title: "Worked Example: Heavy Metal"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 output:
   bookdown::html_document2:
     toc: true
@@ -154,18 +156,18 @@ area. We'll download the map from stamen maps, using **ggmap**.
 library(ggmap)
 ```
 
-To download a map, we need to call `get_stamenmap()` and specify a bounding
+To download a map, we need to call `get_stadiamap()` and specify a bounding
 box. Fortunately for us, we already computed the bounding box of the points in
 the last step, so let's use that.
 
-**Note: Stamen Maps have been incorporated into Stadia maps and `get_stamenmap()` is currently returning brown warning tiles occasionally and will stop working completely after October 31. So you may not see the same result here if you follow along.**
+<!-- **Note: Stamen Maps have been incorporated into Stadia maps and `get_stamenmap()` is currently returning brown warning tiles occasionally and will stop working completely after October 31. So you may not see the same result here if you follow along.** -->
 
 ```{r}
 # extend the ranges slightly
 xrng <- extendrange(c(bbox$xmin, bbox$xmax))
 yrng <- extendrange(c(bbox$ymin, bbox$ymax))
 
-meuse_raster <- get_stamenmap(
+meuse_raster <- get_stadiamap(
   c(
     left   = xrng[1],
     bottom = yrng[1],
@@ -173,7 +175,7 @@ meuse_raster <- get_stamenmap(
     top    = yrng[2]
   ),
   zoom = 14,
-  maptype = "terrain"
+  maptype = "stamen_terrain"
 )
 ```
 

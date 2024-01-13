@@ -1,7 +1,9 @@
 ---
 title: "Maps"
 subtitle: "Data Visualization"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 institute: "The Department of Statistics, Lund University"
 date: ""
 bibliography: "assets/references.bib"
@@ -64,7 +66,7 @@ If you find spatial data, your first urge should be to map it!
 
 ### Themes for Maps
 
-the default ggplot2 theme is not suitable for maps
+The default ggplot2 theme is not suitable for maps.
 
 ```{r, eval = FALSE}
 library(tidyverse)
@@ -72,7 +74,7 @@ library(tidyverse)
 theme_set(theme_void())
 ```
 
-`theme_bw()` is also a good choice, particularly if you need coordinates
+`theme_bw()` is also a good choice, particularly if you need coordinates.
 
 ```{r, echo = FALSE}
 theme_set(theme_void(base_size = 15))
@@ -82,7 +84,7 @@ theme_set(theme_void(base_size = 15))
 
 ## Mapping with ggplot2: Two Methods
 
-### Native ggplot2
+### 1. Native ggplot2
 
 - `geom_polygon()` and `coord_map()`
 - no external dependencies
@@ -91,9 +93,9 @@ theme_set(theme_void(base_size = 15))
 --
 
 .pull-left[
-### Simple Features
+### 2. Simple Features
 
-what we will use instead
+What we will use instead
 
 - `geom_sf()` and `coord_sf()`
 - much more powerful
@@ -145,9 +147,9 @@ knitr::include_graphics("images/raster-vector-data.png")
 
 ## Vector Data
 
-often have separate data sources: one for the map, one for the data of interest
+We often have separate data sources: one for the map and one for the data of interest.
 
-often need to merge these data sets together
+We often need to merge these data sets together.
 
 Simple features are compatible with most tidyverse operations: `filter()`,
 `select()`, `mutate()`, `group_by()`, `*_join()` etc.
@@ -180,13 +182,13 @@ ggplot(usa_arr, aes(fill = Murder)) +
   scale_fill_distiller(direction = 1, palette = "Reds")
 ```
 
-easy to read, but area of region influences visual impression
+It is easy to read, but the area of the region influences the visual impression.
 
 ---
 
 ### Choropleth Alternatives
 
-use **sf** package to get centroid of each state and plot bubbles
+We can use **sf** package to get centroid of each state and plot bubbles
 
 ```{r, fig.height = 5, fig.width = 9}
 centroids <- sf::st_centroid(usa_arr)
@@ -196,7 +198,7 @@ ggplot(usa) +
   geom_sf(aes(size = Murder), data = centroids) 
 ```
 
-harder to read, but visual impression is no longer influenced by area
+It is harder to read, but the visual impression is no longer influenced by area.
 
 ---
 
@@ -212,8 +214,8 @@ airports_raw <- read_tsv(
 )
 ```
 
-if we want to be able to use projections, we need to convert this
-data to a simple features object
+If we want to be able to use projections, we need to convert this
+data to a simple features object.
 
 ```{r}
 library(sf)
@@ -233,7 +235,7 @@ Original data is from <https://slcladal.github.io/data/airports.txt>.
 
 ### Stacking Layers
 
-easy to stack layers of different geometries (here: polygons and points)
+It is easy to stack layers of different geometries (here: polygons and points).
 
 ```{r, fig.width = 10, fig.height = 8}
 ggplot() +
@@ -245,7 +247,9 @@ ggplot() +
 
 ### Airports in Skåne
 
-first filter the data
+<ol>
+<li> filter the data
+</ol>
 
 ```{r}
 skane_map <- ne_states("Sweden", returnclass = "sf") %>%
@@ -259,7 +263,9 @@ skane_air <- st_intersection(airports_sweden, skane_map)
 --
 
 .pull-left[
-then plot it!
+<ol start = 2> 
+<li> plot it!
+</ol>
 
 ```{r skane_empty, eval = FALSE}
 p <- ggplot(skane_map) +
@@ -320,9 +326,9 @@ bbox <- c(
   top    = 29.78400
 )
 
-map <- get_stamenmap(
+map <- get_stadiamap(
   bbox, 
-  maptype = "toner", 
+  maptype = "stamen_toner", 
   zoom = 14
 )
 
@@ -343,7 +349,7 @@ ggmap(map)
 robberies <- filter(crime, offense == "robbery")
 ```
 
-stacking layers on raster maps is also easy
+Stacking layers on raster maps is also easy.
 
 .pull-left[
 ```{r houston-crime, eval = FALSE}
@@ -401,7 +407,7 @@ This example was adapted from <https://github.com/dkahle/ggmap/>.
 
 Geocoding converts addresses or names of places into **coordinates**.
 
-many options available; here we use the
+Many options are available; here we use the
 [tidygeocoder package](https://CRAN.R-project.org/package=tidygeocoder):
 
 ```{r, fig.width = 6, fig.height = 3.5}
@@ -448,7 +454,7 @@ in one (or several) of the following aspects:
 - directions
 - distances
 
-The larger the scale of the map is, the worse the distortion becomes
+The larger the scale of the map is, the worse the distortion becomes.
 
 Every map projection is a compromise.
 ]
@@ -486,7 +492,7 @@ world_map <-
 
 ### Conformal
 
-preserves angles (shapes) locally
+- preserves angles (shapes) locally
 
 ```{r, fig.width = 7, fig.height = 4, fig.cap = "Mercator"}
 library(sf) # for st_crs
@@ -497,7 +503,7 @@ world_map + coord_sf(crs = st_crs("EPSG:3857"))
 
 ### Equal-Area
 
-preserves area measure
+- preserves area measure
 
 ```{r, fig.width = 10, fig.height = 4, fig.cap = "Mollweide"}
 world_map + coord_sf(crs = st_crs("ESRI:54009"))
@@ -507,7 +513,7 @@ world_map + coord_sf(crs = st_crs("ESRI:54009"))
 
 ### Equidistant
 
-preserves distance between any two points
+- preserves distance between any two points
 
 ```{r, fig.width = 5, fig.height = 6, fig.cap = "Azimuthal Equidistant"}
 world_map + coord_sf(crs = st_crs("ESRI:54032"))
@@ -518,7 +524,7 @@ world_map + coord_sf(crs = st_crs("ESRI:54032"))
 
 ### Compromises
 
-tries to compromise distortions among the various aspects
+- tries to compromise distortions among the various aspects
 
 ```{r, fig.width = 10, fig.height = 4, fig.cap = "Robinson"}
 world_map + coord_sf(crs = st_crs("ESRI:54030"))

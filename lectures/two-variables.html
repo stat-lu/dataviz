@@ -4,7 +4,8 @@
     <title>Two Variables</title>
     <meta charset="utf-8" />
     <meta name="author" content="Johan Larsson" />
-    <script src="libs/header-attrs-2.15/header-attrs.js"></script>
+    <meta name="author" content="Behnaz Pirzamanbein" />
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <script src="libs/mark.js-8.11.1/mark.min.js"></script>
     <link href="libs/xaringanExtra-search-0.0.1/search.css" rel="stylesheet" />
@@ -25,6 +26,9 @@ class: middle, center, title-slide
 .author[
 ### Johan Larsson
 ]
+.author[
+### Behnaz Pirzamanbein
+]
 .institute[
 ### The Department of Statistics, Lund University
 ]
@@ -39,7 +43,7 @@ class: middle, center, title-slide
 .pull-left[
 How does `\(x\)` relate to `\(y\)`?
 
-straightforward when both variables are continuous
+It is straightforward when both variables are continuous.
 
 Scatter plots are the bread and butter of visualizations of
 two continuous variables.
@@ -117,8 +121,7 @@ ggplot(economics, aes(date, uempmed)) +
 
 ## Geoms and Time
 
-often useful to combine points and lines when measurements
-are taken at irregular intervals or seldom
+It is often useful to combine points and lines when measurements are taken at irregular intervals or infrequently.
 
 
 ```r
@@ -138,8 +141,7 @@ filter(ChickWeight, Chick == 5) %&gt;%
 
 ## Categorical Variables
 
-Categorical variables (factors) can be used
-as the second dimension.
+Categorical variables (factors) can be used as the second dimension.
 
 
 ```r
@@ -175,7 +177,7 @@ Pay attention to whether or not the factor is **ordered**.
 A problem when one (or both) variables are discrete (or categorical)
 is that they might **overlap**.
 
-simple solution: **opacity** (`alpha`)
+A simple solution: **opacity** (`alpha`)
 
 .pull-left[
 
@@ -203,7 +205,7 @@ ggplot(mpg, aes(cty, hwy)) +
 
 ## Scales
 
-For some variables, it is more natural to study them on a non-standard scale
+For some variables, it is more natural to study them on a non-standard scale.
 
 Other times it is simply **convenient** (more compact).
 
@@ -239,9 +241,9 @@ ggplot(msleep,
 
 ## Pairs Plots
 
-plots the pairwise associations of several variables
+Pairs plot plots the pairwise associations of several variables.
 
-complicated in ggplot2 (requires **pivoting** and **facets**)
+It is complicated in ggplot2 (requires **pivoting** and **facets**).
 
 The [GGally](https://ggobi.github.io/ggally) package &lt;a name=cite-emerson2013&gt;&lt;/a&gt;([Emerson, Green, Schloerke, Crowley, Cook, Hofmann, and Wickham, 2013](https://www.tandfonline.com/doi/ref/10.1080/10618600.2012.694762))
 presents a simpler approach.
@@ -270,7 +272,7 @@ ISSN: 1061-8600. DOI:
 [10.1080/10618600.2012.694762](https://doi.org/10.1080%2F10618600.2012.694762).
 URL:
 [https://www.tandfonline.com/doi/ref/10.1080/10618600.2012.694762](https://www.tandfonline.com/doi/ref/10.1080/10618600.2012.694762)
-(visited on sep. 19, 2020).
+(visited on Sep. 19, 2020).
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

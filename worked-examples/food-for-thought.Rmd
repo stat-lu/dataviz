@@ -1,6 +1,8 @@
 ---
 title: "Worked Example: Food for Thought"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 output:
   bookdown::html_document2:
     toc: true
@@ -177,7 +179,7 @@ budget_food_binned <-
   budget_food_cleaned %>%
   mutate(
     size = as.factor(size),
-    size = fct_other(size, keep = c(1:5), other_level = "+6")
+    size = fct_other(size, keep = paste(c(1:5)), other_level = "+6")
   )
 
 ggplot(budget_food_binned, aes(totexp, wfood)) +

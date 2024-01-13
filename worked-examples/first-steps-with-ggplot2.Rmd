@@ -1,7 +1,9 @@
 ---
 title: "Introduction to ggplot2"
 subtitle: "Exercises"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 output:
   bookdown::html_document2:
     toc: true
@@ -10,7 +12,8 @@ output:
     global_numbering: true
 ---
 
-```{r setup, include=FALSE}  knitr::opts_chunk$set(
+```{r setup, include=FALSE}  
+knitr::opts_chunk$set(
   echo = TRUE,
   message = FALSE,
   warning = FALSE,

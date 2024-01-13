@@ -1,7 +1,9 @@
 ---
 title: "Working with Data in R"
 subtitle: "Data Visualization"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 institute: "The Department of Statistics, Lund University"
 date: ""
 bibliography: "assets/references.bib"
@@ -125,12 +127,12 @@ class: center, middle
 
 ## Importing Data
 
-data can be stored in a myriad of formats (`.csv.`, `.tsv`, `.dat`, `.sav`, etc)
+Data can be stored in a myriad of formats (`.csv`, `.tsv`, `.dat`, `.sav`, etc).
   
 --
 
-we will use the **readr** package, in which functions are named
-`read_*()` (or 
+We will use the **readr** package, in which functions are named
+`read_*()`. 
 
 ```{r, echo = TRUE, eval = FALSE}
 data_tsv <- read_tsv("data.tsv") 
@@ -140,15 +142,14 @@ data_csv <- read_csv("data.csv")
   
 --
   
-always inspect the result; datasets are not always stored in a clean
-way
+Always inspect the result; datasets are not always stored in a clean way.
 
-in this course, however, you will generally be provided data
-that needs little preprocessing
+In this course, however, you will generally be provided data that needs little 
+preprocessing.
   
 --
 
-many datasets available from base R or from packages
+Many datasets are available from base R or from packages.
 
 --
 
@@ -164,8 +165,8 @@ knitr::include_graphics("videos/rstudio-data-import.gif")
 
 ## Data Wrangling
 
-Many times, data is not in the format that we need it to be; it 
-needs to be **wrangled** with.
+Many times, data is not in the format that we need it to be; it needs to be 
+**wrangled** with.
 
 Our workhorses: [dplyr](https://dplyr.tidyverse.org/)
 and [tidyr](https://tidyr.tidyverse.org/)
@@ -205,13 +206,13 @@ d <- tibble(person = rep(c("James", "Julia", "Bixby"), times = 2),
             result = c(1, 3, 2, 5, 6, 3))
 ```
 
-most data is made up of a rectangular table of **rows** and **columns**.
+Most data is made up of a rectangular table of **rows** and **columns**.
 
-the elements (cells) in this table are **values**
+The elements (cells) in this table are **values**.
 
-each value corresponds to an **observation** and a **variable**
+Each value corresponds to an **observation** and a **variable**.
 
-there are usually multiple ways to format the same data
+There are usually multiple ways to format the same data:
 
 <br>
 
@@ -235,21 +236,22 @@ knitr::kable(pivot_wider(d, names_from = "person", values_from = "result"),
 
 ---
 
-.pull-left[
+
 
 ## Tidy Data
+.pull-left-60[
 
-**tidy data**: each observation has its own row, each variable its own
-column, and each value its own cell
+In tidy data:
+* each observation has its own row,
+* each variable its own column, and
+* each value its own cell.
 
-tidy data makes visualization easy
+Tidy data makes visualization easy.
 
-in our example, **person**, **intervention**, and **result** are the variables
+In our example variables are: **person**, **intervention**, and **result**.
 ]
 
-.pull-right[
-<br>
-
+.pull-right-40[
 ```{r echo = FALSE}
 knitr::kable(d, caption = "Tidy treament data")
 ```
@@ -304,36 +306,38 @@ d_tidy
 
 ## Manipulating Data with dplyr
 
-.pull-left[
-use `filter()` to filter rows (observations)
+* `filter()` to filter rows (observations):
 
 ```{r, echo = TRUE}
 filter(d_tidy, 
        person != "Bixby")
 ```
-]
 
---
+---
 
-.pull-right[
-use `select()` to select columns (variables)
+## Manipulating Data with dplyr
+
+* `select()` to select columns (variables):
 
 ```{r, echo = TRUE}
 select(d_tidy, person, result)
 ```
-]
 
 ---
 
-use `mutate()` to modify or add new variables
+## Manipulating Data with dplyr
+
+* `mutate()` to modify or add new variables:
 
 ```{r, echo = TRUE}
 mutate(d_tidy, rel_result = result/max(result))
 ```
 
---
+---
 
-use `group_by()` and `summarize()` to group and summarize data.
+## Manipulating Data with dplyr
+
+* `group_by()` and `summarize()` to group and summarize data:
 
 ```{r, echo = TRUE}
 group_by(d_tidy, intervention) %>%
@@ -344,10 +348,9 @@ group_by(d_tidy, intervention) %>%
 
 ## The Pipe Operator
 
-the `%>%` (pipe) operator is very useful when working with data
+The `%>%` (pipe) operator is very useful when working with data.
 
-takes the left-hand (or line above) and forwards it into
-the next function
+It takes the left-hand (or line above) and forwards it into the next function
 
 ```{r, echo = TRUE}
 d_tidy %>% 
@@ -365,13 +368,13 @@ select(filter(d_tidy, person == "James"), intervention, result)
 
 ## Missing Data
 
-normally, missing data should be approached with diligence (e.g. imputation), but in 
-this course we will usually simply disregard it (`drop_na()`)
+Normally, missing data should be approached with diligence (e.g. imputation), but in 
+this course we will usually simply disregard it (`drop_na()`).
 
-missing data is denoted by `NA` in R
+Missing data is denoted by `NA` in R.
 
-functions applied to missing data often return `NA` unless `na.rm = TRUE`
-is specified
+Functions applied to missing data often return `NA` unless `na.rm = TRUE`
+is specified.
 
 ```{r echo = FALSE}
 msleep %>%

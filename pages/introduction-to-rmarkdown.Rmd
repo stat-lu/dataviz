@@ -1,7 +1,9 @@
 ---
 title: "Introduction to R Markdown"
 subtitle: "Data Visualization"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 affiliation: "Department of Statistics, Lund University"
 date: "`r Sys.Date()`"
 papersize: a4
@@ -59,29 +61,19 @@ options(
 
 # A Syntax for Writing Documents
 
-This document is written using [R Markdown](http://rmarkdown.rstudio.com). R
-Markdown is a syntax for formatting documents that lets you focus on content.
-You write text (including R code) in a standard text document with the ending
-`.Rmd` and then your machine turns your text into a neatly formatted document. 
+This document is written using [R Markdown](http://rmarkdown.rstudio.com), a syntax for formatting documents that allows you to focus on content.
+You write text (including R code) in a standard text document with the `.Rmd` extension. Then, your machine converts your text into a neatly formatted document. 
 
 In addition, R Markdown documents can be compiled into a wide variety of
-formats, including PDFs, Word Documents, and HTML pages (and much more) without
-having to change the content on your document.
+formats, including PDFs, Word Documents, and HTML pages (and much more), without
+needing to modify the content of your document.
 
 This document has in fact been rendered as both a [PDF
 document](https://github.com/stat-lu/dataviz/raw/main/pages/introduction-to-rmarkdown.pdf)
 and [html
-page](https://stat-lu.github.io/dataviz/pages/introduction-to-rmarkdown). You
-can choose any of these when following this guide, but we recommend reading the
-PDF version to get a sense of what your output actually will look like (since
-you'll be handing in PDF documents in this course).
+page](https://stat-lu.github.io/dataviz/pages/introduction-to-rmarkdown). While you can choose either format to follow this guide, we recommend reading the PDF version. This will give you a better sense of what your output will actually look like, especially since you will be submitting PDF documents in this course.
 
-Authoring your documents using R Markdown facilitates reproducibility. Because
-you need to supply all the code used to produce your paper in the `.Rmd` file,
-this makes it much easier for other people to re-run your analysis and use your
-code. It also means that your paper is now automated. Should you need to update
-or modify your data, for instance, you will typically be able to generate your
-final document simply by re-knitting it after having made your changes.
+Authoring your documents using R Markdown facilitates reproducibility. By including all the code necessary to produce your paper within the .Rmd file, you make it easier for others to re-run your analysis and use your code. This also means that your paper is now automated. For example, if you need to update or modify your data, you can usually generate the final document by simply re-knitting it after making the changes.
 
 As you proceed though this document, consider taking a look at the
 [R Markdown source code for this document](
@@ -92,13 +84,9 @@ too, to get a better feel for what R Markdown documents look like.
 
 ## Installation
 
-To get started, you are going to need two packages: **rmarkdown** and **knitr**.
-Run the following line of code to install these now. If you happen to be looking
-at [the source
-code](https://github.com/stat-lu/dataviz/blob/main/pages/introduction-to-rmarkdown.Rmd)
-as you read this, you can simply highlight the text and hit `Ctrl/Cmd + Enter`
-or put the cursor inside the code chunk below and hit `Ctrl/Cmd + Shift + Enter`
-to run the command (and install the packages).
+To get started, you need to install two packages: **rmarkdown** and **knitr**.
+Run the following line of code to install them. If you are viewing [the source
+code](https://github.com/stat-lu/dataviz/blob/main/pages/introduction-to-rmarkdown.Rmd), you can run the command directly from there. Simply, highlight the text and press `Ctrl/Cmd + Enter` or place the cursor inside the code chunk and press `Ctrl/Cmd + Shift + Enter` to install the packages.
 
 ```{r, eval = FALSE}
 install.packages(c("rmarkdown", "knitr"))

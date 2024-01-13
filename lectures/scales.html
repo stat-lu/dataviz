@@ -4,7 +4,8 @@
     <title>Scales</title>
     <meta charset="utf-8" />
     <meta name="author" content="Johan Larsson" />
-    <script src="libs/header-attrs-2.15/header-attrs.js"></script>
+    <meta name="author" content="Behnaz Pirzamanbein" />
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <script src="libs/mark.js-8.11.1/mark.min.js"></script>
     <link href="libs/xaringanExtra-search-0.0.1/search.css" rel="stylesheet" />
@@ -25,6 +26,9 @@ class: middle, center, title-slide
 .author[
 ### Johan Larsson
 ]
+.author[
+### Behnaz Pirzamanbein
+]
 .institute[
 ### The Department of Statistics, Lund University
 ]
@@ -38,9 +42,9 @@ class: middle, center, title-slide
 
 Choosing appropriate scales can make or break a visualization!
 
-must be **knowledgeable** about what the data represent
+One must be **knowledgeable** about what the data represent.
 
-sometimes obvious choice, other times **tricky** to pick scales appropriately
+Sometimes the choice is obvious, other times **tricky** to pick scales appropriately.
 
 .pull-left[
 &lt;img src="scales_files/figure-html/unnamed-chunk-1-1.png" width="345.6" style="display: block; margin: auto;" /&gt;
@@ -58,11 +62,11 @@ sometimes obvious choice, other times **tricky** to pick scales appropriately
 
 ## Scales and Limits
 
-not always appropriate to include entire range, such as when
+It is not always appropriate to include entire range, such as when
 
 - 0 is not a meaningful value for the variable,
 - only a small subset of the range is attained in practice, or
-- when even small differences matter a lot
+- when even small differences matter a lot.
 
 --
 
@@ -90,8 +94,8 @@ Choosing limits for color-mapped variables can also be problematic!
 Choosing limits for color-mapped variables can also be problematic!
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="scales_files/figure-html/unnamed-chunk-5-1.png" alt="Life expectancy in the US with other limits." width="720" /&gt;
-&lt;p class="caption"&gt;Life expectancy in the US with other limits.&lt;/p&gt;
+&lt;img src="scales_files/figure-html/unnamed-chunk-5-1.png" alt="Life expectancy in the US with other limits [66, 80]." width="720" /&gt;
+&lt;p class="caption"&gt;Life expectancy in the US with other limits [66, 80].&lt;/p&gt;
 &lt;/div&gt;
 
 ---
@@ -100,7 +104,7 @@ Choosing limits for color-mapped variables can also be problematic!
 
 When mapping a variable to size, map it to **area** (not height or width).
 
-usually comes up with bubble charts
+It usually becomes a bubble chart.
 
 
 ```r
@@ -131,12 +135,12 @@ p &lt;- ggplot(mtcars, aes(wt, mpg, size = hp)) + geom_point()
 ## The Lie Factor
 
 .pull-left[
-another concept introduced by Edward Tufte
+The lie factor is another concept introduced by Edward Tufte
 
 $$
 \text{lie factor} = \frac{\text{effect in visualization}}{\text{size of effect in data}}
 $$
-should strive for a lie factor of 1
+- should strive for a lie factor of 1
 ]
 
 .pull-right[

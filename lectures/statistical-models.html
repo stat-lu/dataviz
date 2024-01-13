@@ -4,7 +4,8 @@
     <title>Statistical Models</title>
     <meta charset="utf-8" />
     <meta name="author" content="Johan Larsson" />
-    <script src="libs/header-attrs-2.15/header-attrs.js"></script>
+    <meta name="author" content="Behnaz Pirzamanbein" />
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <script src="libs/mark.js-8.11.1/mark.min.js"></script>
     <link href="libs/xaringanExtra-search-0.0.1/search.css" rel="stylesheet" />
@@ -27,6 +28,9 @@ class: middle, center, title-slide
 .author[
 ### Johan Larsson
 ]
+.author[
+### Behnaz Pirzamanbein
+]
 .institute[
 ### The Department of Statistics, Lund University
 ]
@@ -38,10 +42,9 @@ class: middle, center, title-slide
 
 ## Statistical Models
 
-most of our work so far: **exploratory** analysis
+Most of our work so far: **exploratory** analysis
 
-but for analysis we often also want **diagnostic**,
-**prediction**, and **estimate plots**
+For analysis, we often also want **diagnostic**, **estimates**, and **prediction** plots.
 
 --
 
@@ -157,7 +160,7 @@ swiss2 &lt;-
     Catholic = ifelse(Catholic &gt; 50, "Catholic", "Protestant")
   )
 
-# fit the linear model
+# fit a linear model
 fit &lt;- lm(Fertility ~ ., data = swiss2)
 ```
 
@@ -208,12 +211,12 @@ glance(fit)
 
 Visualizations are great for diagnosing models!
 
-for `lm()` models usually need only standard `plot()` method
+For lm() models, usually only the standard plot() method is needed.
 
 .pull-left[
 #### Residual Plot
 
-useful standard diagnostic plot
+- a useful standard diagnostic plot
 
 
 ```r
@@ -318,8 +321,7 @@ tidy(fit, conf.int = TRUE)
 
 ---
 
-easy to pipe the `broom::tidy()` output into ggplot2 to create coefficient
-plots
+It is easy to pipe the `broom::tidy()` output into ggplot2 in order to create coefficient plots.
 
 
 ```r
@@ -333,13 +335,15 @@ tidy(fit, conf.int = TRUE) %&gt;%
 
 &lt;img src="statistical-models_files/figure-html/unnamed-chunk-10-1.png" width="504" style="display: block; margin: auto;" /&gt;
 
-alternative: use `GGally::ggcoef()` directly on `fit`
+Alternative: use `GGally::ggcoef()` directly on `fit`
 
 ---
 
 ### Prediction Plots
 
-first need to create a table of values to predict for
+&lt;ol&gt;
+&lt;li&gt; create a table of values to predict for
+&lt;/ol&gt;
 
 `tidyr::expand()` generates combinations of variables in dataset.
 
@@ -400,7 +404,9 @@ new_data &lt;-
 
 ---
 
-Augment new data with predictions from the model using `broom::augment()`.
+&lt;ol start=2&gt;
+&lt;li&gt; augment new data with predictions from the model using &lt;code&gt;broom::augment()&lt;/code&gt;
+&lt;/ol&gt;
 
 
 ```r
@@ -481,7 +487,9 @@ aug &lt;- augment(fit, newdata = new_data, se_fit = TRUE)
 
 ---
 
-then plot the predictions
+&lt;ol start=3&gt;
+&lt;li&gt; plot the predictions
+&lt;/ol&gt;
 
 
 ```r
@@ -531,17 +539,16 @@ ggplot(aug2, aes(Education, Infant.Mortality, fill = .fitted)) +
 ```
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="statistical-models_files/figure-html/unnamed-chunk-17-1.png" alt="Prediction heatmaps for fertility across variables examination, agriculture, and religion." width="720" /&gt;
-&lt;p class="caption"&gt;Prediction heatmaps for fertility across variables examination, agriculture, and religion.&lt;/p&gt;
+&lt;img src="statistical-models_files/figure-html/unnamed-chunk-17-1.png" alt="Prediction heatmaps for fertility across variables education, infant mortality, and religion." width="720" /&gt;
+&lt;p class="caption"&gt;Prediction heatmaps for fertility across variables education, infant mortality, and religion.&lt;/p&gt;
 &lt;/div&gt;
-
 
 ---
 
 ## Good Practices
 
 - Start by tyding your data.
-- Explore the data with visualizations (and other summaries)
+- Explore the data with visualizations (and other summaries).
 - Spend ample time visualizing model diagnostics and predictions.
 - Use graphics **liberally** when presenting models.
 - Visualizations are easier to read than tables, but sometimes 

@@ -1,7 +1,9 @@
 ---
 title: "Scales"
 subtitle: "Data Visualization"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 institute: "The Department of Statistics, Lund University"
 date: ""
 bibliography: "assets/references.bib"
@@ -63,9 +65,9 @@ options(digits = 3)
 
 Choosing appropriate scales can make or break a visualization!
 
-must be **knowledgeable** about what the data represent
+One must be **knowledgeable** about what the data represent.
 
-sometimes obvious choice, other times **tricky** to pick scales appropriately
+Sometimes the choice is obvious, other times **tricky** to pick scales appropriately.
 
 .pull-left[
 ```{r, echo = FALSE}
@@ -109,11 +111,11 @@ ggplot(bra, aes(year, crime)) +
 
 ## Scales and Limits
 
-not always appropriate to include entire range, such as when
+It is not always appropriate to include entire range, such as when
 
 - 0 is not a meaningful value for the variable,
 - only a small subset of the range is attained in practice, or
-- when even small differences matter a lot
+- when even small differences matter a lot.
 
 --
 
@@ -161,6 +163,7 @@ states_data <-
 states_map <- map_data("state") %>%
   filter(region != "district of columbia")
 
+# range(states_data$`Life Exp`) -> (67.96, 72.96)
 ggplot(states_data, aes(map_id = State)) +
   geom_map(aes(fill = `Life Exp`), map = states_map) +
   expand_limits(x = states_map$long, y = states_map$lat) +
@@ -174,7 +177,7 @@ ggplot(states_data, aes(map_id = State)) +
 
 Choosing limits for color-mapped variables can also be problematic!
 
-```{r, fig.cap = "Life expectancy in the US with other limits.", echo = FALSE, fig.width = 10, fig.height = 6}
+```{r, fig.cap = "Life expectancy in the US with other limits [66, 80].", echo = FALSE, fig.width = 10, fig.height = 6}
 ggplot(states_data, aes(map_id = State)) +
   geom_map(aes(fill = `Life Exp`), map = states_map) +
   expand_limits(x = states_map$long, y = states_map$lat) +
@@ -189,7 +192,7 @@ ggplot(states_data, aes(map_id = State)) +
 
 When mapping a variable to size, map it to **area** (not height or width).
 
-usually comes up with bubble charts
+It usually becomes a bubble chart.
 
 ```{r}
 p <- ggplot(mtcars, aes(wt, mpg, size = hp)) + geom_point()
@@ -213,12 +216,12 @@ p + scale_radius() #<<
 ## The Lie Factor
 
 .pull-left[
-another concept introduced by Edward Tufte
+The lie factor is another concept introduced by Edward Tufte
 
 $$
 \text{lie factor} = \frac{\text{effect in visualization}}{\text{size of effect in data}}
 $$
-should strive for a lie factor of 1
+- should strive for a lie factor of 1
 ]
 
 .pull-right[

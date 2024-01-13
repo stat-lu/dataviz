@@ -1,7 +1,9 @@
 ---
 title: "Two Variables"
 subtitle: "Data Visualization"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 institute: "The Department of Statistics, Lund University"
 date: ""
 bibliography: "assets/references.bib"
@@ -64,7 +66,7 @@ options(digits = 3)
 .pull-left[
 How does $x$ relate to $y$?
 
-straightforward when both variables are continuous
+It is straightforward when both variables are continuous.
 
 Scatter plots are the bread and butter of visualizations of
 two continuous variables.
@@ -179,8 +181,7 @@ ggplot(economics, aes(date, uempmed)) +
 
 ## Geoms and Time
 
-often useful to combine points and lines when measurements
-are taken at irregular intervals or seldom
+It is often useful to combine points and lines when measurements are taken at irregular intervals or infrequently.
 
 ```{r, fig.cap = "Weight of a chick over time.", fig.width = 6, fig.height = 3.3}
 filter(ChickWeight, Chick == 5) %>%
@@ -194,8 +195,7 @@ filter(ChickWeight, Chick == 5) %>%
 
 ## Categorical Variables
 
-Categorical variables (factors) can be used
-as the second dimension.
+Categorical variables (factors) can be used as the second dimension.
 
 ```{r, fig.cap = "Boxplot of total sleep duration for different mammals.", fig.width = 7}
 ggplot(msleep, aes(vore, sleep_total)) +
@@ -232,7 +232,7 @@ ggplot(OrchardSprays, aes(treatment, decrease)) +
 A problem when one (or both) variables are discrete (or categorical)
 is that they might **overlap**.
 
-simple solution: **opacity** (`alpha`)
+A simple solution: **opacity** (`alpha`)
 
 .pull-left[
 ```{r}
@@ -254,7 +254,7 @@ ggplot(mpg, aes(cty, hwy)) +
 
 ## Scales
 
-For some variables, it is more natural to study them on a non-standard scale
+For some variables, it is more natural to study them on a non-standard scale.
 
 Other times it is simply **convenient** (more compact).
 
@@ -284,9 +284,9 @@ ggplot(msleep,
 
 ## Pairs Plots
 
-plots the pairwise associations of several variables
+Pairs plot plots the pairwise associations of several variables.
 
-complicated in ggplot2 (requires **pivoting** and **facets**)
+It is complicated in ggplot2 (requires **pivoting** and **facets**).
 
 The [GGally](https://ggobi.github.io/ggally) package `r Citep(bib, "emerson2013")`
 presents a simpler approach.

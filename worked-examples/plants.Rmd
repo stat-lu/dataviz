@@ -1,6 +1,8 @@
 ---
 title: "Worked Example: Plants"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 output:
   bookdown::html_document2:
     toc: true
@@ -31,10 +33,9 @@ grass species [Echinochloa
 crus-galli](https://en.wikipedia.org/wiki/Echinochloa_crus-galli).
 
 ```{r, echo = FALSE, fig.cap = "A specimen of Echinochloa crus-galli."}
-knitr::include_graphics(paste0(
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/",
-  "Echinochloa_crus-galli01.jpg/220px-Echinochloa_crus-galli01.jpg"
-))
+knitr::include_graphics(
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Echinochloa_crus-galli01.jpg/220px-Echinochloa_crus-galli01.jpg"
+)
 ```
 
 ## Data

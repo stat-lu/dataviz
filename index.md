@@ -6,7 +6,7 @@
 This page contains slides for the courses STAE04 and DABN19: Data Visualization
 
 * [Introduction](lectures/introduction)
-  ([source](https://github.com/stat-lu/dataviz/blob/main/lectures/introduction.Rmd)) 
+  ([source](https://github.com/stat-lu/dataviz/blob/main/lectures/introduction.Rmd))
 * [Introduction to R](lectures/introduction-to-r)
   ([source](https://github.com/stat-lu/dataviz/blob/main/lectures/introduction-to-r.Rmd))
 * [Working with Data in R](lectures/working-with-data-in-r)
@@ -32,8 +32,7 @@ This page contains slides for the courses STAE04 and DABN19: Data Visualization
 * [Statistical Models](lectures/statistical-models)
   ([source](https://github.com/stat-lu/dataviz/blob/main/lectures/statistical-models.Rmd))
 * [Maps](lectures/maps) ([source](https://github.com/stat-lu/dataviz/blob/main/lectures/maps.Rmd))
-* [Animated and Interactive
-  Visualizations](lectures/animated-and-interactive-visualizations)
+* [Animated and Interactive Visualizations](lectures/animated-and-interactive-visualizations)
   ([source](https://github.com/stat-lu/dataviz/blob/main/lectures/animated-and-interactive-visualizations.Rmd))
 * [Wrapping Up](lectures/wrapping-up)
 
@@ -52,8 +51,7 @@ This page contains slides for the courses STAE04 and DABN19: Data Visualization
 
 ## Submission Template
 
-* [R Markdown Template](
-   https://raw.githubusercontent.com/stat-lu/dataviz/main/resources/template.Rmd)
+* [R Markdown Template](https://raw.githubusercontent.com/stat-lu/dataviz/main/resources/template.Rmd)
 
 ## Miscellaneous
 

@@ -1,7 +1,9 @@
 ---
 title: "Color"
 subtitle: "Data Visualization"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 institute: "The Department of Statistics, Lund University"
 date: ""
 bibliography: "assets/references.bib"
@@ -60,7 +62,7 @@ options(digits = 3)
 
 How do we choose colors appropriately?
 
-need to pay attention to data type!
+We need to pay attention to data type!
 
 --
 
@@ -83,7 +85,7 @@ image(
 )
 ```
 
-imply order among values
+- imply order among values
 
 ### Qualitative Palette
 
@@ -102,7 +104,7 @@ image(
 )
 ```
 
-imply no ordering
+- imply no ordering
 ]
 
 .pull-right[
@@ -123,15 +125,14 @@ image(
 )
 ```
 
-emphasis on low, mid, and high ends
+- emphasis on low, mid, and high
 ]
 
 ---
 
 ## Natural Color Mappings
 
-the type of data sometimes implies a natural color mapping: temperature, geographical features,
-political affiliation
+Sometimes, the type of data implies a natural color mapping, such as temperature, geographical features, or political affiliation.
 
 ```{r, out.width = "70%", echo = FALSE, fig.cap = "Forest cover in Europe (www.eea.europa.eu)."}
 knitr::include_graphics("images/europe-forest.png")
@@ -142,30 +143,36 @@ knitr::include_graphics("images/europe-forest.png")
 
 ## ggplot2
 
-ggplot2 tries to **guess** which color palette to use
+ggplot2 tries to **guess** which color palette to use:
 
 - ordinal and numerical variables are mapped to a **sequential** palette
 - unordered categorical variables are mapped to a **qualitative** palette
 
 but ggplot2 never knows when to map a variable a **diverging** palette, or which
-direction of values indicate strongest intensity
+direction of values indicate strongest intensity.
 
 --
 
 ### Applying a Color Palette in ggplot2
 
-- `scale_colour_*` for color mappings (`geom_point()`, `geom_line()` etc)
-- `scale_fill_*` for fill mappings (`geom_col()`, `geom_tile()` etc etc)
-
+- `scale_colour_*` for color mappings: 
+  - `geom_point()`, 
+  - `geom_line()`,
+  - etc
+- `scale_fill_*` for fill mappings 
+  - `geom_col()`, 
+  - `geom_tile()`,
+  - etc
+  
 ---
 
 ## Sequential Palettes
 
-typically used for data that is ordered from low to high
+A sequential palette
+- is typically used for data that is ordered from low to high.
+- consists of colors with varying lightness, progressing from light to dark.
 
-varying lightness
-
-**examples:** population count, quality rating, size
+**Examples:** population count, quality rating, size
 
 ```{r, fig.width = 9, fig.height = 3.8}
 ggplot(diamonds, aes(price, fill = cut)) +
@@ -177,11 +184,13 @@ ggplot(diamonds, aes(price, fill = cut)) +
 
 ## Diverging Palettes
 
-equal emphasis on middle and low and high ends of scale
+Diverging palettes place equal emphasis on the middle, low, and high ends of the scale.
 
-`scale_fill/color_gradient2()` in ggplot2
+In ggplot2:
+- `scale_fill_gradient2()`
+- `scale_color_gradient2()`
 
-**examples:** temperature (celsius), budget balance, correlations
+**Examples:** temperature (celsius), budget balance, correlations
 
 ```{r, echo = FALSE}
 mtcars_cor <- 
@@ -205,21 +214,19 @@ mtcars_cor %>%
 ]
 
 .pull-right[
-```{r, ref.label = "corplot", fig.cap = "Heatmap of correlation matrix.", echo = FALSE}
+```{r, ref.label = "corplot", fig.cap = "Heatmap of correlation matrix.", echo = FALSE , fig.height = 3, fig.width = 4.5}
 
 ```
 
 ]
 
-
-
 ---
 
 ## Qualitative Palettes
 
-colors should be as distinct as possible and not signal differences in magnitude
+Colors should be as distinct as possible and should not signal differences in magnitude.
 
-**examples:** political party affiliation, gender
+**Examples:** political party affiliation, gender
 
 ```{r, fig.width = 8, fig.height = 4}
 ggplot(msleep, aes(bodywt, sleep_total, color = vore)) +
@@ -236,8 +243,7 @@ ggplot(msleep, aes(bodywt, sleep_total, color = vore)) +
 .pull-left[
 red-green color blindness affects 8% of men and 0.5% of females<sup>1</sup>
 
-several different types: 
-
+Several different types: 
 - protanotopia
 - deuteranopia
 - protanomaly 
@@ -272,18 +278,17 @@ cvdPlot(p)  #<<
 
 ## ColorBrewer
 
-based on work on color use in maps `r Citep(bib, "harrower2003")` but applicable to
-most types of plots
+ColorBrewer, based on work on color use in maps `r Citep(bib, "harrower2003")`, is applicable to most types of plots.
 
-sequential, diverging, and qualitative palettes, many tailored to individuals
+- sequential, diverging, and qualitative palettes, many tailored to individuals
 with color blindness
 
-requires [RColorBrewer](https://CRAN.R-project.org/package=RColorBrewer) package
+- requires [RColorBrewer](https://CRAN.R-project.org/package=RColorBrewer) package
 
 .pull-left[
-`scale_color_brewer()`: discrete (integer, categorical) data 
+- `scale_color_brewer()`: discrete (integer, categorical) data 
 
-`scale_color_distiller()`: continuous data
+- `scale_color_distiller()`: continuous data
 
 ```{r brewerplot, eval = FALSE}
 p + 
@@ -311,17 +316,17 @@ display.brewer.all()
 
 ## Viridis
 
-**sequential** palettes created by Stéfan van der Walt and Nathaniel Smith for the 
-Python matplotlib library
+**Sequential** palettes created by Stéfan van der Walt and Nathaniel Smith for the Python matplotlib library
 
-perceptually uniform and great for individuals with color blindness
+- are perceptually uniform and great for individuals with color blindness.
 
-requires [viridis](https://CRAN.R-project.org/package=viridis) 
+- requires [viridis](https://CRAN.R-project.org/package=viridis) 
 (or [viridisLite](https://CRAN.R-project.org/package=viridisLite))
 
 .pull-left[
-- `scale_viridis_c`: continuous data
 - `scale_viridis_d`: discrete data
+- `scale_viridis_c`: continuous data
+
 
 ```{r viridisplot, eval = FALSE}
 tibble(x = rnorm(1e4), 
@@ -409,10 +414,9 @@ image(
 
 ## Other Considerations
 
-### Greyscale
+### 1. Greyscale
 
-color visualizations are still sometimes printed in greyscale; may be a good idea to
-use palettes that vary lightness
+Color visualizations are still sometimes printed in grayscale; therefore, it may be a good idea to use palettes that vary in lightness.
 
 ```{r, echo = FALSE, fig.width = 10, fig.height = 4, fig.cap = "The same plot in original colors and greyscale."}
 library(colorBlindness)
@@ -424,11 +428,11 @@ cvdPlot(p, c("origin", "desaturate"))
 
 ---
 
-### Aesthetics
+### 2. Aesthetics
 
-**subjective** and **fickle** but still important to consider
+Aesthetics are **subjective** and **fickle**, yet they remain important to consider.
 
-beautiful visualizations will always attract more attention
+Beautifully crafted visualizations will always attract more attention.
 
 ```{r, echo = FALSE, fig.width = 10, fig.cap = "Which would you prefer?", fig.height = 5}
 library(gridExtra)

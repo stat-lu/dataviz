@@ -1,7 +1,9 @@
 ---
 title: "Multivariate Data"
 subtitle: "Data Visualization"
-author: "Johan Larsson"
+author: 
+- "Johan Larsson"
+- "Behnaz Pirzamanbein"
 institute: "The Department of Statistics, Lund University"
 date: ""
 bibliography: "assets/references.bib"
@@ -61,7 +63,7 @@ options(digits = 3)
 
 ## Visualizing Multivariate Data
 
-visualizations often most intriguing when they show multiple variables
+Visualizations often most intriguing when they show multiple variables.
 
 ```{r, echo = FALSE, out.width = "78%", fig.cap = "The Emigrants of the World, Charles Joseph Minard, 1858."}
 knitr::include_graphics("images/minard-migration.jpg")
@@ -72,11 +74,11 @@ knitr::include_graphics("images/minard-migration.jpg")
 ## 3D
 
 .pull-left-40[
-seems like a logical choice for a third continuous variable
+3D seems like a logical choice for a third continuous variable.
 
-unfortunately, 3D visualizations are notoriously hard to read
+Unfortunately, 3D visualizations are notoriously hard to read.
 
-as a thumb rule, **avoid 3D visualizations**
+As a thumb rule, **avoid 3D visualizations**.
 ]
 
 .pull-right-60[
@@ -164,8 +166,7 @@ ggplot(mtcars, aes(disp, hp, color = cyl)) + #<<
 
 ### Color and Continuous Variables
 
-sometimes fine to map color to continuous variables, particularly when data is in
-a grid format
+Sometimes, it is fine to map color to continuous variables, particularly when the data are in a grid format.
 
 ```{r, echo = FALSE}
 volcano_long <- 
@@ -202,11 +203,12 @@ ggplot(mtcars, aes(disp, hp, color = mpg)) +
 Mapping to size only makes sense for continuous variables!
 
 .pull-left-40[
-### Area
+### 1. Area
 
-most common use case: bubble plots
+Most common use case: 
+- bubble plots
 
-caveat: comparing areas is **hard**
+Caveat: comparing areas is **hard**
 ]
 
 .pull-right-60[
@@ -220,9 +222,9 @@ ggplot(mtcars,
 
 ---
 
-### Width
+### 2. Width
 
-mapping to width can be useful but has few use cases
+Mapping to width can be useful but has few use cases.
 
 ```{r, echo = FALSE}
 troops <- read.table("data/troops.txt",
@@ -243,9 +245,9 @@ ggplot(troops,
 
 ## Shape
 
-works OK for categorical variables, but usually not preferable over color
+Shape works OK for categorical variables, but usually not preferable over color.
 
-mapping to line shapes is generally better than point shapes
+Mapping to line shapes is generally better than point shapes.
 
 ```{r, fig.width = 6}
 ggplot(mtcars, aes(disp, hp, shape = cyl)) + #<<
@@ -257,7 +259,7 @@ ggplot(mtcars, aes(disp, hp, shape = cyl)) + #<<
 
 ## Text
 
-often makes sense when each observation has a meaningful identity
+Text often makes more sense when each observation has a meaningful identity.
 
 [ggrepel](https://CRAN.R-project.org/package=ggrepel) is a useful package when mapping
 to text (`geom_text_repel()`)
@@ -287,13 +289,13 @@ head(msleep, 15) %>%
 
 ## Facets
 
-splits and plots datasets in small multiples
+Facet splits and plots datasets in small multiples.
 
-### Wrap
+### 1. Wrap
 
-use `facet_wrap()` when you have **one** variable to facet on.
+Use `facet_wrap()` when you have **one** variable to facet on.
 
-```{r, fig.width = 10, fig.height = 3.4}
+```{r, fig.width = 8, fig.height = 3}
 ggplot(mtcars, aes(disp, hp)) +
   geom_point() +
   facet_wrap(vars(cyl)) #<<
@@ -301,7 +303,7 @@ ggplot(mtcars, aes(disp, hp)) +
 
 ---
 
-### Grid
+### 2. Grid
 
 Use `facet_grid()` when you have **two** variables to facet on.
 
@@ -337,7 +339,8 @@ visualizations.
 tail(mtcars, 15) %>%
   ggplot(aes(hp, wt, color = cyl, label = name)) +
     geom_point() +
-    geom_text_repel() +
+    geom_text_repel(show.legend = FALSE) + 
+    # Prevent text labels from appearing in the legend
     facet_wrap(vars(gear))
 ```
 

@@ -4,7 +4,8 @@
     <title>The Grammar of Graphics and ggplot2</title>
     <meta charset="utf-8" />
     <meta name="author" content="Johan Larsson" />
-    <script src="libs/header-attrs-2.15/header-attrs.js"></script>
+    <meta name="author" content="Behnaz Pirzamanbein" />
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <script src="libs/mark.js-8.11.1/mark.min.js"></script>
     <link href="libs/xaringanExtra-search-0.0.1/search.css" rel="stylesheet" />
@@ -25,6 +26,9 @@ class: middle, center, title-slide
 .author[
 ### Johan Larsson
 ]
+.author[
+### Behnaz Pirzamanbein
+]
 .institute[
 ### The Department of Statistics, Lund University
 ]
@@ -37,13 +41,13 @@ class: middle, center, title-slide
 ## The Grammar of Graphics
 
 .pull-left[
-  visualizations can be complicated and difficult to describe 
+Visualizations can be complicated and difficult to describe.
   
-  Leland Wilkinson &lt;a name=cite-wilkinson2005&gt;&lt;/a&gt;([Wilkinson, 2005](#bib-wilkinson2005)) 
-  **The Grammar of Graphics**: an attempt to formalize the basic principles
-  of visualizations
+Leland Wilkinson &lt;a name=cite-wilkinson2005&gt;&lt;/a&gt;([Wilkinson, 2005](#bib-wilkinson2005)) 
+**The Grammar of Graphics**: an attempt to formalize the basic principles
+of visualizations
   
-  we will use Hadley Wickham's *Layered Grammar of Graphics* &lt;a name=cite-wickham2010&gt;&lt;/a&gt;([Wickham, 2010](http://www.tandfonline.com/doi/abs/10.1198/jcgs.2009.07098))
+We will use Hadley Wickham's *Layered Grammar of Graphics* &lt;a name=cite-wickham2010&gt;&lt;/a&gt;([Wickham, 2010](http://www.tandfonline.com/doi/abs/10.1198/jcgs.2009.07098))
 ]
 
 .pull-right[
@@ -136,15 +140,14 @@ mpg %&gt;%
 ## Layers: Stats
 
 .pull-left-40[
-Statistical transformations modify or summarize data.
+Statistical transformations 
+- modify or summarize, and
+- can be used to smooth data.
 
-can be used to smooth, summarize, or modify
-
-A stat can add **new** variables.
-
-Stats have names of the form `stat_*`.
-
-can also be specified directly in `geom_*` functions
+**Stats**
+- can add **new** variables.
+- have names of the form `stat_*`.
+- can also be specified directly in `geom_*` functions.
 ]
 
 .pull-right-60[
@@ -165,9 +168,9 @@ ggplot(faithful,
 ## Layers: Geoms
 
 .pull-left[
-**Geoms** decide what geometrical objects are used when plotting.
-
-Geoms have names of the form `geom_*`.
+**Geoms** 
+- decide what geometrical objects are used when plotting.
+- have names of the form `geom_*`.
 
 
 ```r
@@ -193,8 +196,7 @@ p + geom_area()
 
 ## Layers: Position Adjustments
 
-sometimes need to modify positions of geoms, such as stacking bar geoms side-by-side
-or jittering points that overlap
+Sometimes, we need to modify the positions of geoms, such as by stacking bar geoms side-by-side or jittering points to avoid overlap.
 
 .pull-left[
 
@@ -229,7 +231,7 @@ ggplot(mpg, aes(hwy, drv)) +
 
 ## Scales
 
-controls **how** variables are mapped to aesthetics
+Scale controls **how** variables are mapped to aesthetics.
 
 **Guides** is the inverse of a scale, showing how to read the scale.
 
@@ -264,7 +266,7 @@ p + scale_x_log10()
 ## Coordinate Systems (coord)
 
 .pull-left-60[
-coordinate systems controls the position of objects on the plot
+Coordinate systems control the position of objects on the plot.
 
 
 ```r
@@ -299,9 +301,9 @@ mutate(mpg, cyl = factor(cyl)) %&gt;%
 
 ## Faceting
 
-powerful tool that divide visualizations into small multiples
+Facet is a powerful tool that divide visualizations into small multiples.
 
-ggplot2 provides `facet_grid()` and `facet_wrap()`
+ggplot2 provides `facet_grid()` and `facet_wrap()`.
 
 
 ```r
@@ -333,10 +335,9 @@ ggplot(
 ## A Hierarchy of Defaults
 
 .pull-left[
-having to supply all the 
-parts of the grammar with each plot would be **very** tiresome
+Having to supply all the parts of the grammar with each plot would be **very** tiresome.
 
-thankfully, the grammar of graphics (and ggplot2) comes with a **hierarchy of defaults**
+Thankfully, the grammar of graphics (and ggplot2) comes with a **hierarchy of defaults**.
 
 &lt;img src="the-grammar-of-graphics-and-ggplot2_files/figure-html/unnamed-chunk-19-1.png" width="360" style="display: block; margin: auto;" /&gt;
 ]
@@ -375,11 +376,11 @@ ggplot(diamonds,
 
 ## Using the Grammar
 
-Understanding the grammar of graphics is the key to understanding ggplot2.
+Understanding the grammar of graphics 
+- is the key to understanding ggplot2, and
+- makes it easy to make large changes to the plot
 
 Avoid thinking about visualizations as a bag of tricks.
-
-makes it easy to make large changes to the plot
 
 --
 
@@ -408,7 +409,7 @@ graphical statistics_ 19.1, pp. 3-28. ISSN: 1061-8600. DOI:
 [10.1198/jcgs.2009.07098](https://doi.org/10.1198%2Fjcgs.2009.07098).
 URL:
 [http://www.tandfonline.com/doi/abs/10.1198/jcgs.2009.07098](http://www.tandfonline.com/doi/abs/10.1198/jcgs.2009.07098)
-(visited on mar. 13, 2020).
+(visited on Mar. 13, 2020).
 
 &lt;a name=bib-wilkinson2005&gt;&lt;/a&gt;[Wilkinson, L.](#cite-wilkinson2005)
 (2005). _The Grammar of Graphics_. 2nd edition. New York: Springer.

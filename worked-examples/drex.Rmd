@@ -53,8 +53,8 @@ ggplot(xy, aes(x)) +
 As you see, our call to ggplot2 is quite simple. We use `ggplot()` with the
 data as the first argument and a call to `aes()` for our aesthetics
 specification as our second argument. The call to `aes()` is actually optional
-and if you want to you can provide your mappings inside the layers (geom
-functions) if you want to.
+and you can provide your mappings directly within the layers (geom
+functions) if you prefer.
 
 The distribution seems to be reasonably symmetric but with a longer tail to the
 right and with a single outlier at around 100. The box plot also indicates that
@@ -66,19 +66,16 @@ distribution.
 ## Dot Plot
 
 When studying a distribution, it is usually better to start off with a plot
-that does less abstraction, such as a
-simple dot plot. In a dot plot, each observation is indicated by a
-dot. 
+that does less abstraction, such as a simple dot plot. In a dot plot, each observation is indicated by a dot. 
 
 When constructing the dot plot, the values that are used are cut in intervals
-(much like a histogram) and observations that fall within a given intervals are
-stacked on top of another. The maximum width of these intervals is decided by
+(much like a histogram), and observations that fall within a given interval are
+stacked on top of one another. The maximum width of these intervals is decided by
 the `binwidth`, which by default is 1/30 times the range of the data. The exact
 behavior then depends on the setting of the `method` argument, which by default
 is `"dotdensity"`, which uses an algorithm from a paper by Wilkinson^[Remember
-him? The author of the original grammar of graphics.]. Here we try to use the
-`"histodot"` method instead, which works exactly like a histogram. We se the
-bin width to 5
+him? The author of the original grammar of graphics.]. Here, we try to use the
+`"histodot"` method instead, which works exactly like a histogram. We set the  `binwidth` to 3.
 
 ```{r, fig.cap = "A dotplot of the x variable", fig.height = 2.9, fig.width = 5}
 ggplot(xy, aes(x)) +
@@ -98,8 +95,7 @@ when they are uncertain about the answer.
 ## Histogram
 
 Perhaps this is the case here, so let's use a *histogram* instead. Just as with
-the dot plot, we need to specify the bin width (or number of bins) here. Given
-the number of observations here, and the dot plot we previously plotted, a bin
+the dot plot, we need to specify the `binwidth` (or number of bins, `bins`) here. Given the number of observations here, and the dot plot we previously plotted, a bin
 width of five might be appropriate to remove the effect of possible round-off
 bias and elucidate the shape of the distribution better.
 
@@ -114,11 +110,11 @@ to see how large the effects of these parameters can be.
 ## Density Plot
 
 We could also try a density plot here. Density plots are best when you know
-that your data is measured on a continuous scale and can make strong
-assumptions about the distributions of your variables, since the choice
-of parameters for the density kernel have large effects on the result.
+that your data is measured on a continuous scale and you can make strong
+assumptions about the distributions of your variables. This is because the choice
+of parameters for the density kernel has a large effect on the result.
 
-Here we try a few different choices to highlight this.
+Here, we try a few different choices to highlight this.
 
 ```{r, fig.cap = "Density plots with various density estimate choices"}
 ggplot(xy, aes(x)) +
@@ -138,6 +134,7 @@ It can sometimes be useful to display several plots of univariate
 distributions in a compact design. One way to do so is via
 the [patchwork](https://CRAN.R-project.org/package=patchwork) package, which
 can be used to *patch* together plots that you have created separately.
+
 Let's install the package first.
 
 ```{r eval = FALSE}
@@ -146,8 +143,10 @@ install.packages("patchwork")
 
 **patchwork** is simple and intuitive yet powerful. Most of its functionality
 can be obtained simply by using unary operators (such as `+`) to patch plots
-together. `+` and `|` are used to patch plots horizontally, and `/` to patch
-them vertically.
+together.
+
+- `+` and `|` are used to patch plots horizontally, and 
+- `/` to patch them vertically.
 
 In the following plot, we patch a histogram and density plot together.
 
@@ -163,12 +162,11 @@ p2 <- ggplot(xy, aes(y)) +
 p1 | p2
 ```
 
-Next, we try to stack them horizontally
+Next, we try to stack them horizontally.
 
 ```{r, fig.cap = "Density plot of x and histogram of y.", fig.width = 6, fig.height = 5}
 p1 / p2
 ```
-
 
 And here is an example where we go one step further, using a more complicated
 layout and adding labels to the plots.
@@ -182,10 +180,9 @@ pw <- (p1 | p2) / p3
 pw + plot_annotation(tag_levels = "A")
 ```
 
-Simple, right? Play around with patchwork and it's various options. One thing
-that can be particularly useful to know about is that if you have a legend,
-such as a color legend, that's shared between the plots you're patching
-together, then patchwork will automatically merge these guides into one.
+Simple, right? Play around with patchwork and it's various options. 
+
+It's particularly useful to know that if you have a shared legend, such as a color legend, between the plots you're combining, patchwork will automatically merge these guides into one.
 
 For more examples, check out
 [documentation](https://patchwork.data-imaginist.com/index.html).
@@ -194,10 +191,7 @@ For more examples, check out
 
 We've now plotted several types of plots of the distributions of this dataset
 and might well feel comfortable about making a few conclusions about the data.
-Stopping here, however, would unfortunately be a severe mistake. Because what
-we've missed is to plot the *joint* distribution of these variables, which is
-very easy to do using a scatter plot (which we will tackle in much more detail
-during the next part of the course).
+However, stopping here would be a severe mistake. The reason is that we've overlooked plotting the *joint* distribution of these variables, which can be easily done using a scatter plot. We will explore this in much more detail in the next part of the course.
 
 ```{r fig.cap = "The terrifying Datasaurus Rex"}
 ggplot(xy, aes(x, y)) +
@@ -207,18 +201,18 @@ ggplot(xy, aes(x, y)) +
 What is the take-home message here? Well, it's twofold:
 
 1. When you visualize distributions of several variables one by one, you are
-   projecting these distributions from a multivariate space to a
-   univariate space. In so doing, you are effectively ignoring all of the
-   ways by which these two variables are related to one another. To be fair,
-   it isn't always easy (or even possible) to visualize many variables at once,
-   but in this case we would have been far better off if we had considered
-   a scatter plot right away.
+   projecting these distributions from a multivariate space into a
+   univariate space. In doing so, you effectively ignore all the ways in which 
+   these variables are related to each another. To be fair,
+   visualizing many variables at once isn't always easy (or even possible). 
+   However, in this case, we would have been far better off considering
+   a scatter plot from the start.
 2. Knowing your data is critical. You should never throw yourself into a
-   dataset without at least a bit of understanding about what the variables
-   represent and preferably also how they were collected. Make it a habit
-   to read up on the dataset *before* you start visualizing it. For most of
-   the data that we'll tackle in this course, there is often documentation
-   that you can access by looking at the help file for the dataset.
+   dataset without at least some understanding of what the variables
+   represent, and ideally, how they were collected. Make it a habit
+   to familiarize yourself with the dataset *before* you start visualizing it. 
+   For most of the data we'll tackle in this course, documentation is often 
+   available, which you can access by looking at the help file for the dataset.
 
 # Source Code
 

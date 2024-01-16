@@ -41,11 +41,9 @@ to load ggplot2.
 The main function of ggplot is the `ggplot()` function. It has two main
 arguments that you need to be aware of:
 
-`data`
-: the (default) dataset to use for the plot
+1. `data`: the (default) dataset to use for the plot
 
-`mapping`
-: the aesthetic mappings
+2. `mapping`: the aesthetic mappings
 
 When calling `ggplot()` we typically don't call these arguments by their name
 and instead simply supply them in order.
@@ -57,7 +55,7 @@ the form of a `data.frame` or a `tibble`. Let's starts with a very simple data
 set, `mtcars`, that contains a few variables related to fuel consumption
 of cars.
 
-Before doing anything else, always take a little time to look at bit of the
+Before doing anything else, always take a little time to look at a bit of the
 data. If the dataset has relatively few variables (less than ten), the `head()`
 function is usually your best option; it simply displays the first few rows of
 the data.
@@ -78,8 +76,7 @@ table along with the first values of each variable.
 The `mapping` argument should be supplied with a call to the `aes()` function
 that lists the mappings between variables in your data and aesthetics of the
 plot. Which aesthetics you choose to map to depends on what geoms you intend to
-use. But for now, let's assume that we want to map engine displacement (`disp`) to the x
-axis, and fuel consumption (`mpg`) to the y axis. To do so, we simply use
+use. But for now, let's assume that we want to map engine displacement (`disp`) to the x axis, and fuel consumption (`mpg`) to the y axis. To do so, we simply use
 `aes(x = disp, y = mpg)` as the input to the `mapping` argument. Because the
 first two arguments of `aes()` are `x` and `y`, we can do without calling them
 explicitly.
@@ -90,8 +87,8 @@ Let's put this together:
 ggplot(mtcars, aes(disp, mpg))
 ```
 
-Why does this result in a blank canvas? After all, we did tell ggplot to map
-engine displacement to the x axis and fuel consumption to the y axis.
+Why does this result in a blank canvas? 
+After all, we did tell ggplot to map engine displacement to the x axis and fuel consumption to the y axis.
 
 The answer is that we still haven't told ggplot2 which layers we want to use.
 
@@ -144,12 +141,9 @@ ggplot() +
 ```
 
 Again, we retrieve the same plot. But note that the `mtcars` data set
-is now available only to the `geom_point()` layer. If we were to add
-an additional layer, then that layer wouldn't know about the `mtcars` data
-set (nor the aesthetics mappings defined in the `geom_point()`) call.
+is now available only to the `geom_point()` layer. If we were to add an additional layer, then that layer wouldn't know about the mtcars dataset, nor would it be aware of the aesthetic mappings defined in the `geom_point()` call.
 
-Now try to switch geom for your plot, for instance
-by replacing `geom_point()` with `geom_line()`.
+Now try to switch geom for your plot, for instance by replacing `geom_point()` with `geom_line()`.
 
 Now let's try using `geom_rect()` instead.
 
@@ -158,9 +152,9 @@ ggplot(mtcars, aes(disp, mpg)) +
   geom_rect()
 ```
 
-Well that didn't work, but why not? Well, the reason is simply that
-`geom_rect()` uses the rectangle geom and a rectangle needs more aesthetics than
-just x and y coordinates.
+Well that didn't work, but why not? 
+
+Well, the reason is simply that `geom_rect()` uses the rectangle geom and a rectangle needs more aesthetics than just x and y coordinates.
 
 # Aesthetics
 
@@ -205,6 +199,8 @@ that you will likely come across every now and then, for instance `cex = size`
 (for points), `col = color = colour`, and `lty = shape` (for points), which are
 there mostly for reasons that are historical or have to do with compatibility.
 
+**Note**: For more details about various formats, check the `vignette("ggplot2-specs")`. 
+
 # Other Ways to Generate Layers
 
 So far we've learned that the most common way to generate layers is
@@ -231,8 +227,7 @@ The example above is not really of much practical use. But `stat_*()` functions
 occasionally do come in handy. They are, for instance, natural to consider
 when your goal from the outset is to visualize the result of
 a statistical transformation (other than the identity function), such
-as medians of some
-distribution, for instance. In this example, we've used 
+as medians of some distribution, for instance. In this example, we've used 
 the `stat_summary()` function to compute medians of engine
 displacement across all unique values of numbers of cylinders.
 
@@ -249,9 +244,8 @@ in particular the limits for the x and y axes. You can do so either using
 the `lims()` function or via the wrappers `xlim()` and `ylim()`, which modify
 the limits for the x and y axis respectively.
 
-This will come in handy when you for instance want to include a particular value
-on the axes (such as zero) or just want to make room for annotation.
-Here we've taken the previous plot and changed the limits to include
+This will come in handy, for instance, when you want to include a particular value on the axes (such as zero) or when you just want to make room for annotations.
+Here, we've taken the previous plot and changed the limits to include
 0 on the y axis. 
 
 ```{r}
@@ -270,10 +264,9 @@ of the visualization. If you want more control over the scales, however,
 you can achieve that using `scales_*()` functions.
 
 Every ggplot must have a scale function attached to every aesthetic mapping.
-The reason we haven't had to specify them before is, as you might have
-guessed, that ggplot2 has filled in the blanks for us using reasonable defaults.
+The reason we haven't had to specify them before is, as you might have guessed, that ggplot2 has been filling in the blanks for us with reasonable defaults.
 
-Look at the following plot.
+Look at the following plot:
 
 ```{r}
 ggplot(mtcars, aes(disp, mpg)) +
@@ -337,9 +330,7 @@ this page: <https://ggplot2.tidyverse.org/reference/guides.html>.
 
 # Labeling Guides
 
-How you label your guides matters a lot and it's probably the thing in the
-course that we nitpick on the most in (save maybe for improper figure sizing
-and non-descriptive figure captions). 
+Labeling your guides is very important, and it's probably the aspect of the course we nitpick the most, aside from maybe improper figure sizing and non-descriptive figure captions.
 
 It's fortunately very easy to do in ggplot2. Just use the `labs()` function.
 The basic recipe is `labs(<guide> = <name>)`. So, to label the guides
@@ -387,9 +378,7 @@ In our particular plot, we might even prefer to put the legend inside the plot
 itself, given that there is ample space in the upper-right corner of the plot.
 If you want to place the legend inside the canvas, then you supply a length-two
 numeric vector. Each value needs to lie within [0, 1] and represent normalized
-coordinates of the canvas. Placing legends inside the canvas well typically
-comes down to trial-and-error and will depend on the size of the plot in the
-output.
+coordinates of the canvas. Placing legends inside the canvas typically comes down to trial-and-error and will depend on the size of the plot in the output.
 
 ```{r}
 ggplot(mtcars, aes(disp, mpg, color = factor(cyl))) +
@@ -409,7 +398,7 @@ now, is `theme_grey()` and for most of the plots in this course, we will stick
 to that.
 
 Changing the theme for your plots can be done on a plot-by-plot basis, by
-simple adding the theme you want to your plot, like this:
+simply adding the theme you want to your plot, like this:
 
 ```{r}
 ggplot(mtcars, aes(disp, mpg, color = factor(cyl))) +

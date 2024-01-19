@@ -156,7 +156,7 @@ Proportional stacked bar chart is
 - slightly more intuitive than grouped proportional bar charts, 
 - but harder to read.
 
-```{r, fig.width = 6}
+```{r, fig.width = 6, fig.height= 3.8}
 ggplot(happiness, aes(gender, fill = happy)) +
   geom_bar(position = "fill", col = "black") + #<<
   labs(y = "proportion")
@@ -177,33 +177,6 @@ ggplot(happiness) +
   geom_mosaic(aes(product(happy, gender), fill = happy)) + #<<
   guides(fill = "none") # remove redundant ink
 ```
-
----
-
-## Waffle Plots
-
-Waffle plot is suitable when there are large differences between categories.
-
-- again need to use a new package:
-[waffle](https://CRAN.R-project.org/package=waffle)
-
-```{r, echo = FALSE, fig.width = 7, fig.height = 5, fig.cap = "A waffle plot of the happiness data. Every square represents approximately 10 people. The code is quite complicated (see the source code)."}
-# install.packages("waffle")
-library(waffle)
-
-happiness_counts <-
-  group_by(happiness, gender) %>%
-  count(happy) %>%
-  mutate(n = round(n / 10))
-
-ggplot(happiness_counts, aes(fill = happy, values = n)) +
-  geom_waffle(color = "white", size = 1.125, n_rows = 10, flip = TRUE) +
-  facet_wrap("gender", nrow = 1) +
-  coord_equal() +
-  theme_minimal(base_size = 16) +
-  theme_enhance_waffle()
-```
-
 
 ---
 
@@ -248,6 +221,33 @@ ggplot(happiness_bins, aes(work, n, fill = work)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 ]
+
+---
+
+## Waffle Plots
+
+Waffle plot is suitable when there are large differences between categories.
+
+- again need to use a new package:
+[waffle](https://CRAN.R-project.org/package=waffle)
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 5, fig.cap = "A waffle plot of the happiness data. Every square represents approximately 10 people. The code is quite complicated (see the source code)."}
+# install.packages("waffle")
+library(waffle)
+
+happiness_counts <-
+  group_by(happiness, gender) %>%
+  count(happy) %>%
+  mutate(n = round(n / 10))
+
+ggplot(happiness_counts, aes(fill = happy, values = n)) +
+  geom_waffle(color = "white", size = 1.125, n_rows = 10, flip = TRUE) +
+  facet_wrap("gender", nrow = 1) +
+  coord_equal() +
+  theme_minimal(base_size = 16) +
+  theme_enhance_waffle()
+```
+
 
 ---
 

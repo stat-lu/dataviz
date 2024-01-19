@@ -1547,7 +1547,7 @@ border-radius: 0px;
 
 <div id="arthritis" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Arthritis</h1>
-<p>In this worked example we will be working with data from a treatment trial for
+<p>In this worked example, we will be working with data from a treatment trial for
 Arthritis. The data comes from the <a href="https://CRAN.R-project.org/package=vcd">vcd
 package</a>. To begin, let’s load the
 package and take a <code>glimpse()</code> at the data.</p>
@@ -1596,7 +1596,7 @@ Figure 2: Treatment effect in the arthritis study.
 </div>
 <p>It’s immediately clear that the treatment has worked well! The count of people
 with a improvement is much higher in the treatment arm compared with the placebo
-arm. But how do the treatments compare when it comes to people who’ve made
+arm. But how do the treatments compare in terms of people who’ve made
 <em>some</em> improvement? This is difficult to say from our approach here. This
 is due to two reasons:</p>
 <ol style="list-style-type: decimal">
@@ -1604,9 +1604,8 @@ is due to two reasons:</p>
 first category, since the other portions of the bars are not aligned.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></li>
 <li>The bars are not proportional.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></li>
 </ol>
-<p>Let’s try a grouped proportional bar chart instead. To do this, we need
-to do a little preparatory work since there is no direct option to do this
-in ggplot2.</p>
+<p>Let’s try a grouped proportional bar chart instead. To achieve this, we need
+to do a little preparatory work, since ggplot2 does not offer a direct option for this purpose.</p>
 <p>What we need to do is to prepare a data set with the proportions that we would
 like to plot. In the following lines, we</p>
 <ol style="list-style-type: decimal">
@@ -1620,9 +1619,9 @@ like to plot. In the following lines, we</p>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">count</span>(Treatment, Improved) <span class="sc">%&gt;%</span> <span class="co"># like group_by + summarize</span></span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="fu">group_by</span>(Treatment) <span class="sc">%&gt;%</span></span>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n))</span></code></pre></div>
-<p>Now we’re ready to construct our plot, which we do exactly like a standard
-grouped bar plot, except we use <code>geom_col()</code> and map the <code>y</code> aesthetic since we
-have summary data.</p>
+<p>Now, we’re ready to construct our plot. This will be done similarly to a standard
+grouped bar plot, except we will use <code>geom_col()</code> and map the <code>y</code> aesthetic, as we
+are working with summary data.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">ggplot</span>(arthritis_prop, <span class="fu">aes</span>(Treatment, prop, <span class="at">fill =</span> Improved)) <span class="sc">+</span></span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">position =</span> <span class="st">&quot;dodge&quot;</span>) <span class="sc">+</span></span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">&quot;Improvement&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Proportion&quot;</span>)</span></code></pre></div>
@@ -1632,15 +1631,14 @@ have summary data.</p>
 Figure 3: Grouped, proportional bar chart of the arthritis data.
 </p>
 </div>
-<p>No it’s suddenly quite easy to compare the proportion of people who improved
-some between the two groups.</p>
-<p>See if you can create a proportional stacked bar chart too and compare the
+<p>Now, it becomes quite easy to compare the proportion of people who showed some improvement between the two groups.</p>
+<p>See if you can also create a proportional stacked bar chart and compare the
 result with your previous charts.</p>
 </div>
 </div>
 <div id="mosaic-plots" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> Mosaic Plots</h1>
-<p>In the lecture we also encountered mosaic plots, which are proportional bar
+<p>In the lecture, we also encountered mosaic plots, which are proportional bar
 charts that map not only the height of the bars but also the width of the bars
 to group sizes. We’ll use the <strong>ggmosaic</strong> package here.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># install.packages(&quot;ggmosaic&quot;) # if don&#39;t already have the package</span></span>
@@ -1654,25 +1652,23 @@ adding auxiliary functions (<code>geom_*()</code> functions) to extend its funct
 <p>The key features to notice about this call are</p>
 <ol style="list-style-type: decimal">
 <li>that the <code>aes()</code> specification must reside <em>inside</em> the call to
-<code>geom_mosaic()</code>, and not in the <code>ggplot()</code> function and</li>
+<code>geom_mosaic()</code> and not in the <code>ggplot()</code> function, and</li>
 <li>the call to <code>product()</code>, which acts simply as a list of variables that
 you want to use in the mosaic plot.</li>
 </ol>
-<p>The main benefit of the mosaic plot is that we get to see more of the data. With
-the bar charts we needed to separate visualizations to provide information on
-the overall size of the groups (treatment arms), whereas with the mosaic plot we
-can make do with only a single plot.<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a></p>
+<p>The main benefit of the mosaic plot is that it allows us to see more of the data. With bar charts, separate visualizations were needed to provide information on
+the overall size of the groups (treatment arms). In contract, the mosaic plot enables us to use just a single plot.<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a></p>
 <p>Try to switch the order of the variables in the <code>product()</code> call. What
 happens? How has the information you see changed?</p>
 </div>
 <div id="waffle-plots" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> Waffle Plots</h1>
-<p>Waffle plots are easy-to-read visualizations that are actually quite uncommon
-in statistical visualizations but much more prevalent in media outlets such as
-newspapers. They are, as we mentioned in the lecture, at their best when some of
+<p>Waffle plots are easy-to-read visualizations that, while quite uncommon
+in statistical visualizations, are much more prevalent in media outlets such as
+newspapers. As we mentioned in the lecture, they are at their best when some of
 the categories are so small that their sizes are hard to estimate in a
 bar chart or mosaic plot.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># install.packages(&quot;waffle&quot;) # if you haven&#39;t already instead it</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># install.packages(&quot;waffle&quot;) # if you haven&#39;t already installed it</span></span></code></pre></div>
 <p>The waffle package requires that our data contains counts of the categories, so
 before we can use it, we need to do a bit of wrangling. More precisely, you need
 to group the data by <code>Improved</code> and <code>Treatment</code> and then use <code>summarize()</code>
@@ -1706,8 +1702,8 @@ Figure 4: A basic waffle chart of the results from the treatment arm.
 <p>This looks kind of like a waffle chart, but there’s a lot of superfluous
 information that we’d rather get rid off. Thankfully, <strong>waffle</strong> provides the
 helpful <code>theme_enhance_waffle()</code> function for this. Moreover, we probably prefer
-the symbols (rectangles) to be squares—it’s supposed to look like a waffle
-after all, right?—which we can accomplish by forcing the coordinate system to
+the symbols (rectangles) to be squares — it’s supposed to look like a waffle
+after all, right? — which we can accomplish by forcing the coordinate system to
 be isometric using <code>coord_equal()</code>. Finally, I think it looks more aesthetically
 pleasing if we swap the black line color for white, increase their widths
 slightly, and change theme to the minimal variant.</p>
@@ -1724,7 +1720,7 @@ slightly, and change theme to the minimal variant.</p>
 Figure 5: A prettier waffle plot.
 </p>
 </div>
-<p>That looks much better, doesn’t it?</p>
+<p>This looks much better, doesn’t it?</p>
 <p>To be able to use waffle charts to see both of the treatment arms at once,
 we need to use something called <strong>facets</strong>, which we haven’t covered in the
 course yet. If you already know about facets, however, feel free to
@@ -1745,9 +1741,7 @@ be much more detrimental to the result.<a href="#fnref1" class="footnote-back">�
 <li id="fn2"><p>To be fair, the differences between the group
 sizes are small here, but this also means that we don’t lose much information
 when using proportional bars instead.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
-<li id="fn3"><p>But note that it is the <em>relative</em> size
-that we show. If we want the actual <em>counts</em> in the outer category, we still
-need to add additional plots or provide this information in text.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>However, it is important to note that we’re showing the <em>relative</em> size. If we want to display the actual <em>counts</em> in the outer category, we still need additional plots or must provide this information in text.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 

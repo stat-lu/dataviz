@@ -27,7 +27,7 @@ options(scipen = 999)
 
 # Arthritis
 
-In this worked example we will be working with data from a treatment trial for
+In this worked example, we will be working with data from a treatment trial for
 Arthritis. The data comes from the [vcd
 package](https://CRAN.R-project.org/package=vcd). To begin, let's load the
 package and take a `glimpse()` at the data.
@@ -69,7 +69,7 @@ ggplot(Arthritis, aes(Treatment, fill = Improved)) +
 
 It's immediately clear that the treatment has worked well! The count of people
 with a improvement is much higher in the treatment arm compared with the placebo
-arm. But how do the treatments compare when it comes to people who've made
+arm. But how do the treatments compare in terms of people who've made
 *some* improvement? This is difficult to say from our approach here. This
 is due to two reasons:
 
@@ -82,9 +82,8 @@ is due to two reasons:
    sizes are small here, but this also means that we don't lose much information
    when using proportional bars instead.]
 
-Let's try a grouped proportional bar chart instead. To do this, we need
-to do a little preparatory work since there is no direct option to do this
-in ggplot2. 
+Let's try a grouped proportional bar chart instead. To achieve this, we need
+to do a little preparatory work, since ggplot2 does not offer a direct option for this purpose.
 
 What we need to do is to prepare a data set with the proportions that we would
 like to plot. In the following lines, we
@@ -102,9 +101,9 @@ arthritis_prop <-
   mutate(prop = n / sum(n))
 ```
 
-Now we're ready to construct our plot, which we do exactly like a standard
-grouped bar plot, except we use `geom_col()` and map the `y` aesthetic since we
-have summary data.
+Now, we're ready to construct our plot. This will be done similarly to a standard
+grouped bar plot, except we will use `geom_col()` and map the `y` aesthetic, as we
+are working with summary data.
 
 ```{r, fig.cap = "Grouped, proportional bar chart of the arthritis data.", fig.height = 3}
 ggplot(arthritis_prop, aes(Treatment, prop, fill = Improved)) +
@@ -112,15 +111,14 @@ ggplot(arthritis_prop, aes(Treatment, prop, fill = Improved)) +
   labs(fill = "Improvement", y = "Proportion")
 ```
 
-No it's suddenly quite easy to compare the proportion of people who improved
-some between the two groups. 
+Now, it becomes quite easy to compare the proportion of people who showed some improvement between the two groups. 
 
-See if you can create a proportional stacked bar chart too and compare the
+See if you can also create a proportional stacked bar chart and compare the
 result with your previous charts.
 
 # Mosaic Plots
 
-In the lecture we also encountered mosaic plots, which are proportional bar
+In the lecture, we also encountered mosaic plots, which are proportional bar
 charts that map not only the height of the bars but also the width of the bars
 to group sizes. We'll use the **ggmosaic** package here.
 
@@ -141,30 +139,26 @@ ggplot(Arthritis) +
 The key features to notice about this call are
 
 1. that the `aes()` specification must reside *inside* the call to
-   `geom_mosaic()`, and not in the `ggplot()` function and
+   `geom_mosaic()` and not in the `ggplot()` function, and
 2. the call to `product()`, which acts simply as a list of variables that
    you want to use in the mosaic plot.
 
-The main benefit of the mosaic plot is that we get to see more of the data. With
-the bar charts we needed to separate visualizations to provide information on
-the overall size of the groups (treatment arms), whereas with the mosaic plot we
-can make do with only a single plot.^[But note that it is the *relative* size
-that we show. If we want the actual *counts* in the outer category, we still
-need to add additional plots or provide this information in text.]
+The main benefit of the mosaic plot is that it allows us to see more of the data. With bar charts, separate visualizations were needed to provide information on
+the overall size of the groups (treatment arms). In contract, the mosaic plot enables us to use just a single plot.^[However, it is important to note that we're showing the *relative* size. If we want to display the actual *counts* in the outer category, we still need additional plots or must provide this information in text.]
 
 Try to switch the order of the variables in the `product()` call. What
 happens? How has the information you see changed?
 
 # Waffle Plots
 
-Waffle plots are easy-to-read visualizations that are actually quite uncommon
-in statistical visualizations but much more prevalent in media outlets such as
-newspapers. They are, as we mentioned in the lecture, at their best when some of
+Waffle plots are easy-to-read visualizations that, while quite uncommon
+in statistical visualizations, are much more prevalent in media outlets such as
+newspapers. As we mentioned in the lecture, they are at their best when some of
 the categories are so small that their sizes are hard to estimate in a
 bar chart or mosaic plot.
 
 ```{r, eval = FALSE}
-# install.packages("waffle") # if you haven't already instead it
+# install.packages("waffle") # if you haven't already installed it
 ```
 
 The waffle package requires that our data contains counts of the categories, so
@@ -202,8 +196,8 @@ filter(arthritis_summarized, Treatment == "Treated") %>%
 This looks kind of like a waffle chart, but there's a lot of superfluous
 information that we'd rather get rid off. Thankfully, **waffle** provides the
 helpful `theme_enhance_waffle()` function for this. Moreover, we probably prefer
-the symbols (rectangles) to be squares---it's supposed to look like a waffle
-after all, right?---which we can accomplish by forcing the coordinate system to
+the symbols (rectangles) to be squares --- it's supposed to look like a waffle
+after all, right? --- which we can accomplish by forcing the coordinate system to
 be isometric using `coord_equal()`. Finally, I think it looks more aesthetically
 pleasing if we swap the black line color for white, increase their widths
 slightly, and change theme to the minimal variant.
@@ -218,7 +212,7 @@ filter(arthritis_summarized, Treatment == "Treated") %>%
   labs(fill = "Improvement")
 ```
 
-That looks much better, doesn't it?
+This looks much better, doesn't it?
 
 To be able to use waffle charts to see both of the treatment arms at once,
 we need to use something called **facets**, which we haven't covered in the

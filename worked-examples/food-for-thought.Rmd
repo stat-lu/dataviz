@@ -27,11 +27,9 @@ options(scipen = 999)
 
 # Budget Share of Food for Spanish Households
 
-In this worked example we will try to make use of our newfound tools to handle
-a big data set. The data set that we will be looking at consists of house
-expenditures on food from Spanish households in 1980. The objective of our
-study will be to explore how food expenditure is related to the various
-other variables in the data set.
+In this worked example, we will make use of our newfound tools to handle
+a big data set. We will examine a data set consisting of house
+expenditures on food from Spanish households in 1980. Our study's objective is to explore how food expenditure relates to the various other variables in the data set.
 
 The data set is available in the
 [Ecdat](https://CRAN.R-project.org/package=Ecdat) package. Start by installing
@@ -51,24 +49,17 @@ data("BudgetFood", package = "Ecdat")
 
 There are 23,972 observations and six variables in this dataset:
 
-`wfood`
-: Percentage of total expenditure which the household has spend on food
+- `wfood`: Percentage of total expenditure which the household has spend on food
 
-`totexp`
-: Total expenditure of the household
+- `totexp`: Total expenditure of the household
 
-`age`
-: Age of reference person in the household
+- `age`: Age of reference person in the household
 
-`size`
-: Size of the household
+- `size`: Size of the household
 
-`town`
-: An ordered factor of the size of the town where the household is placed.
-  1 for small towns and 5 for big ones.
+- `town`: size of the town where the household is placed categorized into 5 groups: 1 for small towns, 5 for big ones.
 
-`sex`
-: sex of reference person (man, woman)
+- `sex`: sex of reference person (man, woman)
 
 # Wrangling
 
@@ -125,8 +116,7 @@ ggplot(budget_food_cleaned, aes(totexp, wfood)) +
   labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
 ```
 
-But since we have just learned a few new tools, let's try to make use of them
-now. In this case, we are going to try a hexbin plot.
+Since we have learned a few new tools, let's make use of them now. For this purpose, we are going to try a hexbin plot.
 
 ```{r hexplot, fig.cap = "A hexbin plot of total expenditure versus expenditure on food as a fraction of total expenditure"}
 ggplot(budget_food_cleaned, aes(totexp, wfood)) +
@@ -138,8 +128,7 @@ This plot definitely works better, showing the relationship in a clear fashion.
 
 # Household Size
 
-Now that we have managed to sort out of plot of food and total expenditure,
-we'll see if we can find a relationship with the size of the household too.
+Now that we have managed to create a plot of food and total expenditure, let's see if we can also find a relationship with the size of the household.
 Before we look at the complete picture, it is a good idea to first
 check what the overall relationship between household size and food expenditure
 is. To do so, we first construct a boxplot.
@@ -150,9 +139,9 @@ ggplot(budget_food_cleaned, aes(as.factor(size), wfood)) +
   labs(x = "Household Size", y = "Food Expenditure")
 ```
 
-In general, food expenditure seems to be higher with larger households, which
-is probably what one would expect. But this is not the case for households
-with one or two members. Take a minute to figure out if that makes sense to you.
+In general, food expenditure tends to be higher with larger households, which
+is probably what one might expect. However, this trend does not hold for households
+with only one or two members. Take a minute to figure out if that makes sense to you.
 
 Let's return to our hexbin plot design, but now introduce household size
 as facets.
@@ -165,9 +154,7 @@ ggplot(budget_food_cleaned, aes(totexp, wfood)) +
 ```
 
 This plot looks promising but is crippled by the fact that some of the groups
-are small, which creates problems for the hexbin plot. In fact, hexbin plots
-are generally problematic when the number of observations if facets
-differ because all the facets share the same scale (binning).
+are small, which creates problems for the hexbin plot. In fact, hexbin plots can be problematic when the number of observations differs across facets. This is because all facets share the same binning scale..
 
 To get around this problem, we are going to lump all of the households of
 size 6 or larger into one level, using `fct_other()`, a function from the
@@ -211,17 +198,16 @@ ggplot(budget_food_binned, aes(totexp, wfood)) +
   labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
 ```
 
-The problem with this plot is of course that the smoothers are clearly
+The problem with this plot is that the smoothers are clearly
 inappropriate for the extreme values of total expenditure. To work around
-this problem, we can create a separate data set to use in the
-`geom_smooth()` function only.
+this problem, we can create a separate data set for use exclusively in the
+`geom_smooth()` function.
 
-To do so, we create a new data set that we first group by the 
-variable we are faceting on, `size`, and then filter the data set such
-that only the observations of `totexp` (total expenditure) large than
-the 0.05 quantile and smaller than the 0.95 quantile remain in the data set.
+To do so, we create a new data set, first grouping  by the 
+variable we are faceting on, `size`, and then filtering the data set to include only observations of `totexp` (total expenditure) that are large than
+the 0.05 quantile and smaller than the 0.95 quantile.
 
-Then we use this data in the `data` argument to `geom_smooth()`.
+We then use this data in the `data` argument to `geom_smooth()` function.
 
 ```{r smoother-fixed, fig.cap = "A hexbin plot of total expenditure versus expenditure on food", fig.width = 8, fig.height = 4.5}
 budget_food_smoother_data <-
@@ -236,9 +222,9 @@ ggplot(budget_food_binned, aes(totexp, wfood)) +
   labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
 ```
 
-Go ahead and see if you can figure out ways to improve this plot further.
-Consider using the scale transformation we touch on earlier and see how
-that works together with the smoothers and hex binning.
+Go ahead and see if you can figure out ways to further improve this plot.
+Consider using the scale transformation we touch on earlier, and explore how
+it works together with the smoothers and hex binning.
 
 # Source Code
 

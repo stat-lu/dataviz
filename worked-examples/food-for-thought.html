@@ -1547,11 +1547,9 @@ border-radius: 0px;
 
 <div id="budget-share-of-food-for-spanish-households" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Budget Share of Food for Spanish Households</h1>
-<p>In this worked example we will try to make use of our newfound tools to handle
-a big data set. The data set that we will be looking at consists of house
-expenditures on food from Spanish households in 1980. The objective of our
-study will be to explore how food expenditure is related to the various
-other variables in the data set.</p>
+<p>In this worked example, we will make use of our newfound tools to handle
+a big data set. We will examine a data set consisting of house
+expenditures on food from Spanish households in 1980. Our study’s objective is to explore how food expenditure relates to the various other variables in the data set.</p>
 <p>The data set is available in the
 <a href="https://CRAN.R-project.org/package=Ecdat">Ecdat</a> package. Start by installing
 it (if you haven’t already).</p>
@@ -1561,33 +1559,14 @@ it (if you haven’t already).</p>
 function as we show next.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;BudgetFood&quot;</span>, <span class="at">package =</span> <span class="st">&quot;Ecdat&quot;</span>)</span></code></pre></div>
 <p>There are 23,972 observations and six variables in this dataset:</p>
-<dl>
-<dt><code>wfood</code></dt>
-<dd>
-Percentage of total expenditure which the household has spend on food
-</dd>
-<dt><code>totexp</code></dt>
-<dd>
-Total expenditure of the household
-</dd>
-<dt><code>age</code></dt>
-<dd>
-Age of reference person in the household
-</dd>
-<dt><code>size</code></dt>
-<dd>
-Size of the household
-</dd>
-<dt><code>town</code></dt>
-<dd>
-An ordered factor of the size of the town where the household is placed.
-1 for small towns and 5 for big ones.
-</dd>
-<dt><code>sex</code></dt>
-<dd>
-sex of reference person (man, woman)
-</dd>
-</dl>
+<ul>
+<li><p><code>wfood</code>: Percentage of total expenditure which the household has spend on food</p></li>
+<li><p><code>totexp</code>: Total expenditure of the household</p></li>
+<li><p><code>age</code>: Age of reference person in the household</p></li>
+<li><p><code>size</code>: Size of the household</p></li>
+<li><p><code>town</code>: size of the town where the household is placed categorized into 5 groups: 1 for small towns, 5 for big ones.</p></li>
+<li><p><code>sex</code>: sex of reference person (man, woman)</p></li>
+</ul>
 </div>
 <div id="wrangling" class="section level1" number="2">
 <h1><span class="header-section-number">2</span> Wrangling</h1>
@@ -1641,8 +1620,7 @@ logarithmic scale.</p>
 Figure 2: A scatter plot of total expenditure versus expenditure on food with total expenditure on a logarithmic scale
 </p>
 </div>
-<p>But since we have just learned a few new tools, let’s try to make use of them
-now. In this case, we are going to try a hexbin plot.</p>
+<p>Since we have learned a few new tools, let’s make use of them now. For this purpose, we are going to try a hexbin plot.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ggplot</span>(budget_food_cleaned, <span class="fu">aes</span>(totexp, wfood)) <span class="sc">+</span></span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">geom_hex</span>() <span class="sc">+</span> </span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Total Expenditure (Pesetas)&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Food Expenditure&quot;</span>)</span></code></pre></div>
@@ -1656,8 +1634,7 @@ Figure 3: A hexbin plot of total expenditure versus expenditure on food as a fra
 </div>
 <div id="household-size" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> Household Size</h1>
-<p>Now that we have managed to sort out of plot of food and total expenditure,
-we’ll see if we can find a relationship with the size of the household too.
+<p>Now that we have managed to create a plot of food and total expenditure, let’s see if we can also find a relationship with the size of the household.
 Before we look at the complete picture, it is a good idea to first
 check what the overall relationship between household size and food expenditure
 is. To do so, we first construct a boxplot.</p>
@@ -1670,9 +1647,9 @@ is. To do so, we first construct a boxplot.</p>
 Figure 4: A boxplot of food expenditure as a fraction of total expenditure versus household size
 </p>
 </div>
-<p>In general, food expenditure seems to be higher with larger households, which
-is probably what one would expect. But this is not the case for households
-with one or two members. Take a minute to figure out if that makes sense to you.</p>
+<p>In general, food expenditure tends to be higher with larger households, which
+is probably what one might expect. However, this trend does not hold for households
+with only one or two members. Take a minute to figure out if that makes sense to you.</p>
 <p>Let’s return to our hexbin plot design, but now introduce household size
 as facets.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">ggplot</span>(budget_food_cleaned, <span class="fu">aes</span>(totexp, wfood)) <span class="sc">+</span></span>
@@ -1686,9 +1663,7 @@ Figure 5: A hexbin plot of total expenditure versus expenditure on food across h
 </p>
 </div>
 <p>This plot looks promising but is crippled by the fact that some of the groups
-are small, which creates problems for the hexbin plot. In fact, hexbin plots
-are generally problematic when the number of observations if facets
-differ because all the facets share the same scale (binning).</p>
+are small, which creates problems for the hexbin plot. In fact, hexbin plots can be problematic when the number of observations differs across facets. This is because all facets share the same binning scale..</p>
 <p>To get around this problem, we are going to lump all of the households of
 size 6 or larger into one level, using <code>fct_other()</code>, a function from the
 <strong>forcats</strong> package. We specify the levels we want to <em>keep</em> using the
@@ -1733,15 +1708,14 @@ data and is relatively robust to outliers.</p>
 Figure 7: A scatter plot of total expenditure, expenditure on food as a fraction of total expenditure, and household size. A LOESS smoother, including approximate 95% confidence intervals, is used.
 </p>
 </div>
-<p>The problem with this plot is of course that the smoothers are clearly
+<p>The problem with this plot is that the smoothers are clearly
 inappropriate for the extreme values of total expenditure. To work around
-this problem, we can create a separate data set to use in the
-<code>geom_smooth()</code> function only.</p>
-<p>To do so, we create a new data set that we first group by the
-variable we are faceting on, <code>size</code>, and then filter the data set such
-that only the observations of <code>totexp</code> (total expenditure) large than
-the 0.05 quantile and smaller than the 0.95 quantile remain in the data set.</p>
-<p>Then we use this data in the <code>data</code> argument to <code>geom_smooth()</code>.</p>
+this problem, we can create a separate data set for use exclusively in the
+<code>geom_smooth()</code> function.</p>
+<p>To do so, we create a new data set, first grouping by the
+variable we are faceting on, <code>size</code>, and then filtering the data set to include only observations of <code>totexp</code> (total expenditure) that are large than
+the 0.05 quantile and smaller than the 0.95 quantile.</p>
+<p>We then use this data in the <code>data</code> argument to <code>geom_smooth()</code> function.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>budget_food_smoother_data <span class="ot">&lt;-</span></span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  budget_food_binned <span class="sc">%&gt;%</span></span>
 <span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="fu">group_by</span>(size) <span class="sc">%&gt;%</span></span>
@@ -1758,9 +1732,9 @@ the 0.05 quantile and smaller than the 0.95 quantile remain in the data set.</p>
 Figure 8: A hexbin plot of total expenditure versus expenditure on food
 </p>
 </div>
-<p>Go ahead and see if you can figure out ways to improve this plot further.
-Consider using the scale transformation we touch on earlier and see how
-that works together with the smoothers and hex binning.</p>
+<p>Go ahead and see if you can figure out ways to further improve this plot.
+Consider using the scale transformation we touch on earlier, and explore how
+it works together with the smoothers and hex binning.</p>
 </div>
 <div id="source-code" class="section level1" number="6">
 <h1><span class="header-section-number">6</span> Source Code</h1>

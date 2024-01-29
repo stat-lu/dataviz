@@ -1,16 +1,19 @@
 library(tidyverse)
 library(lubridate)
 
+# set the working directory to where this file set
+# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
 covid <- read_csv(
- "https://opendata.ecdc.europa.eu/covid19/nationalcasedeath/csv"
+ "https://opendata.ecdc.europa.eu/covid19/nationalcasedeath_archive/csv"
 )
 
 covid2 <-
   covid %>%
   as_tibble() %>%
   select(-source) %>%
-  filter(!str_detect(country, "total"),
-         !(country %in% c("Bonaire, Saint Eustatius and Saba")))
+  filter(!str_detect(country, "total")
+         )
 
 covid3 <-
   covid2 %>%
@@ -36,4 +39,4 @@ covid3 <-
     cumulative_count
   )
 
-write_csv(covid3, "data/covid.csv")
+write_csv(covid3, "../data/covid.csv")

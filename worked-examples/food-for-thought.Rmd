@@ -229,4 +229,4 @@ it works together with the smoothers and hex binning.
 # Source Code
 
 The source code for this document is available at
-<https://github.com/stat-lu/dataviz/blob/main/worked-examples/food-for-thought.Rmd>.
+<https://github.com/stat-lu/dataviz/blob/main/worked-examples/food-for-thought.Rmd> .

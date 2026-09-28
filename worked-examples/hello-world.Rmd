@@ -3,6 +3,7 @@ title: "Worked Example: Hello, World!"
 author: 
 - "Johan Larsson"
 - "Behnaz Pirzamanbein"
+- "Jonas Wallin"
 output:
   bookdown::html_document2:
     toc: true
@@ -31,6 +32,15 @@ options(scipen = 999)
 Let's get started working with R! In this worked example, we will learn how
 to install and use packages in R as well as perform some basic operations on
 vectors, matrices, and data frames. 
+
+As you work through this example, write your code in an R script and save it.
+An R script is a text file with the extension `.R` where you can keep the code
+that you want to run again later. In R Studio, you write the code in the script
+editor and run it in the console, where you can see the results.
+
+Run the code from top to bottom, since later examples sometimes use objects
+that we created earlier. Before running each example, try to predict what it
+will do. Does the result match what you expected?
 
 # Objects in R
 
@@ -88,16 +98,17 @@ c(1, 10) * 2       # 2 is multiplied with each element
 c(NA, 3.123, pi)^2 # pi is an object that's always available
 ```
 
-If you combine two vectors there are of different length but where the
-shorter vector's length is a *multiple* of the longer vector's length, then
-R will *recycle* the shorter vector.
+If you combine two vectors of different lengths, R will *recycle* the shorter
+vector by repeating its elements. If the longer vector's length is a
+*multiple* of the shorter vector's length, the shorter vector is repeated a
+whole number of times.
 
 ```{r}
 c(1, 2, 3, 4) * c(1, 2)
 ```
 
-What do you think happens if the shorter vector's length is *not* a multiple
-of the longer vector's length? We'll find out a bit later.
+What do you think happens if the longer vector's length is *not* a multiple
+of the shorter vector's length? We'll find out a bit later.
 
 ## Special Values
 
@@ -190,6 +201,28 @@ m[1, ]
 m[, 2]
 ```
 
+Something that can be tricky in R is that selecting a single row or column
+from a matrix returns a vector by default. Selecting a single element returns
+a vector of length one. We can keep the result as a matrix by using the
+argument `drop = FALSE`.
+
+```{r}
+# A single element
+m[1, 2]
+m[1, 2, drop = FALSE]
+
+# A single row
+m[1, ]
+m[1, , drop = FALSE]
+
+# A single column
+m[, 2]
+m[, 2, drop = FALSE]
+```
+
+Compare the outputs. How many rows and columns does each result have when
+we use `drop = FALSE`?
+
 ## Data Frames
 
 Data frames look a lot like matrices except they allow each column to have a
@@ -205,7 +238,7 @@ d
 ```
 
 In addition to sub-setting columns using the matrix notation (i.e. `d[, 2]` for
-the second row), we can subset columns using `$` as follows.
+the second column), we can subset columns using `$` as follows.
 
 ```{r}
 d$a
@@ -242,6 +275,12 @@ Load the **ggplot2** package we just installed by calling the following.
 ```{r}
 library(ggplot2) # library("ggplot2") would work as well!
 ```
+
+Installing a package and loading it are two separate steps. Once a package is
+installed, it stays on your computer, so you don't need to install it every
+time you use it. You do, however, need to call `library()` in each new R
+session where you want to use the package. Put this line near the beginning
+of your script so that the package is loaded before you use its functions.
 
 Sometimes we will also use `<package>::function()` to call a
 function from a specific package. In this case, you don't need to call library
@@ -309,10 +348,11 @@ We can call it without supplying *any* argument.
 f2()
 ```
 
-We could also supply only `a`, by simply using one argument.
+We could also supply only `a`, by simply using one argument. In this case,
+`b` keeps its default value of `0.5`.
 
-```{r eval = FALSE}
-f2(0) # error
+```{r}
+f2(0)
 ```
 
 To only supply `b`, you have to name the argument.
@@ -448,6 +488,28 @@ d$diet %in% c("vegan", "vegetarian")
 ```
 
 This will come in handy for us repeatedly throughout the course.
+
+## Selecting Rows with Logical Vectors
+
+We can also use the result of a conditional statement to select rows from a
+data frame. Let's save the result of the previous comparison in an object
+called `keep`.
+
+```{r}
+keep <- d$diet %in% c("vegan", "vegetarian")
+keep
+```
+
+Each value in `keep` corresponds to a row in `d`. We can use this vector as
+the row index to keep the rows where the value is `TRUE`.
+
+```{r}
+d[keep, ]
+```
+
+Notice that we leave the column index after the comma empty. This means that
+we keep all columns for the selected rows. Before running the code, can you
+predict which persons will be included?
 
 # Documentation
 

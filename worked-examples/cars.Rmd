@@ -3,6 +3,7 @@ title: "Worked Example: Cars"
 author: 
 - "Johan Larsson"
 - "Behnaz Pirzamanbein"
+- "Jonas Wallin"
 output:
   bookdown::html_document2:
     toc: true

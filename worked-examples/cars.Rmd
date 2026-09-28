@@ -36,15 +36,8 @@ take a lot of time if you haven't already installed these packages.)
 install.packages("tidyverse")
 ```
 
-If you already have **tidyverse** installed, make sure that all of your packages
-are up to date, either by calling
-
-```{r, eval = FALSE}
-update.packages(ask = FALSE) # ask = FALSE is to avoid being prompted
-```
-
-or by going to the **Packages** tab in the lower-right R Studio pane and clicking
-on **Update**.
+If you already have **tidyverse** installed, you can skip this step. As in the
+previous example, we will load the package with `library()` before using it.
 
 # Importing Data into R
 
@@ -128,81 +121,17 @@ glimpse(us_cars)
 
 # Wrangling
 
-## Pivoting
-
-One of the most important data wrangling tools when it comes to data
-visualization is *pivoting*, which can be used to transform messy data into
-tidy data, which in turn will make visualization much easier for us.
-
-Let's see what this can entail by looking at a simple dataset, `table2` from
-the **tidyr** package, which contains information on Tuberculosis cases
-in a few countries from 1999 and 2000.
-
-```{r}
-table2
-```
-
-This data is *not* tidy---but why not? Take a moment to consider this for
-yourself before moving on.
-
-Did you figure it out? The problem is that `cases` and `population` are two
-different variables but don't have their own separate columns. To fix this, we
-need to reshape the data by pivoting it to a wider form using `pivot_wider()`.
-Before you continue, take a look at the documentation for the function by
-calling `help(pivot_wider)` (or `?pivot_wilder`) in R and see if you can make
-sense of the manual entry for the function.
-
-The function has many arguments but we only need to concern ourselves
-with `data`, `names_from`, and `values_from` right now. `names_from` should
-indicate which columns store the names of the variables we want to pivot,
-while  `values_from` should contain those variables' values. Putting this
-together, we get the following.
-
-```{r}
-table2_tidy <-
-  pivot_wider(
-    table2,
-    names_from = "type",
-    values_from = "count"
-  )
-
-table2_tidy
-```
-
-Now it's easy to visualize this data!
-
-```{r, fig.cap = "Tubercolosis cases in Afghanistan, Brazil, and China in 1999 and 2000"}
-ggplot(table2_tidy, aes(year, cases, fill = country)) +
-  geom_col(position = "dodge")
-```
-
-Sometimes it's necessary to pivot in the other direction: from wide to long, in
-which case we need to use `pivot_longer()` instead. `pivot_longer()` is exactly
-the inverse of `pivot_wider()`. Just like you did for `pivot_wider()`, read the
-documentation for `pivot_longer()` and then see if you can figure out by
-yourself how to pivot `table2_tidy` back into `table2`.
-
-When we use `pivot_longer()` we need to tell R what columns we want to stack,
-which we do through the `cols` argument. Here we simply specify the
-names of the columns (cases and population), and then use `names_to` and
-`values_to` with whatever names we think are appropriate.
-
-```{r}
-table2_messy <-
-  pivot_longer(
-    table2_tidy,
-    cols = c("cases", "population"),
-    names_to = "type",
-    values_to = "count"
-  )
-```
-
 ## Manipulation
 
 In the tidyverse vocabulary, *filtering* refers to the process of selecting a
 subset of rows (observations if the data is tidy) from your dataset, whereas
 *selecting* means selecting a subset of columns (variables if the data is tidy).
 We use the aptly named `filter()` and `select()` respectively for these tasks.
+
+These functions return a transformed dataset. They do not change the object
+that we pass to them. To keep a result for later use, we need to assign it to
+an object using `<-`, just as we did when importing the data. We will see an
+example of this below when we create a new variable with `mutate()`.
 
 ## Filtering
 
@@ -243,10 +172,10 @@ select(us_cars, brand, "model") # notice that you may omit quotation marks
 ```
 
 When using `select()`, it's actually possible to change the names of the columns
-by using a `value = name` pair, like this:
+by using a `new_name = old_name` pair, like this:
 
 ```{r}
-select(us_cars, vintage = vin, "price_in_dollars" = price)
+select(us_cars, vehicle_id = vin, "price_in_dollars" = price)
 ```
 
 If you instead want to drop a particular column, you just preface it with `-`
@@ -294,12 +223,19 @@ in the `us_cars` dataset to Swedish kronor instead. Here's how to do this:
 mutate(us_cars, price = price * 8.92)
 ```
 
-In this instance we simply overwrote the `price` variable with a new value,
-but mutate can also be used to create new variables.
+In the returned dataset, `price` has been replaced by the converted values.
+The original `us_cars` object is unchanged, since we have not assigned the
+result to an object. We can also create a new variable and save the result,
+keeping the original prices alongside the converted prices.
 
 ```{r}
-mutate(us_cars, price_sek = price * 8.92)
+us_cars_sek <- mutate(us_cars, price_sek = price * 8.92)
+select(us_cars_sek, price, price_sek)
 ```
+
+We can now use `us_cars_sek` whenever we need the converted prices. The original
+`us_cars` still contains the data that we imported, and we will continue to use
+that object in the examples below.
 
 Inside `mutate()`, you can basically use any operation that would work on a
 typical vector in R. You can, for instance, convert between different vector
@@ -327,14 +263,13 @@ That is why it is often useful to rename your variables during the
 data wrangling step. This also has the benefit of making your data wrangling
 steps more readable. There are multiple ways to rename variables with
 the tidyverse approach. We've already seen that you can use `select()` to
-rename variables, but if you only want to rename and not select, it's
-you should instead use `rename()`.
-Just as with `select()`, you use a `new_name = old_name` pair to do so. Let's
-rename "vin" to "vintage".
+rename variables, but if you only want to rename and not select, you should
+instead use `rename()`. Just as with `select()`, you use a
+`new_name = old_name` pair to do so. Let's rename "vin", which stands for
+vehicle identification number, to "vehicle_id".
 
 ```{r}
-us_cars %>%
-  rename(vintage = vin)
+rename(us_cars, vehicle_id = vin)
 ```
 
 You can have spaces in your variable names if you want to, but this is bad
@@ -342,15 +277,16 @@ practice because including special characters
 like `%`, `&`, `$` in variable names can have undesired side-effects that you
 do best to avoid.
 
-## Grouping, Mutating, and Summarizing
+# Grouping and Summarizing
 
 Another common operation in data-visualization is to group and summarize data.
 This is useful when you want to visualize a summary statistic rather than the
 raw data. Before taking this route in data visualization, however, make it a
-habit to ask yourself whether this aggregation is needed. If you are able to
-craft a visualization where you showcase **all** your data without sacrificing
-the communicative properties of the visualization, then this is always a
-better alternative.
+habit to ask yourself what you want the plot to show. Individual observations
+help us see variation and unusual values, while summaries help us compare
+features such as group means or medians. Sometimes it is useful to show both.
+When we use summaries, we should also keep track of how many observations
+contribute to each one.
 
 ## Grouping
 
@@ -412,7 +348,7 @@ instead of simply removing it.
 
 What you do need to know, however, is that missing data (coded as `NA` in R)
 may interfere with your work in R. Let's say that you're working with
-sleep data on mammals using the `msleep` dataset from **gplot2**, and want
+sleep data on mammals using the `msleep` dataset from **ggplot2**, and want
 to compute the mean number of hours in REM sleep:
 
 ```{r}
@@ -421,22 +357,55 @@ mean(msleep$sleep_rem)
 
 The result here, `NA`, is a consequence of the presence of `NA` values in
 the column `sleep_rem` in `msleep` and this behavior is actually the default
-for many functions in R. To deal with this, you have
-two options: 1) directly remove the observations with `NA` values from the data
-set using `drop_na()` or 2) set `na.rm = TRUE` in the call to `mean()`, which
-excludes the `NA` observations in that particular function call.
+for many functions in R. We can use `is.na()` to check which values are
+missing. It returns `TRUE` for a missing value and `FALSE` otherwise, so
+summing the result tells us how many values are missing.
 
-The second option is usually the best choice, since it means that
-you can still keep the `NA` values around when you want to produce
-visualizations, but in this course we'll sometimes do `drop_na()` to
-make working with the datasets a little bit smoother.
+```{r}
+sum(is.na(msleep$sleep_rem))
+```
+
+To compute the mean of the observed values, we can set `na.rm = TRUE` in the
+call to `mean()`.
+
+```{r}
+mean(msleep$sleep_rem, na.rm = TRUE)
+```
+
+This excludes the missing values from this particular calculation. It does
+not remove any rows from `msleep`, so the full dataset is still available
+for other calculations and visualizations.
+
+Alternatively, we can use `drop_na()` to create a dataset containing only the
+rows where `sleep_rem` is observed.
+
+```{r}
+msleep_rem <- drop_na(msleep, sleep_rem)
+nrow(msleep_rem)
+mean(msleep_rem$sleep_rem)
+```
+
+The two means are the same because they use the same observed values. Notice
+that we specified `sleep_rem` in the call to `drop_na()`. If we leave out the
+column name, the function checks all columns and removes any row that has a
+missing value in at least one of them.
+
+```{r}
+nrow(drop_na(msleep))
+```
+
+Why are fewer rows left this time? Some mammals have an observed value of
+`sleep_rem` but are missing information in other columns. We don't need to
+remove those rows to calculate the mean REM sleep time. Neither approach
+tells us why values are missing or whether the observed mammals are
+representative of those with missing values.
 
 # Pipes
 
 The pipe operator, `%>%`, is a staple in data science workflows because
 it makes the process of managing data much more manageable, modular, and
 readable. The pipe operator can be hard to get to grips with at first, but
-once you do, you will never want to go back.
+once you do, you can write very clean code.
 
 The pipe operator takes an object on its left-hand side (or line above)
 and *pipes* it through to an object (almost exclusively a function) on the
@@ -478,15 +447,16 @@ comes into its own, however, is when we need to chain multiple functions.
 ## Case Study using Pipes
 
 Let's say that we want to take our `us_cars` dataset and perform a set of
-options, namely:
+operations, namely:
 
-1. filter out all cars that are black,
+1. keep only black cars,
 2. group cars by `state`,
-3. compute the mean mileage per state,
+3. compute the mean mileage and the number of cars per state,
 4. sort the states by mean mileage, and
 5. plot a simple bar chart of state versus mean mileage.
 
-There are more or less three ways to do this:
+We will first compare three ways to prepare the summary table, and then use
+it to make the plot:
 
 1. use intermediary objects,
 2. use function composition, or
@@ -498,10 +468,15 @@ To solve this by storing temporary objects, here's what we would do:
 
 ```{r}
 black_cars <- filter(us_cars, color == "black")
-black_cars_groupedby_states <- group_by(black_cars, state)
+black_cars_by_state <- group_by(black_cars, state)
 black_cars_state_mileage <-
-  summarize(black_cars_groupedby_states, mean_mileage = mean(mileage))
-arrange(black_cars_state_mileage, mean_mileage)
+  summarize(
+    black_cars_by_state,
+    mean_mileage = mean(mileage),
+    number_of_cars = n()
+  )
+black_cars_state_mileage <- arrange(black_cars_state_mileage, mean_mileage)
+black_cars_state_mileage
 ```
 
 The largest downside to this approach is that you're cluttering
@@ -527,7 +502,8 @@ arrange(
       filter(us_cars, color == "black"),
       state
     ),
-    mean_mileage = mean(mileage)
+    mean_mileage = mean(mileage),
+    number_of_cars = n()
   ),
   mean_mileage
 )
@@ -544,11 +520,13 @@ attractive approach.
 With pipes, we get the following result:
 
 ```{r}
-us_cars %>%
+black_cars_state_mileage <- us_cars %>%
   filter(color == "black") %>%
   group_by(state) %>%
-  summarize(mean_mileage = mean(mileage)) %>%
+  summarize(mean_mileage = mean(mileage), number_of_cars = n()) %>%
   arrange(mean_mileage)
+
+black_cars_state_mileage
 ```
 
 The code is clean and expressive. If we want to switch the order of the steps
@@ -564,17 +542,38 @@ out there don't necessarily abide by this principle, however, so make sure you
 know what your functions are doing when you're using pipes or you may end up
 with unexpected (and undesirable) results.
 
-Note that the pipe operator that we have so far (`%>%`) covered is not part of
-the base R distribution but is, however, included via all of the tidyverse
-packages. So simply calling `library(tidyverse)` or `library(dplyr)` will get
-you access to it. 
+## Plotting the Result
+
+Now we can use the summary table to make the bar chart. We use `reorder()` to
+put the state labels in order of mean mileage. Sorting the rows with
+`arrange()` alone does not set the order of the labels in the plot.
+
+```{r cars-mileage-plot, fig.width = 7, fig.height = 8, fig.cap = "Mean mileage of black cars by state. Labels show the number of cars in each group."}
+ggplot(
+  black_cars_state_mileage,
+  aes(x = mean_mileage, y = reorder(state, mean_mileage))
+) +
+  geom_col() +
+  geom_text(aes(label = paste0("n = ", number_of_cars)), hjust = -0.1, size = 3) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.2))) +
+  labs(x = "Mean mileage", y = "State")
+```
+
+The labels show how many cars contribute to each mean. Which states have only
+one car? How much confidence would you have in comparing those states with
+states that have many observations? Remember that these summaries describe
+the black cars in this dataset; they do not automatically describe all cars
+in each state.
+
+Note that the pipe operator we have covered so far (`%>%`) is not part of
+the base R distribution. Calling `library(tidyverse)` or `library(dplyr)` will
+get you access to it.
 
 ## The Native Pipe Operator `|>`
 
-R has actually recently^[Since version 4.1] implemented its own native pipe
-operator, which you don't need any additional packages to use. It is written
-as `|>`. So in the last example we covered, you may as well have written
-the first two lines as the following.
+R also has its own native pipe operator, available since version 4.1, which
+you don't need any additional packages to use. It is written as `|>`. The
+first two lines of our pipeline can also be written as follows.
 
 ```{r}
 us_cars |>
@@ -590,6 +589,77 @@ recommend to take a look at [the piping
 section](https://r4ds.had.co.nz/pipes.html) of the R for Data Science book.
 
 Have fun piping in the tidyverse!
+
+# Pivoting
+
+One of the most important data wrangling tools when it comes to data
+visualization is *pivoting*, which can be used to transform messy data into
+tidy data, which in turn will make visualization much easier for us.
+
+Let's see what this can entail by looking at a simple dataset, `table2` from
+the **tidyr** package, which contains information on tuberculosis cases
+in a few countries from 1999 and 2000.
+
+```{r}
+table2
+```
+
+This data is *not* tidy---but why not? Take a moment to consider this for
+yourself before moving on.
+
+Did you figure it out? The problem is that `cases` and `population` are two
+different variables but don't have their own separate columns. To fix this, we
+need to reshape the data by pivoting it to a wider form using `pivot_wider()`.
+Before you continue, take a look at the documentation for the function by
+calling `help(pivot_wider)` (or `?pivot_wider`) in R and see if you can make
+sense of the manual entry for the function.
+
+The function has many arguments but we only need to concern ourselves
+with `data`, `names_from`, and `values_from` right now. `names_from` should
+indicate which columns store the names of the variables we want to pivot,
+while  `values_from` should contain those variables' values. Putting this
+together, we get the following.
+
+```{r}
+table2_tidy <-
+  pivot_wider(
+    table2,
+    names_from = "type",
+    values_from = "count"
+  )
+
+table2_tidy
+```
+
+Now it's easy to visualize this data!
+
+```{r, fig.cap = "Tuberculosis cases in Afghanistan, Brazil, and China in 1999 and 2000"}
+ggplot(table2_tidy, aes(year, cases, fill = country)) +
+  geom_col(position = "dodge")
+```
+
+Sometimes it's necessary to pivot in the other direction: from wide to long, in
+which case we need to use `pivot_longer()` instead. In this example, we can use
+it to recover the original country-year-type observations. Pivoting back and
+forth does not always recover the original data, for instance if values were
+aggregated when pivoting to a wider form. Just like you did for `pivot_wider()`,
+read the documentation for `pivot_longer()` and then see if you can figure out
+by yourself how to pivot `table2_tidy` back into the same long format as `table2`.
+
+When we use `pivot_longer()` we need to tell R what columns we want to stack,
+which we do through the `cols` argument. Here we simply specify the
+names of the columns (cases and population), and then use `names_to` and
+`values_to` with whatever names we think are appropriate.
+
+```{r}
+table2_messy <-
+  pivot_longer(
+    table2_tidy,
+    cols = c("cases", "population"),
+    names_to = "type",
+    values_to = "count"
+  )
+```
 
 # Source Code
 

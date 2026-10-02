@@ -1,6 +1,7 @@
 .Rhistory
 .RData
 .Rproj.user
+*.ipynb
 *.ods
 *_cache
 *.tex

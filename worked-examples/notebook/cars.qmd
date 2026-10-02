@@ -1,0 +1,728 @@
+---
+title: "Worked Example: Cars"
+subtitle: "The same data tasks in R and Python"
+author:
+  - Johan Larsson
+  - Behnaz Pirzamanbein
+  - Jonas Wallin
+lang: en
+engine: knitr
+format:
+  html:
+    theme: cosmo
+    css: r-python.css
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    embed-resources: true
+execute:
+  echo: true
+  message: false
+  warning: false
+  error: false
+  cache: false
+  fig-width: 6
+  fig-height: 4
+---
+
+```{r}
+#| include: false
+options(scipen = 999)
+```
+
+In this example, we will import a table of used cars, wrangle it, and summarize it. Each step has matching **R** and **Python** examples. Choose a language in any tab to switch all the tabs, and run the examples in order so that earlier objects are available.
+
+We use the same data files in both languages. Keep the `data` folder beside this file. See [R and Python: a practical guide](r-python.html) for more comparisons of syntax and defaults.
+
+## Getting started
+
+Install packages once, then load or import them in each new session. In R, we use the **tidyverse** collection of packages. In Python, we use **NumPy**, **pandas**, and **seaborn/matplotlib**.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+If needed, run this once to install tidyverse:
+
+```{r}
+#| eval: false
+install.packages("tidyverse")
+```
+
+```{r}
+library(tidyverse)
+```
+
+### Python {.unlisted}
+
+If needed, run this once in a terminal:
+
+```bash
+python -m pip install numpy pandas matplotlib seaborn
+```
+
+```{python}
+from pathlib import Path
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+DATA_DIR = Path("data")
+sns.set_theme(style="whitegrid", context="notebook")
+```
+:::
+
+::: {.callout-note collapse="true" title="Rendering the Quarto source"}
+You can read the HTML page and copy examples without rendering it yourself. To render `cars.qmd`, install Quarto, the R packages `tidyverse`, `knitr`, `rmarkdown`, and `reticulate`, and the Python packages listed above. Both languages run when the document is rendered.
+
+Quarto uses [knitr and reticulate to run R and Python together](https://quarto.org/docs/computations/execution-options.html#engine-binding). Make sure reticulate uses the Python environment where you installed the packages; see [Python version configuration](https://rstudio.github.io/reticulate/articles/versions.html).
+
+Open `cars.qmd` in RStudio and click **Render**, or run this command from the folder containing the file:
+
+```bash
+quarto render cars.qmd
+```
+:::
+
+## Importing data
+
+We use `read_csv()` in R and `pd.read_csv()` in Python to read a comma-separated file. A copy of the US Cars dataset is included in `data`, so there is no need to download it each time. Paths are relative to the folder containing this file.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+us_cars <- read_csv(file.path("data", "us_cars.csv"))
+head(us_cars)
+```
+
+### Python {.unlisted}
+
+```{python}
+us_cars = pd.read_csv(DATA_DIR / "us_cars.csv")
+us_cars.head()
+```
+:::
+
+Both functions can also read directly from a URL. You would replace the file path with `"https://raw.githubusercontent.com/stat-lu/dataviz/main/data/us_cars.csv"`. Use the bundled file for this exercise.
+
+### Taking a glimpse
+
+Whenever you start working with new data, take a look at the rows, column types, and missing values. Does everything look as you expect?
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+`glimpse()` shows each column and its type. `dim()` reports the number of rows and columns.
+
+```{r}
+glimpse(us_cars)
+dim(us_cars)
+summary(us_cars)
+```
+
+#### Python {.unlisted}
+
+`.info()` reports column types and nonmissing counts. `.shape` gives the number of rows and columns; `.describe()` summarizes the numeric columns by default.
+
+```{python}
+us_cars.info()
+print("Rows and columns:", us_cars.shape)
+us_cars.describe()
+```
+:::
+
+## Wrangling
+
+*Filtering* means selecting rows; *selecting* means choosing columns. The operations below return transformed tables. They do not change `us_cars` unless we assign the result back to it.
+
+### Logical comparisons
+
+Let's first practice elementwise comparisons. In R we use vectors; in Python we use NumPy arrays for these vector operations.
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+```{r}
+c(1, 2, 3) < c(0.2, 0.5, 3.8)
+1:3 == 3:1
+c("a", "b", "c") %in% c("a", "c")
+```
+
+#### Python {.unlisted}
+
+```{python}
+print(np.array([1, 2, 3]) < np.array([0.2, 0.5, 3.8]))
+print(np.arange(1, 4) == np.arange(3, 0, -1))
+print(np.isin(["a", "b", "c"], ["a", "c"]))
+```
+:::
+
+### Filtering
+
+Let's say that we only want cars from Tennessee from 2015 onwards.
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+`filter()` takes the table first, followed by the conditions. Conditions separated by commas must all hold.
+
+```{r}
+filter(us_cars, state == "tennessee", year >= 2015)
+```
+
+#### Python {.unlisted}
+
+Use `.loc` to select rows satisfying a condition. Both comparisons need parentheses when combined with `&`.
+
+```{python}
+keep = (us_cars["state"] == "tennessee") & (us_cars["year"] >= 2015)
+us_cars.loc[keep]
+```
+:::
+
+### Selecting
+
+Select columns by name. Notice that pandas requires quoted column names, while dplyr usually lets you write names without quotes.
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+```{r}
+select(us_cars, brand, model)
+```
+
+#### Python {.unlisted}
+
+A list inside square brackets returns a table. Here `.head()` just limits the displayed rows.
+
+```{python}
+us_cars[["brand", "model"]].head()
+```
+:::
+
+We can also select columns and give them new names.
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+Use a `new_name = old_name` pair.
+
+```{r}
+select(us_cars, vehicle_id = vin, price_in_dollars = price)
+```
+
+#### Python {.unlisted}
+
+Select the columns, then use a dictionary mapping old names to new names.
+
+```{python}
+selected = us_cars[["vin", "price"]]
+selected.rename(columns={"vin": "vehicle_id", "price": "price_in_dollars"}).head()
+```
+:::
+
+To exclude columns, use negative selection in R or `.drop(columns=...)` in pandas.
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+```{r}
+select(us_cars, -brand, -model)
+```
+
+#### Python {.unlisted}
+
+```{python}
+us_cars.drop(columns=["brand", "model"]).head()
+```
+:::
+
+A range selects adjacent columns. Both of these examples include the two endpoint columns.
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+```{r}
+select(us_cars, title_status:state)
+```
+
+#### Python {.unlisted}
+
+A label slice with `.loc` includes its stop label, unlike a positional Python slice.
+
+```{python}
+us_cars.loc[:, "title_status":"state"].head()
+```
+:::
+
+Take a little time to try these selections on `us_cars`.
+
+### Mutating
+
+Frequently when visualizing data, we want to transform a column or create a new one. Let's convert prices from US dollars to Swedish kronor. The factor **8.92** is the illustrative exchange rate used in the original example.
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+`mutate()` returns a table with added or changed columns.
+
+```{r}
+mutate(us_cars, price = price * 8.92)
+```
+
+#### Python {.unlisted}
+
+`.assign()` returns a table with added or changed columns.
+
+```{python}
+us_cars.assign(price=us_cars["price"] * 8.92).head()
+```
+:::
+
+The returned table has converted prices, but `us_cars` is unchanged because we have not kept the result. To save it while retaining the original prices, create a new column and assign the table to an object.
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+```{r}
+us_cars_sek <- mutate(us_cars, price_sek = price * 8.92)
+select(us_cars_sek, price, price_sek)
+```
+
+#### Python {.unlisted}
+
+```{python}
+us_cars_sek = us_cars.assign(price_sek=us_cars["price"] * 8.92)
+us_cars_sek[["price", "price_sek"]].head()
+```
+:::
+
+Let's convert years to integers, capitalize state names, round prices to hundreds, and lump brands with at most 10% of observations into “Other”. These operations work on whole columns.
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+```{r}
+formatted_cars <- mutate(
+  us_cars,
+  year = as.integer(year),
+  state = toupper(state),
+  price = round(price, -2),
+  brand = fct_lump_prop(brand, 0.1)
+)
+formatted_cars
+```
+
+#### Python {.unlisted}
+
+```{python}
+brand_share = us_cars["brand"].value_counts(normalize=True)
+common_brands = brand_share.index[brand_share > 0.1]
+formatted_cars = us_cars.assign(
+    year=us_cars["year"].astype(int),
+    state=us_cars["state"].str.upper(),
+    price=us_cars["price"].round(-2),
+    brand=us_cars["brand"].where(us_cars["brand"].isin(common_brands), "Other"),
+)
+formatted_cars.head()
+```
+:::
+
+### Renaming
+
+Rename `vin`, the vehicle identification number, to `vehicle_id`. Both methods return a new table; assign it to an object if you want to keep it.
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+```{r}
+renamed_cars <- rename(us_cars, vehicle_id = vin)
+renamed_cars
+```
+
+#### Python {.unlisted}
+
+```{python}
+renamed_cars = us_cars.rename(columns={"vin": "vehicle_id"})
+renamed_cars.head()
+```
+:::
+
+## Grouping and summarizing
+
+Individual observations help us see variation and unusual values; summaries help us compare group means or medians. When we summarize, keep track of how many observations contribute to each result.
+
+Let's group the cars by country, then calculate the median price, mean price, and number of cars in each group.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+`group_by()` defines groups; `summarize()` calculates a summary for each group. `n()` counts the rows in the group.
+
+```{r}
+us_cars_grouped <- group_by(us_cars, country)
+country_summary <- summarize(
+  us_cars_grouped,
+  median_price = median(price),
+  mean_price = mean(price),
+  number_of_cars = n()
+)
+country_summary
+```
+
+### Python {.unlisted}
+
+`.groupby()` defines groups; `.agg()` calculates a summary for each group. `size` counts rows, whereas `count` counts nonmissing entries in the selected column.
+
+```{python}
+us_cars_grouped = us_cars.groupby("country")
+country_summary = us_cars_grouped.agg(
+    median_price=("price", "median"),
+    mean_price=("price", "mean"),
+    number_of_cars=("price", "size"),
+)
+country_summary
+```
+:::
+
+There are only seven cars from Canada in this dataset. How does this affect what we can conclude from the Canadian summary?
+
+## Missing data
+
+Missing data is common in real datasets. Always consider why values might be missing before deciding how to handle them. Removing them does not automatically solve the problem.
+
+Here is a difference that is easy to miss: R's `mean()` returns `NA` if values are missing, but pandas `.mean()` **skips missing values by default**. Let's use the same mammal sleep data in both languages to see this.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+`is.na()` identifies missing values. Use `na.rm = TRUE` to calculate a mean from the observed values.
+
+```{r}
+msleep <- read_csv(file.path("data", "msleep.csv"))
+mean(msleep$sleep_rem)
+sum(is.na(msleep$sleep_rem))
+mean(msleep$sleep_rem, na.rm = TRUE)
+```
+
+### Python {.unlisted}
+
+`.isna()` identifies missing values. Use `skipna=False` to retain missingness when calculating the mean.
+
+```{python}
+msleep = pd.read_csv(DATA_DIR / "msleep.csv")
+print("Mean with missing values retained:", msleep["sleep_rem"].mean(skipna=False))
+print("Number missing:", msleep["sleep_rem"].isna().sum())
+print("Mean of observed values:", msleep["sleep_rem"].mean())
+```
+:::
+
+We can instead create a table containing only rows with an observed `sleep_rem`. This gives the same mean as above. Leaving out the column selection removes rows with missing values in **any** column.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+msleep_rem <- drop_na(msleep, sleep_rem)
+nrow(msleep_rem)
+mean(msleep_rem$sleep_rem)
+nrow(drop_na(msleep))
+```
+
+### Python {.unlisted}
+
+```{python}
+msleep_rem = msleep.dropna(subset=["sleep_rem"])
+print("Rows with observed REM sleep:", len(msleep_rem))
+print("Mean REM sleep:", msleep_rem["sleep_rem"].mean())
+print("Rows complete across all columns:", len(msleep.dropna()))
+```
+:::
+
+Why are fewer rows left when all columns are checked? Some mammals have observed REM sleep but are missing other information. We do not need to remove those rows to calculate mean REM sleep time. Neither approach tells us whether the observed mammals are representative of those with missing values.
+
+## Pipes and method chaining
+
+So far, we have performed each operation separately. R's `%>%` and pandas method chaining help us write a sequence of operations in the order in which we want them to happen.
+
+### Passing the first argument
+
+The R pipe `%>%` takes the value on its left and passes it as the first argument to the function on its right. Let's see this with a small function that calculates a fraction.
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+```{r}
+my_frac <- function(x, y) {
+  x / y
+}
+
+my_frac(2, 5)
+2 %>% my_frac(5)
+```
+
+#### Python {.unlisted}
+
+Python has no `%>%` operator. Here we simply call the function.
+
+```{python}
+def my_frac(x, y):
+    return x / y
+
+my_frac(2, 5)
+```
+:::
+
+### A case study with intermediate objects
+
+Let's prepare a summary table by doing the following:
+
+1. keep only black cars,
+2. group cars by state,
+3. calculate the mean mileage and number of cars per state, and
+4. sort the states by mean mileage.
+
+First, we will save each step in an intermediate object.
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+```{r}
+black_cars <- filter(us_cars, color == "black")
+black_cars_by_state <- group_by(black_cars, state)
+black_cars_state_mileage <- summarize(
+  black_cars_by_state,
+  mean_mileage = mean(mileage),
+  number_of_cars = n()
+)
+black_cars_state_mileage <- arrange(black_cars_state_mileage, mean_mileage)
+black_cars_state_mileage
+```
+
+#### Python {.unlisted}
+
+```{python}
+black_cars = us_cars.loc[us_cars["color"] == "black"]
+black_cars_by_state = black_cars.groupby("state", as_index=False)
+black_cars_state_mileage = black_cars_by_state.agg(
+    mean_mileage=("mileage", "mean"),
+    number_of_cars=("mileage", "size"),
+)
+black_cars_state_mileage = black_cars_state_mileage.sort_values("mean_mileage")
+black_cars_state_mileage
+```
+:::
+
+Intermediate objects are useful when you want to inspect or reuse a step. When we only need the final table, we can combine the steps.
+
+### Using a pipe or chain
+
+These expressions perform the same steps as the intermediate objects above.
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+Each `%>%` passes the previous result as the first argument of the next function.
+
+```{r}
+black_cars_state_mileage <- us_cars %>%
+  filter(color == "black") %>%
+  group_by(state) %>%
+  summarize(mean_mileage = mean(mileage), number_of_cars = n()) %>%
+  arrange(mean_mileage)
+
+black_cars_state_mileage
+```
+
+#### Python {.unlisted}
+
+Each method acts on the table returned by the previous one. Parentheses let the chain span several lines.
+
+```{python}
+black_cars_state_mileage = (
+    us_cars.loc[us_cars["color"] == "black"]
+    .groupby("state", as_index=False)
+    .agg(mean_mileage=("mileage", "mean"), number_of_cars=("mileage", "size"))
+    .sort_values("mean_mileage")
+)
+black_cars_state_mileage
+```
+:::
+
+### Plotting the result
+
+Now we can use the summary table to draw a bar chart. The counts matter: a state with one car gives us very little information about typical mileage in that state. This chart describes these listings; it does not automatically describe all cars in each state.
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+`reorder()` sets the order of the state labels. Sorting the table alone does not set the label order in ggplot2.
+
+```{r}
+#| fig-width: 7
+#| fig-height: 8
+#| fig-cap: "Mean mileage of black cars by state. Labels show the number of cars in each group."
+ggplot(
+  black_cars_state_mileage,
+  aes(x = mean_mileage, y = reorder(state, mean_mileage))
+) +
+  geom_col() +
+  geom_text(aes(label = paste0("n = ", number_of_cars)), hjust = -0.1, size = 3) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.2))) +
+  labs(x = "Mean mileage", y = "State")
+```
+
+#### Python {.unlisted}
+
+`barh()` displays the states in the table's row order, with the first state at the bottom.
+
+```{python}
+#| fig-cap: "Mean mileage of black cars by state. Labels show the number of cars in each group."
+fig, ax = plt.subplots(figsize=(8, 9))
+ax.barh(black_cars_state_mileage["state"], black_cars_state_mileage["mean_mileage"])
+for row_number, row in enumerate(black_cars_state_mileage.itertuples()):
+    ax.text(
+        row.mean_mileage + 1500, row_number, f"n = {row.number_of_cars}",
+        va="center", fontsize=8,
+    )
+ax.set(
+    xlabel="Mean mileage", ylabel="State",
+    xlim=(0, black_cars_state_mileage["mean_mileage"].max() * 1.25),
+)
+fig.tight_layout()
+plt.show()
+```
+:::
+
+Which states have only one car? How much confidence would you have in comparing those states with states that have many observations?
+
+### Other ways to pass data to a function
+
+::: {.panel-tabset group="language"}
+#### R {.unlisted}
+
+R also has the native pipe `|>`, available since R 4.1. It can be used for these data operations if you prefer it. For example:
+
+```{r}
+us_cars |>
+  filter(color == "black")
+```
+
+`%>%` is supplied by tidyverse/dplyr, while `|>` is part of base R.
+
+#### Python {.unlisted}
+
+pandas `.pipe(function, ...)` passes the current table as the first argument of a function. This is useful for custom functions. Python has no `|>` operator.
+
+```{python}
+def select_black_cars(data):
+    return data.loc[data["color"] == "black"]
+
+us_cars.pipe(select_black_cars).head()
+```
+:::
+
+## Pivoting
+
+The `table2` example records tuberculosis cases and population in different rows for a few countries in 1999 and 2000. Take a look at the table. Why is it not tidy?
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+table2 <- read_csv(file.path("data", "table2.csv"))
+table2
+```
+
+### Python {.unlisted}
+
+```{python}
+table2 = pd.read_csv(DATA_DIR / "table2.csv")
+table2
+```
+:::
+
+The problem is that `cases` and `population` are different variables but do not have their own columns. We can pivot the table into a wider form.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+`names_from` gives the column storing variable names; `values_from` gives the column storing their values.
+
+```{r}
+table2_tidy <- pivot_wider(
+  table2,
+  names_from = "type",
+  values_from = "count"
+)
+table2_tidy
+```
+
+### Python {.unlisted}
+
+`columns` gives the column storing variable names; `values` gives the column storing their values. `index` identifies each country-year observation. `.reset_index()` makes these identifiers ordinary columns again.
+
+```{python}
+table2_tidy = table2.pivot(index=["country", "year"], columns="type", values="count").reset_index()
+table2_tidy.columns.name = None
+table2_tidy
+```
+:::
+
+These examples assume each country-year-type combination occurs once. If combinations repeat, decide how to handle them before pivoting. In pandas, `.pivot_table()` can aggregate repeated combinations.
+
+Now it's easy to visualize the number of cases.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+#| fig-cap: "Tuberculosis cases in Afghanistan, Brazil, and China in 1999 and 2000."
+ggplot(table2_tidy, aes(year, cases, fill = country)) +
+  geom_col(position = "dodge") +
+  labs(x = "Year", y = "Cases")
+```
+
+### Python {.unlisted}
+
+```{python}
+#| fig-cap: "Tuberculosis cases in Afghanistan, Brazil, and China in 1999 and 2000."
+fig, ax = plt.subplots(figsize=(6, 4))
+sns.barplot(data=table2_tidy, x="year", y="cases", hue="country", ax=ax, errorbar=None)
+ax.set(xlabel="Year", ylabel="Cases")
+fig.tight_layout()
+plt.show()
+```
+:::
+
+To move the variables back into rows, use `pivot_longer()` in R or `.melt()` in pandas. The row order can differ from the original, even when the information is the same. A round trip cannot recover information lost through aggregation.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+table2_messy <- pivot_longer(
+  table2_tidy,
+  cols = c("cases", "population"),
+  names_to = "type",
+  values_to = "count"
+)
+table2_messy
+```
+
+### Python {.unlisted}
+
+```{python}
+table2_messy = table2_tidy.melt(
+    id_vars=["country", "year"], value_vars=["cases", "population"],
+    var_name="type", value_name="count",
+)
+table2_messy
+```
+:::
+
+**Try it:** summarize the price of red cars by brand. Include the group sizes, sort the results, and decide how you would display them.
+
+[Download the Quarto source](cars.qmd).

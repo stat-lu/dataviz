@@ -49,6 +49,8 @@ This page contains slides for the courses STAE04 and DABN19: Data Visualization
 * [Heavy Metal](worked-examples/heavy-metal)
 * [Gapminder](worked-examples/gapminder)
 
+A [Quarto version of Cars with R and Python](worked-examples/notebook/cars.html) is also available. See [R and Python: the same data tasks, two ways](worked-examples/notebook/r-python.html) for paired examples.
+
 ## Submission Template
 
 * [R Markdown Template](https://raw.githubusercontent.com/stat-lu/dataviz/main/resources/template.Rmd)

@@ -1,0 +1,13 @@
+# Tested with Python 3.12.14.
+numpy==2.5.3
+pandas==3.0.6
+matplotlib==3.11.2
+seaborn==0.13.2
+scipy==1.18.1
+statsmodels==0.15.0
+plotly==7.1.0
+geopandas==1.2.0
+contextily==1.7.1
+pywaffle==1.2.0
+jupyterlab==4.6.4
+ipykernel==7.4.0

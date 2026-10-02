@@ -1,0 +1,38 @@
+:root {
+  --course-ink: #17324d;
+  --course-accent: #d17a22;
+}
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.65;
+  color: #253546;
+}
+h1, h2, h3, .title {
+  color: var(--course-ink);
+  font-weight: 650;
+}
+#title-block-header {
+  border-top: 5px solid var(--course-accent);
+  padding-top: 1.6rem;
+  margin-bottom: 2.5rem;
+}
+.subtitle { font-size: 1.35rem; color: #526579; }
+h2 { margin-top: 2.5rem; }
+.panel-tabset { margin: 1rem 0 1.5rem; }
+.tab-content {
+  background: #f7f9fc;
+  border-radius: 0 0 8px 8px;
+  padding: 1rem;
+}
+div.sourceCode { border: 1px solid #dce4ee; border-radius: 6px; }
+.nav-tabs .nav-link.active { font-weight: 700; color: var(--course-ink); }
+.btn { margin: 0.35rem 0.5rem 0.35rem 0; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  .tab-content { padding: 0.6rem; }
+}
+@media print {
+  #TOC, .code-copy-button, .btn { display: none; }
+  .tab-pane { display: block !important; opacity: 1 !important; }
+  .tab-content { background: white; }
+}

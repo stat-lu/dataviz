@@ -252,7 +252,7 @@ Here, we've taken the previous plot and changed the limits to include
 ggplot(mtcars, aes(cyl, disp)) +
   stat_summary(fun = median, geom = "line") +
   stat_summary(fun = median, geom = "point") +
-  ylim(0, 300)
+  ylim(0, NA)
 ```
 
 # Scales (and Guides)

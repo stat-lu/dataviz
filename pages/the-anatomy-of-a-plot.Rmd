@@ -3,6 +3,7 @@ title: "The Anatomy of a Plot"
 author: 
 - "Johan Larsson"
 - "Behnaz Pirzamanbein"
+- "Jonas Wallin"
 output: 
   bookdown::html_document2:
     toc: true
@@ -114,3 +115,16 @@ knitr::include_graphics("images/anatomy-titles.png")
 The guide titles describe the variables and often the units for the 
 data.
 
+# Captions
+
+```{r}
+knitr::include_graphics("images/anatomy-caption.png")
+```
+
+A caption is a short description accompanying a figure, usually placed below it.
+It provides context for interpreting the plot, such as what the observations
+represent and where the data comes from.
+
+In this example, the caption describes the variables being plotted and identifies
+the source of the car data. Captions often include a figure number, which lets you
+refer to the plot in the text.

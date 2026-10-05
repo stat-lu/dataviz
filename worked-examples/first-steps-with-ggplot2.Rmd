@@ -116,32 +116,8 @@ a complete layer, including a point geom.
 Notice the use of `+` here to add layers to the canvas that we started out with.
 Also observe that we didn't need to specify what data to use or which mappings
 we wanted in the call to `geom_point()`---they were inherited from the
-`ggplot()` call. If you want to avoid this type of inheritance (which you
-will want when constructing plots from different data sources), you can
-do so by specifying `inherit.aes = FALSE` in the call to `geom_point()`.
-
-Alternatively, you can define the mappings in the `geom_point()` function
-directly, which also has a `mapping` argument. Practically speaking, the
-lines above turn out to be equivalent to those below.
-
-```{r cars-plot-aes}
-ggplot(mtcars) +
-  geom_point(aes(disp, mpg))
-```
-
-This will come in handy for us later on in the course.
-
-The layer functions, such as `geom_point()`, also have its own `data` argument,
-which means that we can define the data directly in the `geom_point()` function
-too:
-
-```{r cars-plot-data}
-ggplot() +
-  geom_point(aes(disp, mpg), data = mtcars)
-```
-
-Again, we retrieve the same plot. But note that the `mtcars` data set
-is now available only to the `geom_point()` layer. If we were to add an additional layer, then that layer wouldn't know about the mtcars dataset, nor would it be aware of the aesthetic mappings defined in the `geom_point()` call.
+`ggplot()` call. We will return to choosing data and mappings for individual
+layers later in this example.
 
 Now try to switch geom for your plot, for instance by replacing `geom_point()` with `geom_line()`.
 
@@ -240,20 +216,23 @@ ggplot(mtcars, aes(cyl, disp)) +
 # Limits
 
 It is sometimes handy to be able to change the limits of the visualization,
-in particular the limits for the x and y axes. You can do so either using
-the `lims()` function or via the wrappers `xlim()` and `ylim()`, which modify
-the limits for the x and y axis respectively.
-
-This will come in handy, for instance, when you want to include a particular value on the axes (such as zero) or when you just want to make room for annotations.
-Here, we've taken the previous plot and changed the limits to include
-0 on the y axis. 
+in particular the limits for the x and y axes. The `coord_cartesian()` function
+lets us change the displayed range without removing observations from the
+calculations. Here, we've taken the previous plot and set the y-axis limits
+to 0 and 300.
 
 ```{r}
 ggplot(mtcars, aes(cyl, disp)) +
   stat_summary(fun = median, geom = "line") +
   stat_summary(fun = median, geom = "point") +
-  ylim(0, NA)
+  coord_cartesian(ylim = c(0, 300))
 ```
+
+**Note:** With `coord_cartesian(ylim = c(0, 300))`, all data will be used.
+For instance`stat_summary()` still uses all observations to calculate the medians. The medians are unchanged, but parts of the plot outside the displayed range are clipped. In contrast, adding `ylim(0, 300)` changes the scale limits and removes observations with
+displacement above 300 *before* the medians are calculated, so the medians
+themselves can change. The same distinction applies to `xlim()` and `lims()`.
+See the [official documentation](https://ggplot2.tidyverse.org/reference/lims.html).
 
 # Scales (and Guides)
 
@@ -308,6 +287,8 @@ ggplot(mtcars, aes(disp, mpg)) +
   scale_y_log10()
 ```
 
+What is wrong?
+
 # Guides
 
 For other guides, such as legends for sizes, shapes, and color mappings,
@@ -315,14 +296,23 @@ most of the control of the guides is instead covered through the `guides()`
 function. In fact, it may be better to think of the `guides()` function
 as a function that controls legends.
 
-Most of the time, the only reason you'll have to invoke the `guides()` function
-will actually be to *remove* guides that are redundant[^1]. To do so, just
-set the respective guide to `"none"`, like this:
+For example, the following plot maps colour to the number of cylinders.
+The expression `factor(cyl)` treats the cylinder counts as categories, so
+ggplot2 adds a colour legend:
 
 ```{r}
-ggplot(cars, aes(speed, dist)) +
+ggplot(mtcars, aes(disp, mpg, colour = factor(cyl))) +
+  geom_point()
+```
+
+To remove a legend that is redundant[^1], set its guide to `"none"`.
+Here, `guides(colour = "none")` removes the colour legend while keeping
+the point colours and both axes:
+
+```{r}
+ggplot(mtcars, aes(disp, mpg, colour = factor(cyl))) +
   geom_point() +
-  guides(x = "none")
+  guides(colour = "none")
 ```
 
 If you want to read more about modifying guides (legends), check out
@@ -354,6 +344,92 @@ to waste space on a long title label for the legend.
 Just like with limits, there are shortcuts for the x and y coordinates here
 too: `xlab()` and `ylab()`.
 
+# Data and Mappings in Individual Layers
+
+So far, we've usually supplied the data and aesthetic mappings in the
+`ggplot()` call, where they become defaults for all layers. Sometimes we want
+a layer to use different data or different mappings, for instance when adding
+a summary to a plot of individual observations. Data and mappings are
+inherited separately.
+
+### Supplying Data and Mappings in a Layer
+
+You can define the mappings directly in `geom_point()`, which also has a
+`mapping` argument. The following code gives the same scatter plot as our
+first example, but the mappings belong only to the point layer:
+
+```{r cars-plot-aes}
+ggplot(mtcars) +
+  geom_point(aes(disp, mpg))
+```
+
+Layer functions also have their own `data` argument, so we can supply both
+the data and the mappings in the layer itself:
+
+```{r cars-plot-data}
+ggplot() +
+  geom_point(aes(disp, mpg), data = mtcars)
+```
+
+Again, we get the same plot. But another layer would not inherit the data or
+mappings from this point layer: layers inherit defaults from `ggplot()`,
+not from one another.
+
+### Adding a Layer with Different Data
+
+Let's add a point showing the overall mean engine displacement and mean fuel
+economy. First, we create a dataset with one row:
+
+```{r cars-mean-data}
+car_means <- data.frame(
+  disp = mean(mtcars$disp),
+  mpg = mean(mtcars$mpg)
+)
+```
+
+We can now give the second point layer its own dataset:
+
+```{r cars-mean-inherited}
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_point(data = car_means, colour = "red", size = 4)
+```
+
+The first layer uses `mtcars`, while the second uses `car_means`. Both inherit
+the mappings `aes(disp, mpg)` from `ggplot()`, because both datasets contain
+those variables. Using a different dataset does not automatically require
+turning off mapping inheritance.
+
+### Turning Off Mapping Inheritance
+
+Now suppose we also want to colour the individual cars by their number of
+cylinders. The dataset `car_means` has no `cyl` variable, so the summary layer
+cannot use the inherited colour mapping. We can give that layer its own
+mappings and set `inherit.aes = FALSE`:
+
+```{r cars-mean-independent}
+ggplot(mtcars, aes(disp, mpg, colour = factor(cyl))) +
+  geom_point() +
+  geom_point(
+    data = car_means,
+    mapping = aes(disp, mpg),
+    inherit.aes = FALSE,
+    shape = 4,
+    size = 4
+  )
+```
+
+The larger cross shows the overall means. The summary layer now uses only
+its own mappings, so its colour is not mapped to the number of cylinders.
+
+The argument `inherit.aes = FALSE` controls only the inheritance of aesthetic
+mappings. The layer would still inherit the plot's data if we did not supply
+its `data` argument.
+
+Try removing `inherit.aes = FALSE` from the last example.
+
+See the [layer documentation](https://ggplot2.tidyverse.org/reference/geom_point.html)
+for more details.
 
 # Changing the Appearance of Your Plots
 

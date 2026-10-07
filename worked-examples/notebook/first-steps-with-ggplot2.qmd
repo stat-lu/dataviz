@@ -1,0 +1,730 @@
+---
+title: "First Steps with ggplot2"
+subtitle: "The same plotting tasks in R and Python"
+author:
+  - Johan Larsson
+  - Behnaz Pirzamanbein
+  - Jonas Wallin
+lang: en
+engine: knitr
+format:
+  html:
+    theme: cosmo
+    css: r-python.css
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    embed-resources: true
+    smooth-scroll: true
+execute:
+  echo: true
+  message: false
+  warning: false
+  error: false
+  cache: false
+  fig-align: center
+  fig-width: 5
+  fig-height: 4
+---
+
+```{r}
+#| include: false
+options(scipen = 999)
+```
+
+In this example, we explore the building blocks of a plot: data, mappings, layers, scales, guides, and themes. We use **ggplot2** in R and **seaborn/matplotlib** in Python. Each step has matching examples. Choose a language in any tab to switch all the tabs, and run the examples in order so that earlier objects are available.
+
+Keep the `data` folder beside this file. See [R and Python: the same data tasks, two ways](r-python.html) for more comparisons of syntax and defaults.
+
+## Getting started
+
+Install packages once, then load or import them in each new session. ggplot2 is part of the tidyverse, but we only need ggplot2 for this example. In Python, pandas holds the data, seaborn provides convenient plotting functions, and matplotlib controls the figure and axes.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+If needed, run this once:
+
+```{r}
+#| eval: false
+install.packages("ggplot2")
+```
+
+```{r}
+library(ggplot2)
+```
+
+### Python {.unlisted}
+
+If needed, run this once in a terminal:
+
+```bash
+python -m pip install pandas matplotlib seaborn
+```
+
+```{python}
+from pathlib import Path
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+DATA_DIR = Path("data")
+sns.set_theme(style="whitegrid", context="notebook")
+```
+:::
+
+::: {.callout-note collapse="true" title="Rendering the Quarto source"}
+You can read the HTML page and copy examples without rendering it yourself. To render `first-steps-with-ggplot2.qmd`, install Quarto, the R packages `ggplot2`, `knitr`, `rmarkdown`, and `reticulate`, and the Python packages listed above. Both languages run when the document is rendered.
+
+Quarto uses [knitr and reticulate to run R and Python together](https://quarto.org/docs/computations/execution-options.html#engine-binding). Select a Python environment containing the packages above; see [Python version configuration](https://rstudio.github.io/reticulate/articles/versions.html).
+
+Open this file in RStudio and click **Render**, or run this command from the folder containing the file:
+
+```bash
+quarto render first-steps-with-ggplot2.qmd
+```
+:::
+
+## Data and mappings
+
+The main function in ggplot2 is `ggplot()`. Its first two arguments are `data`, the default dataset, and `mapping`, the links between variables and visual properties. We usually supply these arguments in order without naming them.
+
+In matplotlib, a **figure** contains one or more **axes**. Here, `fig` is the whole figure and `ax` is the plotting area. We tell each seaborn or matplotlib call which data and variables to use.
+
+### Inspecting the data
+
+We use `mtcars`, containing measurements for 32 cars. It is built into R. Python reads a CSV copy of the same dataset, with the car names in an additional `car` column. Engine displacement (`disp`) is measured in cubic inches; fuel economy (`mpg`) is measured in miles per US gallon. Higher `mpg` means better fuel economy.
+
+Before plotting, take a little time to look at the data. `head()` shows the first few rows.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+head(mtcars)
+```
+
+### Python {.unlisted}
+
+```{python}
+mtcars = pd.read_csv(DATA_DIR / "mtcars.csv")
+mtcars.head()
+```
+:::
+
+The argument to `head()` controls how many rows are shown. Try showing the first ten cars. To inspect column types in a compact form, use `str(mtcars)` in R or `mtcars.info()` in Python. If you have loaded tidyverse in R, `glimpse(mtcars)` is another option.
+
+### Starting with a blank canvas
+
+In R, `aes(x = disp, y = mpg)` maps displacement to horizontal position and fuel economy to vertical position. Since `x` and `y` are the first two arguments of `aes()`, we can write `aes(disp, mpg)`.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(mtcars, aes(disp, mpg))
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+ax.set(xlabel="disp", ylabel="mpg")
+plt.show()
+```
+:::
+
+Why is the canvas blank? We have not yet told either library how to draw the observations. In R, the plot already has data and mappings. In Python, the code above creates axes and labels; the data will be supplied in the plotting call.
+
+## Layers
+
+A mapping is not enough by itself: we need a layer to display the data. In ggplot2, `geom_*()` functions provide layers using a particular geometric representation, or **geom**. For example, `geom_point()` draws points. The `+` operator adds the layer to the plot.
+
+In Python, calling a plotting function adds graphical elements to the chosen axes. Each new example starts with `plt.subplots()` so that we get a fresh figure.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point()
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+sns.scatterplot(data=mtcars, x="disp", y="mpg", ax=ax)
+plt.show()
+```
+:::
+
+The point layer inherits the data and mappings from `ggplot()` in R. In Python, we supply `data`, `x`, and `y` directly to `sns.scatterplot()`. We will return to data and mappings in individual layers later.
+
+**Try it:** replace `geom_point()` with `geom_line()` in R. In Python, replace the scatter call with `sns.lineplot(data=mtcars, x="disp", y="mpg", estimator=None, ax=ax)`. Both connect observations in increasing x order. These cars are separate observations: does connecting them have a useful interpretation?
+
+The `estimator=None` setting matters. By default, seaborn's line plot summarizes repeated y values at the same x value rather than drawing all the observations; see the [seaborn line plot documentation](https://seaborn.pydata.org/generated/seaborn.lineplot.html).
+
+### Why a rectangle needs more information
+
+Try this R code in your own session:
+
+```{r}
+#| eval: false
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_rect()
+```
+
+It produces an error because a rectangle needs `xmin`, `xmax`, `ymin`, and `ymax`; an x and y coordinate alone does not specify its boundaries. The same issue arises in Python: a matplotlib `Rectangle` needs a lower-left position, a width, and a height. Different geometric representations require different information.
+
+## Aesthetics
+
+An **aesthetic** is a visual property, such as position, colour, size, shape, or transparency. A point layer needs x and y coordinates; other properties have defaults. For instance, `alpha = 1` means fully opaque points.
+
+We can **set** an aesthetic to a constant or **map** it to a variable. Here, we set every point to the same colour, size, and shape.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point(colour = "navy", size = 1.8, shape = 4)
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+ax.scatter(mtcars["disp"], mtcars["mpg"],
+           color="navy", s=35, marker="x")
+ax.set(xlabel="disp", ylabel="mpg")
+plt.show()
+```
+:::
+
+In R, constants belong outside `aes()`. A colour inside `aes()` is interpreted as a mapping and can create a legend. In matplotlib, `s` is marker area in points squared; its numbers are not the same size units as ggplot2's `size`. Marker codes also differ: ggplot2's shape `4` and matplotlib's marker `"x"` both draw a cross.
+
+**Try it:** change colour, size, and transparency. Swap the x and y variables. In R, investigate `stroke`, which controls the border width of supported point shapes; in matplotlib, try `linewidths`.
+
+## Other ways to generate layers
+
+The `geom_*()` functions describe a layer through its geometric representation. The `stat_*()` functions describe a layer through a statistical transformation. Each supplies defaults for the other parts of the layer.
+
+### The identity transformation
+
+`stat_identity()` leaves the data unchanged and uses points by default, so this gives the same scatter plot as `geom_point()`. A direct matplotlib scatter call also plots the supplied values without calculating a summary.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(mtcars, aes(disp, mpg)) +
+  stat_identity()
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+ax.scatter(mtcars["disp"], mtcars["mpg"])
+ax.set(xlabel="disp", ylabel="mpg")
+plt.show()
+```
+:::
+
+### Plotting a statistical summary
+
+Suppose we want the median engine displacement for each number of cylinders. R's `stat_summary()` calculates the medians within the plot. In Python, we calculate the medians with pandas, then draw a line and points through the resulting table. Saving the summary makes it easy to inspect the values.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+summary_plot <- ggplot(mtcars, aes(cyl, disp)) +
+  stat_summary(fun = median, geom = "line") +
+  stat_summary(fun = median, geom = "point")
+
+summary_plot
+```
+
+### Python {.unlisted}
+
+```{python}
+median_displacement = mtcars.groupby("cyl", as_index=False).agg(
+    median_disp=("disp", "median")
+)
+median_displacement
+```
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+ax.plot(median_displacement["cyl"],
+        median_displacement["median_disp"], marker="o")
+ax.set(xlabel="cyl", ylabel="disp", xticks=[4, 6, 8])
+plt.show()
+```
+:::
+
+## Limits
+
+Changing the displayed range and removing observations are different operations. This distinction matters whenever the plot calculates a statistic.
+
+### Zooming without changing the summary
+
+In R, `coord_cartesian()` changes the displayed range while keeping all observations in the calculations. In Python, `ax.set_ylim()` changes the visible limits of the axes; it does not recalculate the summary.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+summary_plot +
+  coord_cartesian(ylim = c(0, 300))
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+ax.plot(median_displacement["cyl"],
+        median_displacement["median_disp"], marker="o")
+ax.set(xlabel="cyl", ylabel="disp", xticks=[4, 6, 8])
+ax.set_ylim(0, 300)
+plt.show()
+```
+:::
+
+The medians are unchanged. The 8-cylinder median is 350.5, so its point is outside the visible range and is clipped.
+
+### Removing observations before calculating the summary
+
+Adding `ylim(0, 300)` in ggplot2 sets **scale limits**: observations outside that range are excluded before `stat_summary()` calculates the medians. To get that result in Python, filter the table before grouping it.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+summary_plot +
+  ylim(0, 300)
+```
+
+### Python {.unlisted}
+
+```{python}
+cars_in_range = mtcars.loc[mtcars["disp"].between(0, 300)]
+filtered_medians = cars_in_range.groupby("cyl", as_index=False).agg(
+    median_disp=("disp", "median")
+)
+
+fig, ax = plt.subplots(figsize=(5, 4))
+ax.plot(filtered_medians["cyl"],
+        filtered_medians["median_disp"], marker="o")
+ax.set(xlabel="cyl", ylabel="disp", xticks=[4, 6, 8])
+ax.set_ylim(0, 300)
+plt.show()
+```
+:::
+
+Here, 11 cars have displacement above 300 and are excluded. The 8-cylinder median changes from **350.5** to **275.8**. Use a coordinate zoom when the goal is to change the view while retaining the original calculation. The same distinction applies to `xlim()` in ggplot2 and `ax.set_xlim()` in matplotlib.
+
+See the official documentation for [ggplot2 coordinate limits](https://ggplot2.tidyverse.org/reference/coord_cartesian.html) and [matplotlib y-axis limits](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylim.html).
+
+## Scales and guides
+
+Scales determine how data values become visual properties. A **guide** helps the reader interpret a scale: axes guide position, and legends guide colour, size, or shape.
+
+### Default scales
+
+ggplot2 supplies a scale for every aesthetic mapping. Displacement and fuel economy are numeric, so their default position scales are continuous. Adding the continuous scales explicitly gives the same scatter plot. Matplotlib also uses linear axes by default.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  scale_x_continuous() +
+  scale_y_continuous()
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+ax.scatter(mtcars["disp"], mtcars["mpg"])
+ax.set_xscale("linear")
+ax.set_yscale("linear")
+ax.set(xlabel="disp", ylabel="mpg")
+plt.show()
+```
+:::
+
+### Reversing and transforming axes
+
+We can reverse an axis, choose its ticks, move it to the top, or use a logarithmic scale. The following example deliberately chooses poor x-axis tick positions. What is wrong with the resulting plot?
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  scale_x_reverse(
+    breaks = c(5, 10, 15),
+    minor_breaks = 7,
+    position = "top"
+  ) +
+  scale_y_log10()
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+ax.scatter(mtcars["disp"], mtcars["mpg"])
+displacement_limits = ax.get_xlim()
+ax.set_xticks([5, 10, 15])
+ax.set_xticks([7], minor=True)
+ax.set_xlim(displacement_limits)
+ax.invert_xaxis()
+ax.xaxis.tick_top()
+ax.xaxis.set_label_position("top")
+ax.set_yscale("log")
+ax.set(xlabel="disp", ylabel="mpg")
+plt.show()
+```
+:::
+
+The displacement values range from 71.1 to 472, so ticks at 5, 10, and 15 lie outside the data range. Try 100, 200, 300, and 400 instead. We restore the Python axis limits after setting ticks because matplotlib can expand the limits to include the requested ticks.
+
+A logarithmic scale also changes how distances on the axis are interpreted. Check that all plotted values are positive before using it. In ggplot2, scale transformations happen before statistical transformations, so transforming a scale can also affect a statistical layer. This example contains only raw points.
+
+## Guides
+
+To explain a colour mapping, we need a legend. The number of cylinders takes only the values 4, 6, and 8. Treating them as categories gives a discrete colour legend.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(mtcars, aes(disp, mpg, colour = factor(cyl))) +
+  geom_point()
+```
+
+### Python {.unlisted}
+
+```{python}
+mtcars["cylinders"] = pd.Categorical(
+    mtcars["cyl"].astype(str), categories=["4", "6", "8"]
+)
+
+fig, ax = plt.subplots(figsize=(5, 4))
+sns.scatterplot(data=mtcars, x="disp", y="mpg",
+                hue="cylinders", ax=ax)
+plt.show()
+```
+:::
+
+`factor(cyl)` in R and the categorical `cylinders` column in Python specify the categories. The order 4, 6, 8 is explicit in the Python example. Mapping the original numeric column can produce a different colour scale.
+
+### Removing a legend
+
+If a legend is redundant, we can hide it while keeping the point colours and both axes. In R, `guides()` controls individual guides. In seaborn, `legend=False` prevents the legend from being added for that plotting call.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(mtcars, aes(disp, mpg, colour = factor(cyl))) +
+  geom_point() +
+  guides(colour = "none")
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+sns.scatterplot(data=mtcars, x="disp", y="mpg",
+                hue="cylinders", legend=False, ax=ax)
+plt.show()
+```
+:::
+
+Only remove a guide if the reader can still interpret the plot.
+
+## Labeling guides
+
+Labels should tell the reader what was measured and in which units. Use `labs()` in ggplot2, or set axis and legend labels in matplotlib. The special character `"\n"` inserts a line break, which is useful for long labels.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(mtcars, aes(disp, mpg, colour = factor(cyl))) +
+  geom_point() +
+  labs(
+    x = "Engine displacement (cu. in.)",
+    y = "Fuel economy\n(miles per US gallon)",
+    colour = "Number of\ncylinders"
+  )
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+sns.scatterplot(data=mtcars, x="disp", y="mpg",
+                hue="cylinders", ax=ax)
+ax.set(xlabel="Engine displacement (cu. in.)",
+       ylabel="Fuel economy\n(miles per US gallon)")
+ax.legend(title="Number of\ncylinders")
+fig.tight_layout()
+plt.show()
+```
+:::
+
+In R, `xlab()` and `ylab()` are shortcuts for the axis titles. In Python, `ax.set_xlabel()` and `ax.set_ylabel()` set them separately. `fig.tight_layout()` adjusts the spacing so that labels fit inside the figure.
+
+## Data and mappings in individual layers
+
+Sometimes we want a layer to use different data or mappings, for example when adding a summary to a plot of individual observations. In ggplot2, data and mappings are inherited separately from `ggplot()`. Layers do not inherit defaults from one another.
+
+### Supplying data and mappings in a layer
+
+We can put the mapping in `geom_point()` instead of in `ggplot()`. We can also put both the data and the mapping in the layer. Both R expressions below give the same scatter plot.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(mtcars) +
+  geom_point(aes(disp, mpg))
+```
+
+```{r}
+ggplot() +
+  geom_point(aes(disp, mpg), data = mtcars)
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+sns.scatterplot(data=mtcars, x="disp", y="mpg", ax=ax)
+plt.show()
+```
+:::
+
+The seaborn call already supplies the data and variable names for that call. Another call on the same axes needs its own data and variables; it does not inherit them from the first call.
+
+### Adding a layer with different data
+
+Let's add a point showing the overall mean displacement and mean fuel economy. First, create a dataset with one row.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+car_means <- data.frame(
+  disp = mean(mtcars$disp),
+  mpg = mean(mtcars$mpg)
+)
+car_means
+```
+
+### Python {.unlisted}
+
+```{python}
+car_means = pd.DataFrame({
+    "disp": [mtcars["disp"].mean()],
+    "mpg": [mtcars["mpg"].mean()],
+})
+car_means
+```
+:::
+
+Now give the second layer its own dataset.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_point(data = car_means, colour = "red", size = 4)
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+sns.scatterplot(data=mtcars, x="disp", y="mpg", ax=ax)
+ax.scatter(car_means["disp"], car_means["mpg"],
+           color="red", s=100)
+plt.show()
+```
+:::
+
+In R, both layers inherit `aes(disp, mpg)` because both datasets contain those variables. Using different data does not automatically require turning off mapping inheritance. In Python, both calls use the same axes, but each explicitly selects its data.
+
+### Turning off mapping inheritance
+
+Now colour the individual cars by cylinder count. The summary dataset has no `cyl` column, so it cannot use that colour mapping. In R, give the summary layer its own mappings and set `inherit.aes = FALSE`.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(mtcars, aes(disp, mpg, colour = factor(cyl))) +
+  geom_point() +
+  geom_point(
+    data = car_means,
+    mapping = aes(disp, mpg),
+    inherit.aes = FALSE,
+    shape = 4,
+    size = 4
+  )
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+sns.scatterplot(data=mtcars, x="disp", y="mpg",
+                hue="cylinders", ax=ax)
+ax.scatter(car_means["disp"], car_means["mpg"],
+           color="black", marker="x", s=100)
+plt.show()
+```
+:::
+
+The larger cross shows the overall means. In Python, we simply omit a colour mapping from the summary call. In R, `inherit.aes = FALSE` disables only inherited mappings. The layer would still inherit the plot's data if we did not supply `data`.
+
+**Try it:** remove `inherit.aes = FALSE` from the R example. Why does ggplot2 now look for a `cyl` column in `car_means`?
+
+## Changing the appearance of your plots
+
+ggplot2's `theme()` controls non-data components, including backgrounds, grid lines, fonts, and legend placement. Matplotlib exposes similar settings through the axes, legend, and figure.
+
+### Placing a legend below the plot
+
+The default ggplot2 legend is on the right. Moving it below the plot can leave more room for the plotting area.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(mtcars, aes(disp, mpg, colour = factor(cyl))) +
+  geom_point() +
+  theme(legend.position = "bottom")
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+sns.scatterplot(data=mtcars, x="disp", y="mpg",
+                hue="cylinders", ax=ax)
+ax.legend(title="Cylinders", loc="upper center",
+          bbox_to_anchor=(0.5, -0.2), ncol=3)
+fig.subplots_adjust(bottom=0.3)
+plt.show()
+```
+:::
+
+In R, try `"top"`, `"left"`, or `"right"`. In Python, `loc` selects which part of the legend is positioned at `bbox_to_anchor`; here the anchor is below the axes. We reserve space at the bottom so the legend fits in the figure.
+
+### Placing a legend inside the plot
+
+There is space in the upper-right corner of this scatter plot. Put the legend inside and check that it does not obscure observations.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(mtcars, aes(disp, mpg, colour = factor(cyl))) +
+  geom_point() +
+  theme(
+    legend.position = "inside",
+    legend.position.inside = c(0.8, 0.8)
+  )
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+sns.scatterplot(data=mtcars, x="disp", y="mpg",
+                hue="cylinders", ax=ax)
+ax.legend(title="Cylinders", loc="center",
+          bbox_to_anchor=(0.8, 0.8))
+plt.show()
+```
+:::
+
+The coordinates run from 0 to 1 across the plotting area, from left to right and bottom to top. In current ggplot2, `legend.position = "inside"` activates inside placement, and `legend.position.inside` specifies the position. The older `legend.position = c(0.8, 0.8)` syntax is deprecated. In Python, the anchor uses axes coordinates by default. Adjust the position for the final figure size.
+
+See the [ggplot2 theme documentation](https://ggplot2.tidyverse.org/reference/theme.html) for more settings.
+
+## Themes
+
+Complete themes provide a consistent appearance. ggplot2's default is `theme_grey()`. Python's seaborn styles offer alternatives, but they do not reproduce ggplot2 themes exactly.
+
+### Changing one plot
+
+Add a theme to a ggplot2 plot to change that plot. In Python, a style context applies settings within its block. Here, we choose a simple background and remove the top and right borders in Python.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(mtcars, aes(disp, mpg, colour = factor(cyl))) +
+  geom_point() +
+  theme_bw()
+```
+
+### Python {.unlisted}
+
+```{python}
+with sns.axes_style("ticks"):
+    fig, ax = plt.subplots(figsize=(5, 4))
+    sns.scatterplot(data=mtcars, x="disp", y="mpg",
+                    hue="cylinders", ax=ax)
+    sns.despine(ax=ax)
+    plt.show()
+```
+:::
+
+### Changing session defaults
+
+`theme_set()` in R and `sns.set_theme()` in Python change the defaults for subsequent plots in the current session.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+theme_set(theme_minimal())
+
+ggplot(mtcars, aes(disp, mpg, colour = factor(cyl))) +
+  geom_point()
+```
+
+### Python {.unlisted}
+
+```{python}
+sns.set_theme(style="whitegrid", context="notebook")
+
+fig, ax = plt.subplots(figsize=(5, 4))
+sns.scatterplot(data=mtcars, x="disp", y="mpg",
+                hue="cylinders", ax=ax)
+plt.show()
+```
+:::
+
+Try to use a consistent theme within a report. Good labels, readable text, and an appropriate figure size matter more than decorative changes.
+
+**Try it:** map transmission type (`am`) to point shape. In R, use `shape = factor(am)` inside `aes()`. In Python, create a categorical transmission column and use `style="transmission"` in `sns.scatterplot()`. Replace the codes 0 and 1 with the labels "Automatic" and "Manual" so that the legend is meaningful.
+
+## Source code
+
+This handout follows the [original R worked example](../first-steps-with-ggplot2.html), with Python examples for the same plotting tasks. [Download the Quarto source](first-steps-with-ggplot2.qmd).

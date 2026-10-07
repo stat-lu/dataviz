@@ -3,6 +3,7 @@ title: "Worked Example: D-Rex"
 author: 
 - "Johan Larsson"
 - "Behnaz Pirzamanbein"
+- "Jonas Wallin"
 output:
   bookdown::html_document2:
     toc: true
@@ -56,12 +57,11 @@ specification as our second argument. The call to `aes()` is actually optional
 and you can provide your mappings directly within the layers (geom
 functions) if you prefer.
 
-The distribution seems to be reasonably symmetric but with a longer tail to the
-right and with a single outlier at around 100. The box plot also indicates that
-the distribution is uni-modal, with a center around 55. But this is the problem
-with box plots: they can never "discover" anything *but* a single mode, since
-box plots are based on statistics only related to the quantiles of the
-distribution.
+The box plot shows a median around 53, a somewhat longer whisker to the right,
+and a single observation flagged as an outlier near 100. Box plots summarize
+location and spread using quantiles, so distributions with very different
+shapes can produce the same box plot. To explore whether this distribution
+has one peak or several, let's look at a dot plot.
 
 ## Dot Plot
 
@@ -128,12 +128,89 @@ The default density layer uses Silverman's rule-of-thumb (see `?bw.nrd0`) for
 choosing band width but there are other choices that are probably better, such
 as `bw = "SJ"`. Try this out too.
 
+## Violin Plot
+
+A violin plot displays a kernel density estimate mirrored around a centreline.
+In the horizontal violin below, the shape is thicker at `x` values where the
+estimated density is higher. As with a density plot, its shape depends on the
+bandwidth.
+
+We use `y = 1` to position a single violin. This constant does not refer to the
+`y` variable in the dataset; the plot shows the distribution of `x` only. We
+therefore hide the vertical axis. We save the plot as `p3` to combine it with
+other plots below.
+
+```{r, fig.cap = "A horizontal violin plot of the x variable", fig.height = 2}
+p3 <- ggplot(xy, aes(x, y = 1)) +
+  geom_violin() +
+  scale_y_continuous(NULL, breaks = NULL)
+
+p3
+```
+
+### Adding Observations and a Box Plot
+
+We can make the violin plot more informative by combining it with other
+layers. The violin shows the smoothed distribution, the narrow box plot shows
+the quartiles and median, and the points show the individual observations.
+We also add a white circle to make the median easier to see.
+
+The points are *jittered*: we add small random vertical offsets to reduce
+overlap. Setting `width = 0` keeps their original `x` values unchanged, while
+`seed = 1` makes the offsets reproducible. We hide the box plot's separate
+outlier dots with `outlier.shape = NA`, since these observations are already
+included in the point layer.
+
+```{r, fig.cap = "A violin plot with observations, a box plot, and a median marker", fig.height = 2.7, fig.width = 6}
+ggplot(xy, aes(x, y = 1)) +
+  geom_violin(fill = "lightblue", alpha = 0.5) +
+  geom_boxplot(width = 0.1, outlier.shape = NA, fill = "white") +
+  geom_point(
+    position = position_jitter(width = 0, height = 0.08, seed = 1),
+    alpha = 0.4,
+    size = 1.2
+  ) +
+  annotate("point", x = median(xy$x), y = 1, shape = 21,
+           size = 3, fill = "white") +
+  scale_y_continuous(NULL, breaks = NULL)
+```
+
+Try adding `adjust = 0.5` or `adjust = 2` to `geom_violin()` to use half or
+twice the default bandwidth. The points and box plot provide a fixed reference
+while the smoothed outline changes.
+
 ## Compactly Displaying Several Univariate Distributions
 
-It can sometimes be useful to display several plots of univariate 
-distributions in a compact design. One way to do so is via
-the [patchwork](https://CRAN.R-project.org/package=patchwork) package, which
-can be used to *patch* together plots that you have created separately.
+It can sometimes be useful to display several plots of univariate
+distributions in a compact design.
+
+### Overlaying a Histogram and Density Curve
+
+We can display a histogram and a kernel density estimate in the same plot.
+Both layers below use `x`, allowing us to compare a binned and a smoothed
+view of the same distribution.
+
+To put them on the same vertical scale, we use `aes(y = after_stat(density))`
+in the histogram layer. The area of each bar then represents the fraction of
+observations in that bin, and the total area of the bars is one. This makes
+the histogram comparable to the density curve.
+
+```{r, fig.cap = "A histogram and kernel density estimate of x in the same plot"}
+ggplot(xy, aes(x)) +
+  geom_histogram(
+    aes(y = after_stat(density)),
+    binwidth = 5,
+    fill = "grey80",
+    colour = "white"
+  ) +
+  geom_density(colour = "steelblue", linewidth = 1)
+```
+
+### Arranging Separate Plots with Patchwork
+
+To arrange separate plots, we can use the
+[patchwork](https://CRAN.R-project.org/package=patchwork) package, which
+can *patch* together plots that we have created separately.
 
 Let's install the package first.
 
@@ -142,11 +219,12 @@ install.packages("patchwork")
 ```
 
 **patchwork** is simple and intuitive yet powerful. Most of its functionality
-can be obtained simply by using unary operators (such as `+`) to patch plots
+can be obtained simply by using binary operators (such as `+`) to patch plots
 together.
 
-- `+` and `|` are used to patch plots horizontally, and 
-- `/` to patch them vertically.
+- `+` combines plots in an automatically chosen grid,
+- `|` places plots side by side, and
+- `/` stacks plots vertically.
 
 In the following plot, we patch a histogram and density plot together.
 
@@ -162,19 +240,16 @@ p2 <- ggplot(xy, aes(y)) +
 p1 | p2
 ```
 
-Next, we try to stack them horizontally.
+Next, we try to stack them vertically.
 
 ```{r, fig.cap = "Density plot of x and histogram of y.", fig.width = 6, fig.height = 5}
 p1 / p2
 ```
 
-And here is an example where we go one step further, using a more complicated
-layout and adding labels to the plots.
+We can also include our violin plot in a more complicated layout and add
+labels to the plots.
 
 ```{r, fig.width = 6, fig.height = 5}
-p3 <- ggplot(xy, aes(x, y = 1)) +
-  geom_violin()
-
 pw <- (p1 | p2) / p3
 
 pw + plot_annotation(tag_levels = "A")
@@ -197,6 +272,25 @@ However, stopping here would be a severe mistake. The reason is that we've overl
 ggplot(xy, aes(x, y)) +
   geom_point()
 ```
+
+Despite the clear pattern in the scatter plot, the usual summary statistics
+give little indication of its shape. Let's calculate the means, standard
+deviations, and Pearson's correlation.
+
+```{r}
+summarise(
+  xy,
+  mean_x = mean(x),
+  mean_y = mean(y),
+  sd_x = sd(x),
+  sd_y = sd(y),
+  correlation = cor(x, y)
+)
+```
+
+The correlation is approximately -0.0645, which is close to zero. Pearson's
+correlation measures linear association, so a value near zero can coexist
+with clear structure in a scatter plot, as we see here.
 
 What is the take-home message here? Well, it's twofold:
 

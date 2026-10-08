@@ -1,0 +1,465 @@
+---
+title: "D-Rex Extra: Distribution Plots from Scratch"
+author: "Jonas Wallin"
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    highlight: pygments
+    global_numbering: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.width = 7,
+  fig.height = 3.5,
+  dev = "png"
+)
+```
+
+# A Small Dataset
+
+Open this file as an R Markdown document in RStudio and click **Knit** to
+create the HTML page. Run individual examples from their R code chunks;
+the document header and surrounding text are not R code.
+
+In the D-Rex example, ggplot2 calculates the summaries needed for a box plot,
+histogram, and density plot. Here, we work through these calculations ourselves
+and use ggplot2 to draw the resulting lines, rectangles, and points. All the
+calculation code is shown, so you can follow how each observation contributes
+to a plot.
+
+We use a small illustrative dataset with 13 observations. These invented
+values represent rounded measurements of a continuous quantity. They are
+chosen to include repeated observations and a value separated from the
+others. This example runs independently of the D-Rex data file.
+
+```{r small-data}
+library(ggplot2)
+
+values <- c(2, 3, 3, 4, 5, 5, 6, 7, 8, 8, 9, 10, 18)
+n_observations <- length(values)
+observations <- data.frame(value = values)
+
+values
+n_observations
+```
+
+# Constructing a Box Plot
+
+We calculate each part just before adding it to the drawing. We save the
+drawing as `box_plot`, then display the updated plot at each step.
+`annotate()` lets us draw a shape at the positions we have calculated.
+
+The observations determine the horizontal positions. We place the box around
+`y = 1`; its vertical position and height are only drawing choices.
+
+## Step 1: Calculate the Quartiles and Draw the Box
+
+First, we sort the observations and find the first and third quartiles.
+There are several conventions for sample quartiles. Here, we calculate the
+usual R `quantile()` convention explicitly: for a probability $p$, the
+position in the sorted data is $1 + (n - 1)p$, where $n$ is the number of
+observations. With 13 observations, the first and third quartiles are at
+positions 4 and 10.
+
+If a position falls between observations, we interpolate between its two
+neighbours. `fraction` gives the weight on the upper neighbour. The quartiles
+are 4 and 8, so these become the horizontal edges, `xmin` and `xmax`, of
+our rectangle. `ymin` and `ymax` give its bottom and top.
+
+We keep the same axes throughout. To leave room for the later guides, we
+extend the horizontal range by one quarter of the data range at each end.
+
+```{r boxplot-box, fig.cap = "Step 1: the box extends from the first to the third quartile.", fig.height = 2.4}
+sorted_values <- sort(values)
+probabilities <- c(0.25, 0.75)
+positions <- 1 + (n_observations - 1) * probabilities
+
+lower_positions <- floor(positions)
+upper_positions <- ceiling(positions)
+fraction <- positions - lower_positions
+
+box_quartiles <- (1 - fraction) * sorted_values[lower_positions] +
+  fraction * sorted_values[upper_positions]
+lower_quartile <- box_quartiles[1]
+upper_quartile <- box_quartiles[2]
+
+data_range <- range(values)
+plot_margin <- diff(data_range) / 4
+plot_limits <- data_range + c(-plot_margin, plot_margin)
+
+box_plot <- ggplot() +
+  annotate("rect", xmin = lower_quartile, xmax = upper_quartile,
+           ymin = 0.8, ymax = 1.2,
+           fill = "lightblue", colour = "black") +
+  scale_x_continuous(limits = plot_limits) +
+  scale_y_continuous(NULL, breaks = NULL, limits = c(0.5, 1.5)) +
+  labs(x = "Value")
+
+box_plot
+```
+
+## Step 2: Calculate and Add the Median
+
+The middle position is $(n + 1)/2$, which is 7 for our 13 observations.
+For an odd sample size, `floor()` and `ceiling()` pick the same observation.
+For an even sample size, they pick the two middle observations, whose average
+is the median.
+
+Our median is 6. We draw a vertical line through the box at this value.
+For a line segment, `x` and `y` give its starting point, and `xend` and
+`yend` give its endpoint. Equal `x` and `xend` values make the line vertical.
+
+```{r boxplot-median, fig.cap = "Step 2: a vertical line marks the median.", fig.height = 2.4}
+median_position <- (n_observations + 1) / 2
+median_value <- (sorted_values[floor(median_position)] +
+                   sorted_values[ceiling(median_position)]) / 2
+
+box_plot <- box_plot +
+  annotate("segment", x = median_value, xend = median_value,
+           y = 0.8, yend = 1.2)
+
+box_plot
+```
+
+Here, `box_plot <- box_plot + ...` keeps the existing drawing and adds the
+new layer. The assignment saves this updated version for the next step.
+
+## Step 3: Calculate and Add the Whiskers
+
+The *interquartile range* (IQR) is the difference between the third and first
+quartiles. We set fences 1.5 IQRs below the first quartile and above the third
+quartile. The whiskers end at the most extreme observations inside these
+fences.
+
+Our IQR is 4 and our fences are -2 and 14. The whiskers therefore end at 2
+and 10, rather than at the fences themselves. We connect these values to the
+box with horizontal lines, then draw a short vertical end cap at each endpoint.
+
+```{r boxplot-whiskers, fig.cap = "Step 3: the whiskers reach the most extreme observations inside the fences.", fig.height = 2.4}
+interquartile_range <- upper_quartile - lower_quartile
+lower_fence <- lower_quartile - 1.5 * interquartile_range
+upper_fence <- upper_quartile + 1.5 * interquartile_range
+
+inside_fences <- values >= lower_fence & values <= upper_fence
+lower_whisker <- min(values[inside_fences])
+upper_whisker <- max(values[inside_fences])
+
+box_plot <- box_plot +
+  annotate("segment", x = lower_whisker, xend = lower_quartile,
+           y = 1, yend = 1) +
+  annotate("segment", x = upper_quartile, xend = upper_whisker,
+           y = 1, yend = 1) +
+  annotate("segment", x = lower_whisker, xend = lower_whisker,
+           y = 0.9, yend = 1.1) +
+  annotate("segment", x = upper_whisker, xend = upper_whisker,
+           y = 0.9, yend = 1.1)
+
+box_plot
+```
+
+## Step 4: Find and Add the Flagged Observation
+
+We now select the observations outside the fences. The value 18 is flagged
+by this rule, so we draw it as a separate point. Being flagged does not by
+itself mean that an observation is incorrect. This completes the usual box
+plot.
+
+```{r boxplot-flagged, fig.cap = "Step 4: the observation beyond the upper fence is drawn separately.", fig.height = 2.4}
+flagged_observations <- data.frame(value = values[!inside_fences])
+
+box_plot <- box_plot +
+  geom_point(data = flagged_observations, aes(x = value, y = 1), size = 2)
+
+box_plot
+```
+
+## Step 5: Show the Fences and Data Positions
+
+For this explanation, we add two guides to the completed box plot. The dotted
+lines show the fences at -2 and 14. The small ticks along the bottom show
+the observations. This makes it easier to see why the whiskers stop at 2
+and 10, while 18 is drawn separately.
+
+```{r manual-boxplot, fig.cap = "Step 5: dotted lines show the fences, and ticks show the data positions.", fig.height = 2.4}
+box_plot <- box_plot +
+  geom_vline(
+    xintercept = c(lower_fence, upper_fence),
+    linetype = "dotted", colour = "grey50"
+  ) +
+  geom_rug(data = observations, aes(x = value), sides = "b")
+
+box_plot
+```
+
+The box plot summarizes location and spread. It does not show whether the
+distribution has one peak or several. For that, we need to look more directly
+at the shape of the distribution.
+
+# Constructing a Histogram
+
+## Choosing Bins and Drawing the Histogram
+
+A histogram divides the horizontal axis into intervals, called *bins*.
+With only 13 observations, we choose a bin width of 4 to group neighbouring
+values into a few bins that are easy to count by hand. A bin for every integer
+would give many sparsely occupied bins. This width is an illustrative choice:
+smaller bins show finer detail, while larger bins combine more observations.
+
+The observations range from 2 to 18. We place the edges at multiples of the
+bin width, rounding the minimum down and the maximum up to cover all the
+data. Thus, the first edge is 0 and the last is 20, giving five equal-width
+bins with boundaries at 0, 4, 8, 12, 16, and 20. Both the bin width and the
+starting point can affect the histogram's appearance.
+
+We must also decide what happens to observations exactly on a boundary.
+Here, each bin includes its left boundary and excludes its right boundary,
+so the value 4 goes into the bin from 4 to 8. We include the final right
+boundary in the last bin.
+
+We count the observations in each bin, then draw one rectangle for each row
+of `histogram`. Its horizontal extent is given by `left` and `right`, and
+its height is the bin's count. The calculations and drawing are in the same
+chunk so we can see how the counts become bars.
+
+```{r manual-histogram, fig.cap = "A histogram drawn from manually counted bins."}
+bin_width <- 4
+first_edge <- floor(min(values) / bin_width) * bin_width
+last_edge <- ceiling(max(values) / bin_width) * bin_width
+bin_edges <- seq(first_edge, last_edge, by = bin_width)
+n_bins <- length(bin_edges) - 1
+
+histogram <- data.frame(
+  left = bin_edges[1:n_bins],
+  right = bin_edges[2:(n_bins + 1)],
+  count = integer(n_bins)
+)
+
+for (bin in seq_len(n_bins)) {
+  in_bin <- values >= histogram$left[bin] &
+    values < histogram$right[bin]
+
+  if (bin == n_bins) {
+    in_bin <- values >= histogram$left[bin] &
+      values <= histogram$right[bin]
+  }
+
+  histogram$count[bin] <- sum(in_bin)
+}
+
+knitr::kable(histogram)
+sum(histogram$count)
+
+histogram_plot <- ggplot(histogram) +
+  geom_rect(aes(xmin = left, xmax = right, ymin = 0, ymax = count),
+            fill = "lightblue", colour = "white") +
+  geom_rug(data = observations, aes(x = value), sides = "b") +
+  scale_x_continuous(breaks = bin_edges) +
+  scale_y_continuous(breaks = 0:max(histogram$count),
+                     expand = expansion(mult = c(0, 0.05))) +
+  labs(x = "Value", y = "Count")
+
+histogram_plot
+```
+
+The counts are 3, 5, 4, 0, and 1. They add up to 13, so every observation
+has been counted once. We keep the empty bin from 12 to 16: it shows a gap
+in the data.
+
+## How ggplot2 Creates a Histogram
+
+This is the same statistical construction used by `geom_histogram()`:
+its `stat_bin()` step assigns observations to bins and calculates the counts,
+then the geom draws the bars. ggplot2 uses different internal code to perform
+the counting, rather than our explicit loop.
+
+To reproduce our histogram, we supply the same `breaks` and use
+`closed = "left"` to include each bin's left edge. Without these settings,
+ggplot2's defaults need not match our example: it uses 30 bins when neither
+`bins` nor `binwidth` is specified, and includes right edges by default.
+See the [ggplot2 histogram documentation](https://ggplot2.tidyverse.org/reference/geom_histogram.html).
+
+```{r ggplot-histogram, fig.cap = "The same histogram made with geom_histogram() and matching bin boundaries."}
+ggplot_histogram <- ggplot(observations, aes(x = value)) +
+  geom_histogram(breaks = bin_edges, closed = "left",
+                 fill = "lightblue", colour = "white") +
+  geom_rug(sides = "b") +
+  scale_x_continuous(breaks = bin_edges) +
+  scale_y_continuous(breaks = 0:max(histogram$count),
+                     expand = expansion(mult = c(0, 0.05))) +
+  labs(x = "Value", y = "Count")
+
+ggplot_histogram
+```
+
+## Changing Counts to Densities
+
+A histogram can also show density instead of counts. Divide each count by
+the number of observations and by the bin's width:
+
+$$
+\text{density height} =
+\frac{\text{bin count}}{\text{number of observations}\times\text{bin width}}.
+$$
+
+The *area* of each bar then equals the fraction of observations in that bin,
+and the total area of all the bars is one. A density height is not itself
+a probability; an area over an interval represents a probability. This is
+the quantity ggplot2 provides as `after_stat(density)`.
+
+```{r histogram-densities}
+histogram$width <- histogram$right - histogram$left
+histogram$proportion <- histogram$count / n_observations
+histogram$density <- histogram$proportion / histogram$width
+
+knitr::kable(histogram, digits = 4)
+sum(histogram$density * histogram$width)
+```
+
+# Constructing a Kernel Density Estimate
+
+A *kernel density estimate* (KDE) is another way to display a distribution.
+Instead of putting each observation into a bin, we place a small curve,
+called a *kernel*, around each observation, then average the heights of
+these curves.
+
+## Placing a Gaussian Kernel at Each Observation
+
+We use Gaussian kernels. Each curve is centred on one observation and has
+total area one. Its standard deviation is the *bandwidth*. Choosing Gaussian
+kernels does not mean that the data are assumed to follow a Gaussian
+distribution.
+
+We choose a bandwidth of 1.5 to illustrate the calculation: nearby observations
+contribute overlapping curves, while the isolated observation remains visible.
+Smaller bandwidths show more detail; larger bandwidths produce more smoothing.
+See the [Density Plot section of the D-Rex example](drex.html#density-plot)
+for a comparison of bandwidths.
+
+Let $x_i$ be observation $i$, let $t$ be a position along the horizontal axis,
+and let $h$ be the bandwidth. The height of observation $i$'s kernel at $t$ is
+
+$$
+k_i(t) = \frac{1}{h\sqrt{2\pi}}
+\exp\left[-\frac{1}{2}\left(\frac{t-x_i}{h}\right)^2\right].
+$$
+
+We evaluate this formula on a grid of positions. The grid extends four
+bandwidths beyond the smallest and largest observations so we can see most
+of the tails. The Gaussian curves continue beyond the displayed range.
+
+`expand.grid()` creates one row for each combination of a grid position and
+an observation number. The observation number matters: the two observations
+at 3 must each contribute a kernel, even though their curves coincide.
+
+We draw one line for each observation using `group = observation`. Curves
+for repeated values lie on top of each other. The ticks show the data positions.
+For these ticks, `inherit.aes = FALSE` lets the rug layer use its own mapping:
+it only needs the observed values, not the kernel heights or observation groups.
+
+```{r kernel-curves, fig.cap = "One Gaussian kernel per observation, with bandwidth 1.5. Repeated observations produce overlapping curves."}
+bandwidth <- 1.5
+x_grid <- seq(min(values) - 4 * bandwidth,
+              max(values) + 4 * bandwidth,
+              length.out = 501)
+
+kernels <- expand.grid(
+  x = x_grid,
+  observation = seq_len(n_observations)
+)
+kernels$centre <- values[kernels$observation]
+kernels$height <- exp(-0.5 * ((kernels$x - kernels$centre) / bandwidth)^2) /
+  (bandwidth * sqrt(2 * pi))
+
+ggplot(kernels, aes(x = x, y = height, group = observation)) +
+  geom_line(colour = "steelblue", alpha = 0.6, linewidth = 0.6) +
+  geom_rug(data = observations, aes(x = value),
+           inherit.aes = FALSE, sides = "b") +
+  labs(x = "Value", y = "Kernel height")
+```
+
+## Averaging the Kernels
+
+At each grid position, add the heights of all 13 kernels and divide by 13.
+The resulting curve is the kernel density estimate:
+
+$$
+\widehat f(t) = \frac{1}{n}\sum_{i=1}^{n} k_i(t),
+$$
+
+where $n$ is the number of observations. We use a loop to make this averaging
+step explicit. At each position, `at_this_position` selects the 13 kernel
+heights to average.
+
+Since each kernel has area one, their average also has area one over the
+whole real line. Every observation, including 18, contributes to this curve.
+Repeated observations contribute repeatedly; we average over observations,
+not over distinct values.
+
+```{r kernels-and-average, fig.cap = "The orange curve is the average of the individual blue kernels."}
+density_estimate <- data.frame(x = x_grid, density = NA_real_)
+
+for (position in seq_along(x_grid)) {
+  at_this_position <- kernels$x == x_grid[position]
+  density_estimate$density[position] <-
+    sum(kernels$height[at_this_position]) / n_observations
+}
+
+ggplot() +
+  geom_line(data = kernels,
+            aes(x = x, y = height, group = observation),
+            colour = "steelblue", alpha = 0.35, linewidth = 0.5) +
+  geom_line(data = density_estimate, aes(x = x, y = density),
+            colour = "darkorange", linewidth = 1.1) +
+  geom_rug(data = observations, aes(x = value), sides = "b") +
+  labs(x = "Value", y = "Density")
+```
+
+# A Rectangular Kernel
+
+Replace each Gaussian curve with a rectangle centred on its observation.
+With half-width $a$, the kernel has height $1/(2a)$ inside its interval and
+zero outside, giving area one. We set $a = \sqrt{3}h$ to keep its standard
+deviation equal to the earlier bandwidth $h$, following
+[R's bandwidth convention](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/density.html).
+
+The averaging is unchanged, but the result is a step curve. We include the
+rectangle edges in the grid so `geom_step()` places the jumps correctly.
+
+```{r rectangular-average, fig.cap = "The orange step curve is the average of the individual rectangular kernels."}
+rectangular_bandwidth <- bandwidth
+half_width <- sqrt(3) * rectangular_bandwidth
+
+rectangular_kernels <- data.frame(
+  left = values - half_width,
+  right = values + half_width,
+  height = 1 / (2 * half_width)
+)
+
+rectangular_grid <- sort(unique(c(x_grid, rectangular_kernels$left,
+                                  rectangular_kernels$right)))
+rectangular_density <- data.frame(x = rectangular_grid, density = NA_real_)
+
+for (position in seq_along(rectangular_grid)) {
+  inside_rectangle <- rectangular_grid[position] >= rectangular_kernels$left &
+    rectangular_grid[position] < rectangular_kernels$right
+
+  rectangular_density$density[position] <-
+    sum(rectangular_kernels$height[inside_rectangle]) / n_observations
+}
+
+ggplot() +
+  geom_rect(data = rectangular_kernels,
+            aes(xmin = left, xmax = right, ymin = 0, ymax = height),
+            fill = NA, colour = "steelblue", alpha = 0.3) +
+  geom_step(data = rectangular_density, aes(x = x, y = density),
+            direction = "hv", colour = "darkorange", linewidth = 1.1) +
+  geom_rug(data = observations, aes(x = value), sides = "b") +
+  labs(x = "Value", y = "Density")
+```

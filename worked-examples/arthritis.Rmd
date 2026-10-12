@@ -3,6 +3,7 @@ title: "Worked Example: Arthritis"
 author: 
 - "Johan Larsson"
 - "Behnaz Pirzamanbein"
+- "Jonas Wallin"
 output:
   bookdown::html_document2:
     toc: true
@@ -68,13 +69,13 @@ ggplot(Arthritis, aes(Treatment, fill = Improved)) +
 ```
 
 It's immediately clear that the treatment has worked well! The count of people
-with a improvement is much higher in the treatment arm compared with the placebo
+with an improvement is much higher in the treatment arm compared with the placebo
 arm. But how do the treatments compare in terms of people who've made
 *some* improvement? This is difficult to say from our approach here. This
 is due to two reasons:
 
 1. The stacked bar chart makes it hard to compare all but the
-   first category, since the other portions of the bars are not aligned.^[This
+   bottom segment (`Marked` here), since the other portions of the bars are not aligned.^[This
    is not quite as severe a problem for this particular visualization since the
    inner grouping variable is ordinal. For other problems, however, this can
    be much more detrimental to the result.]
@@ -118,17 +119,17 @@ result with your previous charts.
 
 # Mosaic Plots
 
-In the lecture, we also encountered mosaic plots, which are proportional bar
-charts that map not only the height of the bars but also the width of the bars
-to group sizes. We'll use the **ggmosaic** package here.
+In the lecture, we also encountered mosaic plots. These extend proportional
+stacked bar charts by allowing the widths of the bars to vary with the relative
+group sizes. We'll use the **ggmosaic2** package here.
 
 ```{r}
-# install.packages("ggmosaic") # if don't already have the package
+# install.packages("ggmosaic2") # if you don't already have the package
 
-library(ggmosaic)
+library(ggmosaic2)
 ```
 
-**ggmosaic** works directly with a ggplot2 object,
+**ggmosaic2** works directly with a ggplot2 object,
 adding auxiliary functions (`geom_*()` functions) to extend its functionality.
 
 ```{r}
@@ -138,16 +139,33 @@ ggplot(Arthritis) +
 
 The key features to notice about this call are
 
-1. that the `aes()` specification must reside *inside* the call to
-   `geom_mosaic()` and not in the `ggplot()` function, and
-2. the call to `product()`, which acts simply as a list of variables that
-   you want to use in the mosaic plot.
+1. that we supply the `aes()` mapping to `geom_mosaic()` in this example,
+   with `fill = Improved` determining the colors, and
+2. the call to `product(Improved, Treatment)`, which lists the variables from
+   the inner subdivision to the outer grouping. With the default layout,
+   `Treatment` determines the widths of the bars, and `Improved` subdivides each
+   bar vertically.
 
-The main benefit of the mosaic plot is that it allows us to see more of the data. With bar charts, separate visualizations were needed to provide information on
-the overall size of the groups (treatment arms). In contract, the mosaic plot enables us to use just a single plot.^[However, it is important to note that we're showing the *relative* size. If we want to display the actual *counts* in the outer category, we still need additional plots or must provide this information in text.]
+Read the dimensions of this plot as follows:
 
-Try to switch the order of the variables in the `product()` call. What
-happens? How has the information you see changed?
+- The **width** of each treatment bar represents that arm's share of all
+  participants.
+- The **height** of each colored segment represents the proportion of
+  participants in that improvement category *within that treatment arm*.
+- The **area** of each rectangle is proportional to the share of all
+  participants with that combination of treatment and improvement.
+
+For example, 21 of the 41 treated participants showed `Marked` improvement.
+The height of their segment therefore represents `21 / 41`, while its area
+represents `21 / 84`, since there are 84 participants in total.
+
+The mosaic plot therefore shows both the relative sizes of the treatment arms
+and their improvement proportions in a single plot.^[These are relative sizes.
+To communicate the actual sample sizes, also provide the counts in the text.]
+
+Try switching the order to `product(Treatment, Improved)`. Which variable now
+determines the widths? What proportions do the vertical subdivisions show?
+Which ordering makes it easier to compare improvement between treatment arms?
 
 # Waffle Plots
 
@@ -157,15 +175,19 @@ newspapers. As we mentioned in the lecture, they are at their best when some of
 the categories are so small that their sizes are hard to estimate in a
 bar chart or mosaic plot.
 
+For this example, install **waffle** from
+[GitHub](https://github.com/hrbrmstr/waffle) using the **remotes** package.
+Run these installation commands once before continuing.
+
 ```{r, eval = FALSE}
-# install.packages("waffle") # if you haven't already installed it
+#install.packages("remotes") # if you haven't already installed it
+#library(remotes)
+#remotes::install_github("hrbrmstr/waffle")
 ```
 
-The waffle package requires that our data contains counts of the categories, so
-before we can use it, we need to do a bit of wrangling. More precisely, you need
-to group the data by `Improved` and `Treatment` and then use `summarize()`
-together with either the `n()` function to get either counts or some other
-expression for proportions. We'll settle for counts in this example. Before
+For a count waffle, we first need the number of participants in each category.
+Group the data by `Improved` and `Treatment`, then use `summarize()` together
+with `n()` to compute the counts. Before
 looking at the following code, see if you can do this by yourself. The result
 should be a 6-row tibble with columns `Treatment`, `Improved` and `Count` (or
 whatever you want to call it). Save the result to an object called
@@ -179,10 +201,10 @@ arthritis_summarized <-
 ```
 
 Now we're ready to start making waffles! The aesthetics you need to know about
-here are `fill` and `values`. Values is what we want to map the counts or
-proportions that we just created to and `fill` will connect our inner-most group
-to fill color. We start with the simplest possible waffle chart, just looking at
-improvement among the participants in the treatment arm.
+here are `fill` and `values`. Mapping `Count` to `values` means that **one square
+represents one participant**, while `fill = Improved` determines the colors.
+We start with the simplest possible waffle chart, just looking at improvement
+among the participants in the treatment arm.
 
 ```{r, fig.cap = "A basic waffle chart of the results from the treatment arm."}
 library(waffle)
@@ -193,8 +215,12 @@ filter(arthritis_summarized, Treatment == "Treated") %>%
   labs(fill = "Improvement")
 ```
 
+The treated group contains 13 participants with `None`, 7 with `Some`, and 21
+with `Marked` improvement. The plot therefore has 41 squares. Each square
+represents `100 / 41` percent, or about 2.44% of the treated group.
+
 This looks kind of like a waffle chart, but there's a lot of superfluous
-information that we'd rather get rid off. Thankfully, **waffle** provides the
+information that we'd rather get rid of. Thankfully, **waffle** provides the
 helpful `theme_enhance_waffle()` function for this. Moreover, we probably prefer
 the symbols (rectangles) to be squares --- it's supposed to look like a waffle
 after all, right? --- which we can accomplish by forcing the coordinate system to
@@ -209,7 +235,8 @@ filter(arthritis_summarized, Treatment == "Treated") %>%
   coord_equal() +
   theme_minimal() +
   theme_enhance_waffle() +
-  labs(fill = "Improvement")
+  labs(fill = "Improvement",
+       subtitle = "Treated group: one square = one participant")
 ```
 
 This looks much better, doesn't it?
@@ -218,6 +245,44 @@ To be able to use waffle charts to see both of the treatment arms at once,
 we need to use something called **facets**, which we haven't covered in the
 course yet. If you already know about facets, however, feel free to 
 modify the plot now by faceting on the type of treatment.
+
+## Percentage Waffle Plots
+
+The count waffle above uses 41 squares, one for each treated participant. For a
+percentage waffle, we use **100 squares** to represent the entire treated group,
+so **one square represents 1%** of that group.
+
+We first convert the counts to percentages, then round them to whole numbers
+because we need a whole number of squares for each category.
+
+```{r}
+arthritis_percent <-
+  arthritis_summarized %>%
+  filter(Treatment == "Treated") %>%
+  mutate(Percent = 100 * Count / sum(Count),
+         Squares = round(Percent))
+
+arthritis_percent
+```
+
+For these data, rounding gives 32 squares for `None`, 17 for `Some`, and 51 for
+`Marked`, which sum to 100. These approximate the original percentages of
+31.7%, 17.1%, and 51.2%. We map `Squares` to `values` and set `n_rows = 10` to
+arrange the 100 squares in a 10-by-10 grid.
+
+```{r, fig.cap = "A percentage waffle plot of the treated group: one square represents 1%."}
+ggplot(arthritis_percent, aes(fill = Improved, values = Squares)) +
+  geom_waffle(n_rows = 10, color = "white", size = 1.5) +
+  coord_equal() +
+  theme_minimal() +
+  theme_enhance_waffle() +
+  labs(fill = "Improvement",
+       subtitle = "Treated group: one square = 1%")
+```
+
+Both waffles show the improvement distribution for the same 41 participants.
+The count waffle makes the sample size visible, while the percentage waffle
+makes the proportions easier to read.
 
 # Source Code
 

@@ -3,6 +3,7 @@ title: "Worked Example: Air Quality"
 author: 
 - "Johan Larsson"
 - "Behnaz Pirzamanbein"
+- "Jonas Wallin"
 output:
   bookdown::html_document2:
     toc: true
@@ -56,7 +57,7 @@ Well, our layman intuition tells us that it's likely that the wind affects air
 pollution, and not the other way around, so the natural mapping here is
 to place wind speed on the x axis and ozone on the y axis.
 
-```{r, fig.cap = "Ozone and solar radiation from September to May in New York."}
+```{r, fig.cap = "Ozone and wind speed in New York, May to September 1973."}
 library(tidyverse)
 
 airquality %>%
@@ -117,9 +118,11 @@ p1
 The result is possibly not quite as nice as you'd expect. Can you figure out
 why there are multiple holes in the plot?
 
-The reason is that there are missing values in the data set. Normally, missing values wouldn't necessarily pose a problem for visualization. However, in this case, observations adjacent to missing ones also disappear from the visualization when using the line geom.
+Missing ozone values break the line. An observed value surrounded by missing
+values has no line segment, so it is invisible without a point geom.
 
-A possible solution here is to drop the missing values, which allows the points to connect.
+Dropping the missing values allows the remaining observations to connect, even
+when there are missing days between them.
 
 ```{r, fig.cap = "Air quality (ozone levels) in 1973", fig.width = 5.5, fig.height = 1.8}
 airquality_nona <- drop_na(airquality_formatted, Ozone)
@@ -133,15 +136,28 @@ p2 <-
 p2
 ```
 
-One potential problem with this approach is that it's hard to tell which date ranges  correspond to missing values. To address this, adding a point geom can help make these ranges clear.
+Adding a point geom shows which dates have observed measurements, although the
+lines still connect across missing days.
 
 ```{r, fig.cap = "Air quality (ozone levels) in 1973.", fig.width = 5.5, fig.height = 1.8}
 p3 <- p2 + geom_point()
 p3
 ```
 
-It seems quite clear that the air quality takes a turn for the worse during the
-summer months.
+### Keeping Gaps for Missing Observations
+
+To leave gaps where ozone measurements are missing, we can add points to `p1`.
+This plot still uses the original data, including the missing values, so the
+line breaks at each missing measurement. The points show all observed values.
+Setting `na.rm = TRUE` on the point geom silently omits missing points without
+changing the line layer.
+
+```{r, fig.cap = "Ozone levels with gaps for missing measurements, May to September 1973.", fig.width = 5.5, fig.height = 1.8}
+p_gaps <- p1 + geom_point(na.rm = TRUE)
+p_gaps
+```
+
+Compare this with `p3`: where does `p3` connect observations across missing days?
 
 ### Air Pollution across the Week
 
@@ -159,7 +175,7 @@ air pollution varies significantly from day to day due to other factors.
 A possible way to solve this is to create a new variable, `Weekday`, in our
 data set, representing the day of the week. For this purpose, we use the `wday()` function from lubridate.
 
-```{r, fig.cap = "Air pollution across the week from May to June in 1973"}
+```{r, fig.cap = "Ozone levels by day of the week, May to September 1973."}
 airquality_1973 <-
   airquality_nona %>%
   mutate(Weekday = wday(Date))
@@ -174,20 +190,102 @@ Great, but now the point geom is probably not the best candidate for this job,
 specially without adjustments like jittering and/or opacity. A better alternative could be to use box plots. To effectively use box plots, we need to convert the
 `Weekday` variable into a factor variable. Ensuring the correct order of days, we'll use `as.ordered()`. This conversion can be done directly in the `ggplot()` call. However, it's important to note that this approach requires manually adjusting the axis label, as it will default to `"as.ordered(Weekday)"` otherwise.
 
-```{r, fig.cap = "Air pollution across weekdays from May to June in 1973", fig.width = 5.5}
+```{r, fig.cap = "Ozone levels by day of the week, May to September 1973.", fig.width = 5.5}
 airquality_1973 %>%
   ggplot(aes(as.ordered(Weekday), Ozone)) +
   geom_boxplot() +
   labs(x = "Weekday", y = "Ozone (ppb)")
 ```
 
-Now, we *can* actually see a slight improvement in air quality over
-the weekends, at least in terms of the median values. At this point, it would be 
-interesting to extend our investigation by examining the outliers in this
-plot to see if they correspond to specific calendar events.
+There is no clear pattern across the days of the week. Do the box plots suggest
+any consistent difference between weekends and other days?
 
 Additionally, take some time to visualize the relationships between time and the other
 variables in the data set.
+
+### Using Day Names on the Axis
+
+The weekday plots above use numbers on the x axis. With the default `wday()`
+settings, `1` means Sunday, `2` means Monday, and so on, up to `7` for Saturday.
+Using day names instead makes it easier to identify the weekdays and weekends.
+
+In the previous box plot, `as.ordered(Weekday)` turns the numbers into factor
+levels, so `ggplot2` draws a separate box for each day. It uses the existing
+numeric order; it does not discover the calendar order. A regular factor would
+also provide separate groups for the box plots.
+
+We can use `wday()` to create the day names directly by setting `label = TRUE`.
+This returns an ordered factor, so we no longer need `as.ordered()` inside
+`aes()`. Setting `week_start = 7` keeps Sunday first, matching the earlier plots.
+We also use `locale = "C"` to get English day names regardless of the computer's
+language settings.
+
+```{r, fig.cap = "Ozone levels by day of the week, May to September 1973.", fig.width = 5.5}
+airquality_1973_named <-
+  airquality_nona %>%
+  mutate(Weekday = wday(Date, label = TRUE, week_start = 7, locale = "C"))
+
+airquality_1973_named %>%
+  ggplot(aes(Weekday, Ozone)) +
+  geom_boxplot() +
+  labs(x = "Day of the Week", y = "Ozone (ppb)")
+```
+
+To display Monday first instead, change `week_start` to `1`. Compare the numbered
+and named plots: have the observations or box-plot summaries changed, or only
+the axis labels?
+
+### Weekend and Non-weekend Summary
+
+Let's compare weekends (Saturday and Sunday) with other days, using the observed
+ozone measurements. The mean and median are in ppb.
+
+```{r}
+airquality_1973_named %>%
+  mutate(DayType = if_else(Weekday %in% c("Sat", "Sun"), "Weekend", "Non-weekend")) %>%
+  group_by(DayType) %>%
+  summarise(
+    Observations = n(),
+    Mean_Ozone = round(mean(Ozone), 1),
+    Median_Ozone = median(Ozone),
+    .groups = "drop"
+  )
+```
+
+### Comparing Months
+
+The time-series plots suggest higher ozone levels in the summer. Let's compare
+the monthly distributions using box plots.
+
+```{r, fig.cap = "Ozone distributions by month, May to September 1973.", fig.width = 5.5}
+airquality_month_named <-
+  airquality_formatted %>%
+  mutate(Month = factor(Month, levels = 5:9, labels = month.name[5:9]))
+
+airquality_month_named %>%
+  ggplot(aes(Month, Ozone)) +
+  geom_boxplot(na.rm = TRUE) +
+  labs(x = "Month", y = "Ozone (ppb)")
+```
+
+We can also count observed and missing ozone measurements in each month.
+The mean and median use only observed values and are in ppb.
+
+```{r}
+airquality_month_named %>%
+  group_by(Month) %>%
+  summarise(
+    Observations = sum(!is.na(Ozone)),
+    Missing = sum(is.na(Ozone)),
+    Mean_Ozone = round(mean(Ozone, na.rm = TRUE), 1),
+    Median_Ozone = median(Ozone, na.rm = TRUE),
+    .groups = "drop"
+  )
+```
+
+Which months have higher ozone levels, and how much do their distributions
+overlap? Notice that June has only nine observed values; its summary is based
+on much less data.
 
 # Source Code
 

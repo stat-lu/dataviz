@@ -47,7 +47,7 @@ Let's try to explore the univariate distributions of these two variables.
 We begin with a box plot.
 
 ```{r, fig.cap = "A boxplot of the x variable", fig.height = 1.5}
-ggplot(xy, aes(x)) +
+ggplot(xy, aes(x=x)) +
   geom_boxplot()
 ```
 
@@ -100,7 +100,7 @@ width of five might be appropriate to remove the effect of possible round-off
 bias and elucidate the shape of the distribution better.
 
 ```{r, fig.cap = "A histogram of the x variable", fig.height = 2, fig.width = 4}
-ggplot(xy, aes(x)) +
+ggplot(xy, aes(x=x)) +
   geom_histogram(binwidth = 5)
 ```
 
@@ -117,7 +117,7 @@ of parameters for the density kernel has a large effect on the result.
 Here, we try a few different choices to highlight this.
 
 ```{r, fig.cap = "Density plots with various density estimate choices"}
-ggplot(xy, aes(x)) +
+ggplot(xy, aes(x=x)) +
   geom_density() + # kernel = "gaussian", the default
   geom_density(col = "dark orange", bw = 10)
 ```
@@ -162,8 +162,8 @@ outlier dots with `outlier.shape = NA`, since these observations are already
 included in the point layer.
 
 ```{r, fig.cap = "A violin plot with observations, a box plot, and a median marker", fig.height = 2.7, fig.width = 6}
-ggplot(xy, aes(x, y = 1)) +
-  geom_violin(fill = "lightblue", alpha = 0.5) +
+ggplot(xy, aes(x=x, y = 1)) +
+  geom_violin(fill = "lightblue", alpha = 0.5,adjust = 1) +
   geom_boxplot(width = 0.1, outlier.shape = NA, fill = "white") +
   geom_point(
     position = position_jitter(width = 0, height = 0.08, seed = 1),
@@ -196,7 +196,7 @@ observations in that bin, and the total area of the bars is one. This makes
 the histogram comparable to the density curve.
 
 ```{r, fig.cap = "A histogram and kernel density estimate of x in the same plot"}
-ggplot(xy, aes(x)) +
+ggplot(xy, aes(x = x)) +
   geom_histogram(
     aes(y = after_stat(density)),
     binwidth = 5,

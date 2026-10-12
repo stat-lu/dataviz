@@ -433,6 +433,7 @@ The averaging is unchanged, but the result is a step curve. We include the
 rectangle edges in the grid so `geom_step()` places the jumps correctly.
 
 ```{r rectangular-average, fig.cap = "The orange step curve is the average of the individual rectangular kernels."}
+bandwidth <- 10
 rectangular_bandwidth <- bandwidth
 half_width <- sqrt(3) * rectangular_bandwidth
 

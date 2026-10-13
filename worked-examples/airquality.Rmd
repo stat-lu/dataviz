@@ -57,7 +57,7 @@ Well, our layman intuition tells us that it's likely that the wind affects air
 pollution, and not the other way around, so the natural mapping here is
 to place wind speed on the x axis and ozone on the y axis.
 
-```{r, fig.cap = "Ozone and wind speed in New York, May to September 1973."}
+```{r}
 library(tidyverse)
 
 airquality %>%
@@ -71,16 +71,158 @@ ozone --- as wind speed increases, air quality seems to improve. That's
 hardly surprising if you think about it. But what kind of relationship is this?
 Describing it as a linear relationship is not accurate.
 
-The best way to describe this relationship is as an *inverse* relationship. That
-is, ozone is inversely proportional to wind speed, which is equivalent to
-saying that the relationship could be described as
+The downward curvature suggests that a straight line may be too restrictive.
+An *inverse* relationship, such as
 $$
 \text{ozone} = \frac{c}{\text{wind speed}}
 $$
-for some choice of a constant $c$.
+for some constant $c$, is one possible model, but the scatter plot alone does
+not establish this particular form.
+
+## Linear Regression and LOESS
+
+Scatter plots show the variation between individual days. Adding a fitted line
+helps us see the average trend. With `geom_smooth()`, we can compare two choices:
+
+- `method = "lm"` fits a straight line by least squares.
+- `method = "loess"` fits local regressions, allowing the curve to bend.
+
+### Adding the Fits as Layers
+
+Let's begin with the wind–ozone scatter plot. Slightly transparent points make
+overlapping observations easier to see.
+
+```{r}
+ozone_wind <-
+  ggplot(airquality, aes(x = Wind,y = Ozone)) +
+  geom_point(alpha = 0.5) +
+  labs(x = "Wind speed (mph)", y = "Ozone (ppb)")
+print(ozone_wind)
+```
+
+A ggplot layer can be saved as an object and reused. We will use a dashed blue
+line for linear regression and a solid orange curve for LOESS.
+
+```{r, fig.width = 5.5}
+linear_fit <- geom_smooth(
+  method = "lm", formula = y ~ x, se = FALSE,
+  colour = "steelblue", linetype = "dashed"
+)
+
+loess_fit <- geom_smooth(
+  method = "loess", formula = y ~ x, span = 0.75, se = FALSE,
+  colour = "darkorange"
+)
+
+ozone_wind + linear_fit + loess_fit
+```
+
+Here, `x` and `y` refer to the variables mapped to the axes. A LOESS `span` of
+`0.75` uses roughly three quarters of the observations for each local fit.
+Smaller values give more flexible curves, while larger values give smoother
+curves. We use `se = FALSE`
+to hide the confidence bands and make the two fitted trends easier to compare.
+Each fit uses the observations with both plotted variables available.
+
+## Comparing All Six Relationships
 
 Take some time to plot the associations between `Ozone`, `Solar.R`, `Wind`,
 and `Temp` and try to identify any patterns you observe.
+
+There are six distinct pairs among the four variables. We can put the pairs
+in a tibble and define each axis label once. Here we use a bit more advanced coding to
+visualize the data.
+
+```{r}
+variable_labels <- c(
+  Ozone = "Ozone (ppb)",
+  Solar.R = "Solar radiation\n(Langleys)",
+  Wind = "Wind speed (mph)",
+  Temp = "Temperature (F)"
+)
+
+plot_pairs <- tribble(
+  ~x,        ~y,
+  "Wind",    "Ozone",
+  "Temp",    "Ozone",
+  "Solar.R", "Ozone",
+  "Wind",    "Temp",
+  "Solar.R", "Temp",
+  "Solar.R", "Wind"
+)
+
+scatter_plot <- function(x, y) {
+  ggplot(airquality, aes(x = .data[[x]], y = .data[[y]])) +
+    geom_point(alpha = 0.5) +
+    labs(x = variable_labels[[x]], y = variable_labels[[y]])
+}
+
+plot_pairs <- plot_pairs %>%
+  mutate(scatter = map2(x, y, scatter_plot))
+```
+
+The entries in `x` and `y` are column names stored as strings; `.data[[x]]`
+selects the corresponding column inside `aes()`. `map2()` calls `scatter_plot()`
+for each pair and stores the plots in a list-column named `scatter`.
+We can pass that list directly to **patchwork**.
+
+```{r, fig.width = 8, fig.height = 6}
+library(patchwork)
+
+wrap_plots(plot_pairs$scatter, ncol = 3)
+```
+
+Which relationships look roughly linear, and which suggest curvature?
+
+### Adding Fits to All Six Relationships
+
+We can extend `scatter_plot()` with the fitted layers and reuse the same
+tibble to compare the trends across all six relationships.
+
+```{r}
+trend_plot <- function(x, y) {
+  scatter_plot(x, y) +
+    linear_fit +
+    loess_fit
+}
+
+plot_pairs <- plot_pairs %>%
+  mutate(plot = map2(x, y, trend_plot))
+```
+
+```{r, fig.width = 8, fig.height = 6}
+wrap_plots(plot_pairs$plot, ncol = 3)
+```
+
+Where does a straight line capture the main trend, and where does LOESS reveal
+curvature? Which relationships still show considerable scatter? Try changing
+the LOESS `span` to `0.5` or `1` and see which features remain visible.
+
+### Adding Confidence Bands
+
+Now replace the fitted layers with versions using `se = TRUE`, then reuse
+`trend_plot()` to draw all six relationships again. With `level = 0.95`, the
+shading shows 95% confidence intervals for the estimated mean trend at each
+x value; the LOESS intervals are approximate. Individual days can vary much
+more than the width of these bands.
+
+```{r, fig.width = 8, fig.height = 6}
+linear_fit <- geom_smooth(
+  method = "lm", formula = y ~ x, se = TRUE, level = 0.95,
+  colour = "steelblue", fill = "steelblue", alpha = 0.15,
+  linetype = "dashed"
+)
+
+loess_fit <- geom_smooth(
+  method = "loess", formula = y ~ x, span = 0.75, se = TRUE, level = 0.95,
+  colour = "darkorange", fill = "darkorange", alpha = 0.15
+)
+
+plot_pairs <- plot_pairs %>%
+  mutate(plot_with_bands = map2(x, y, trend_plot))
+
+wrap_plots(plot_pairs$plot_with_bands, ncol = 3)
+```
 
 ## Longitudinal Data
 
@@ -105,7 +247,7 @@ air quality, so our main interest is in examining ozone levels over time.
 Here is our first attempt: we will use the line geom, which is a natural choice
 for visualizing this type of data.
 
-```{r, fig.cap = "Air quality (ozone levels) in 1973", fig.width = 5.5, fig.height = 1.8}
+```{r, fig.width = 5.5, fig.height = 1.8}
 p1 <-
   airquality_formatted %>%
   ggplot(aes(Date, Ozone)) +
@@ -124,7 +266,7 @@ values has no line segment, so it is invisible without a point geom.
 Dropping the missing values allows the remaining observations to connect, even
 when there are missing days between them.
 
-```{r, fig.cap = "Air quality (ozone levels) in 1973", fig.width = 5.5, fig.height = 1.8}
+```{r, fig.width = 5.5, fig.height = 1.8}
 airquality_nona <- drop_na(airquality_formatted, Ozone)
 
 p2 <-
@@ -139,7 +281,7 @@ p2
 Adding a point geom shows which dates have observed measurements, although the
 lines still connect across missing days.
 
-```{r, fig.cap = "Air quality (ozone levels) in 1973.", fig.width = 5.5, fig.height = 1.8}
+```{r, fig.width = 5.5, fig.height = 1.8}
 p3 <- p2 + geom_point()
 p3
 ```
@@ -152,7 +294,7 @@ line breaks at each missing measurement. The points show all observed values.
 Setting `na.rm = TRUE` on the point geom silently omits missing points without
 changing the line layer.
 
-```{r, fig.cap = "Ozone levels with gaps for missing measurements, May to September 1973.", fig.width = 5.5, fig.height = 1.8}
+```{r, fig.width = 5.5, fig.height = 1.8}
 p_gaps <- p1 + geom_point(na.rm = TRUE)
 p_gaps
 ```
@@ -165,7 +307,7 @@ One aspect currently missing from the visualization, which could provide further
 solution for this might be to color the weekend days differently. However, in this case, we'll use the grid and axis ticks to display this information. We can achieve this by specifying scales with `scale_x_date()` and inputting `"weeks"` into the
 `minor_breaks` argument.
 
-```{r, fig.cap = "Air quality, in terms of ozone levels, in 1973", fig.width = 5.5, fig.height = 1.8}
+```{r, fig.width = 5.5, fig.height = 1.8}
 p4 <- p3 + scale_x_date(minor_breaks = "weeks")
 p4
 ```
@@ -175,7 +317,7 @@ air pollution varies significantly from day to day due to other factors.
 A possible way to solve this is to create a new variable, `Weekday`, in our
 data set, representing the day of the week. For this purpose, we use the `wday()` function from lubridate.
 
-```{r, fig.cap = "Ozone levels by day of the week, May to September 1973."}
+```{r}
 airquality_1973 <-
   airquality_nona %>%
   mutate(Weekday = wday(Date))
@@ -190,7 +332,7 @@ Great, but now the point geom is probably not the best candidate for this job,
 specially without adjustments like jittering and/or opacity. A better alternative could be to use box plots. To effectively use box plots, we need to convert the
 `Weekday` variable into a factor variable. Ensuring the correct order of days, we'll use `as.ordered()`. This conversion can be done directly in the `ggplot()` call. However, it's important to note that this approach requires manually adjusting the axis label, as it will default to `"as.ordered(Weekday)"` otherwise.
 
-```{r, fig.cap = "Ozone levels by day of the week, May to September 1973.", fig.width = 5.5}
+```{r, fig.width = 5.5}
 airquality_1973 %>%
   ggplot(aes(as.ordered(Weekday), Ozone)) +
   geom_boxplot() +
@@ -220,7 +362,7 @@ This returns an ordered factor, so we no longer need `as.ordered()` inside
 We also use `locale = "C"` to get English day names regardless of the computer's
 language settings.
 
-```{r, fig.cap = "Ozone levels by day of the week, May to September 1973.", fig.width = 5.5}
+```{r, fig.width = 5.5}
 airquality_1973_named <-
   airquality_nona %>%
   mutate(Weekday = wday(Date, label = TRUE, week_start = 7, locale = "C"))
@@ -257,7 +399,7 @@ airquality_1973_named %>%
 The time-series plots suggest higher ozone levels in the summer. Let's compare
 the monthly distributions using box plots.
 
-```{r, fig.cap = "Ozone distributions by month, May to September 1973.", fig.width = 5.5}
+```{r, fig.width = 5.5}
 airquality_month_named <-
   airquality_formatted %>%
   mutate(Month = factor(Month, levels = 5:9, labels = month.name[5:9]))

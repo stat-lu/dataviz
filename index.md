@@ -42,6 +42,7 @@ This page contains slides for the courses STAE04 and DABN19: Data Visualization
 * [Cars](worked-examples/cars)
 * [First Steps with ggplot2](worked-examples/first-steps-with-ggplot2)
 * [D-Rex](worked-examples/drex)
+* [Diamonds: Beeswarm Plots](worked-examples/diamonds)
 * [Air Quality](worked-examples/airquality)
 * [Arthritis](worked-examples/arthritis)
 * [Plants](worked-examples/plants)

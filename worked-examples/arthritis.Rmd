@@ -28,10 +28,14 @@ options(scipen = 999)
 
 # Arthritis
 
-In this worked example, we will be working with data from a treatment trial for
-Arthritis. The data comes from the [vcd
-package](https://CRAN.R-project.org/package=vcd). To begin, let's load the
-package and take a `glimpse()` at the data.
+In this worked example, we will be working with data from a double-blind clinical
+trial comparing a new treatment for rheumatoid arthritis with a placebo. The
+outcome records whether patients showed no, some, or marked improvement. The
+[dataset documentation](https://search.r-project.org/CRAN/refmans/vcd/html/Arthritis.html)
+does not name the specific treatment.
+
+The data comes from the [vcd package](https://CRAN.R-project.org/package=vcd).
+To begin, let's load the package and take a `glimpse()` at the data.
 
 ```{r}
 # install.packages("vcd") # if you haven't installed it yet
@@ -50,7 +54,7 @@ us.
 Let's start with a simple bar chart to see how many people were allocated to the
 two treatment arms.
 
-```{r, fig.cap = "Treatment allocation for the arthritis study.", fig.width = 2.2, fig.height = 2.2}
+```{r, fig.width = 2.2, fig.height = 2.2}
 library(tidyverse)
 
 ggplot(Arthritis, aes(Treatment)) +
@@ -62,8 +66,8 @@ ggplot(Arthritis, aes(Treatment)) +
 Now for something more interesting. Let's try to look at how well the treatment
 seems to have worked. We start with a stacked bar chart.
 
-```{r, fig.cap = "Treatment effect in the arthritis study.", fig.height = 3}
-ggplot(Arthritis, aes(Treatment, fill = Improved)) +
+```{r, fig.height = 3}
+ggplot(Arthritis, aes(x = Treatment, fill = Improved)) +
   geom_bar(color = "black") +
   labs(fill = "Improvement") # add a better legend title
 ```
@@ -106,7 +110,7 @@ Now, we're ready to construct our plot. This will be done similarly to a standar
 grouped bar plot, except we will use `geom_col()` and map the `y` aesthetic, as we
 are working with summary data.
 
-```{r, fig.cap = "Grouped, proportional bar chart of the arthritis data.", fig.height = 3}
+```{r, fig.height = 3}
 ggplot(arthritis_prop, aes(Treatment, prop, fill = Improved)) +
   geom_col(color = "black", position = "dodge") +
   labs(fill = "Improvement", y = "Proportion")
@@ -116,6 +120,70 @@ Now, it becomes quite easy to compare the proportion of people who showed some i
 
 See if you can also create a proportional stacked bar chart and compare the
 result with your previous charts.
+
+## A Larger Example with Unequal Groups
+
+Both problems are more visible in `DanishWelfare`, also supplied by **vcd**.
+We will compare place of residence (`Urban`) across marital-status groups
+(`Status`). The [dataset](https://search.r-project.org/CRAN/refmans/vcd/html/DanishWelfare.html)
+already contains frequencies in `Freq`, so we sum those counts. We also give
+the categories more readable labels using `fct_recode()` from **forcats**,
+which is loaded with **tidyverse**. This function renames factor levels using
+`new_label = "old_label"`. For example, `Widowed = "Widow"` changes the label
+`"Widow"` to `"Widowed"`. The category counts and factor order are preserved.
+
+```{r welfare-summary}
+welfare_summarized <-
+  DanishWelfare %>%
+  group_by(Status, Urban) %>%
+  summarize(Count = sum(Freq), .groups = "drop") %>%
+  mutate(
+    Status = fct_recode(Status, Widowed = "Widow"),
+    Urban = fct_recode(Urban,
+                       "Copenhagen suburbs" = "SubCopenhagen",
+                       "Large cities" = "LargeCity",
+                       "Other cities" = "City",
+                       "Countryside" = "Country")
+  )
+
+welfare_prop <-
+  welfare_summarized %>%
+  group_by(Status) %>%
+  mutate(prop = Count / sum(Count))
+
+# Keep the same residence colors in the bar charts and waffles.
+welfare_colors <- c("Copenhagen" = "darkorange",
+                    "Copenhagen suburbs" = "skyblue",
+                    "Large cities" = "goldenrod",
+                    "Other cities" = "seagreen",
+                    "Countryside" = "orchid")
+```
+
+```{r welfare-bars, fig.show = "hold", out.width = "50%", fig.width = 4.8, fig.height = 4.5}
+ggplot(welfare_prop, aes(Status, Count, fill = Urban)) +
+  geom_col(color = "white") +
+  scale_fill_manual(values = welfare_colors) +
+  guides(fill = guide_legend(nrow = 3)) +
+  theme(legend.position = "bottom") +
+  labs(title = "Stacked counts", x = "Marital status",
+       y = "Count", fill = "Residence")
+
+ggplot(welfare_prop, aes(Status, prop, fill = Urban)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::label_percent()) +
+  scale_fill_manual(values = welfare_colors) +
+  guides(fill = guide_legend(nrow = 3)) +
+  theme(legend.position = "bottom") +
+  labs(title = "Grouped proportions", x = "Marital status",
+       y = "Proportion within group", fill = "Residence")
+```
+
+The groups contain 580 widowed, 3,633 married, and 931 unmarried respondents.
+With five colored segments and such different totals, the floating segments
+are harder to compare. For example, the married group has **more Copenhagen
+residents** than the widowed group (288 versus 116), but Copenhagen represents
+a **smaller proportion** of that group (7.9% versus 20%). The grouped
+proportional chart makes both the denominator and the common baseline clear.
 
 # Mosaic Plots
 
@@ -181,7 +249,7 @@ Run these installation commands once before continuing.
 
 ```{r, eval = FALSE}
 #install.packages("remotes") # if you haven't already installed it
-#library(remotes)
+library(remotes)
 #remotes::install_github("hrbrmstr/waffle")
 ```
 
@@ -198,6 +266,7 @@ arthritis_summarized <-
   Arthritis %>%
   group_by(Treatment, Improved) %>%
   summarize(Count = n())
+head(arthritis_summarized)
 ```
 
 Now we're ready to start making waffles! The aesthetics you need to know about
@@ -206,7 +275,7 @@ represents one participant**, while `fill = Improved` determines the colors.
 We start with the simplest possible waffle chart, just looking at improvement
 among the participants in the treatment arm.
 
-```{r, fig.cap = "A basic waffle chart of the results from the treatment arm."}
+```{r}
 library(waffle)
 
 filter(arthritis_summarized, Treatment == "Treated") %>%
@@ -228,7 +297,7 @@ be isometric using `coord_equal()`. Finally, I think it looks more aesthetically
 pleasing if we swap the black line color for white, increase their widths
 slightly, and change theme to the minimal variant.
 
-```{r, fig.cap = "A prettier waffle plot."}
+```{r}
 filter(arthritis_summarized, Treatment == "Treated") %>%
   ggplot(aes(fill = Improved, values = Count)) +
   geom_waffle(color = "white", size = 1.5) +
@@ -246,43 +315,92 @@ we need to use something called **facets**, which we haven't covered in the
 course yet. If you already know about facets, however, feel free to 
 modify the plot now by faceting on the type of treatment.
 
-## Percentage Waffle Plots
+## Counts and Percentages with More Data
 
-The count waffle above uses 41 squares, one for each treated participant. For a
-percentage waffle, we use **100 squares** to represent the entire treated group,
-so **one square represents 1%** of that group.
+Let's return to `DanishWelfare` and select the **3,633 married respondents**.
+A count waffle needs one square for each respondent. A percentage waffle uses
+100 squares for the whole group, so one square represents 1%.
 
-We first convert the counts to percentages, then round them to whole numbers
-because we need a whole number of squares for each category.
-
-```{r}
-arthritis_percent <-
-  arthritis_summarized %>%
-  filter(Treatment == "Treated") %>%
+```{r welfare-percentages}
+welfare_married <-
+  welfare_summarized %>%
+  filter(Status == "Married") %>%
   mutate(Percent = 100 * Count / sum(Count),
          Squares = round(Percent))
 
-arthritis_percent
+welfare_married
+#sum(welfare_married$Squares)
 ```
 
-For these data, rounding gives 32 squares for `None`, 17 for `Some`, and 51 for
-`Marked`, which sum to 100. These approximate the original percentages of
-31.7%, 17.1%, and 51.2%. We map `Squares` to `values` and set `n_rows = 10` to
-arrange the 100 squares in a 10-by-10 grid.
+Here, rounding gives 8, 12, 12, 34, and 34 percentage squares, which sum to 100.
+Check this sum when using other data: ordinary rounding does not always give
+exactly 100 squares. We use 60 squares per full row for the count waffle and
+a 10-by-10 grid for the percentage waffle. `flip = TRUE` fills the rows
+horizontally.
 
-```{r, fig.cap = "A percentage waffle plot of the treated group: one square represents 1%."}
-ggplot(arthritis_percent, aes(fill = Improved, values = Squares)) +
-  geom_waffle(n_rows = 10, color = "white", size = 1.5) +
+```{r welfare-waffle-comparison, fig.show = "hold", out.width = "50%", fig.width = 5, fig.height = 5.5, dpi = 160}
+welfare_count_plot <-
+  ggplot(welfare_married, aes(fill = Urban, values = Count)) +
+  geom_waffle(n_rows = 60, flip = TRUE, color = "white", size = 0.15) +
   coord_equal() +
+  scale_fill_manual(values = welfare_colors) +
+  guides(fill = guide_legend(nrow = 3)) +
   theme_minimal() +
   theme_enhance_waffle() +
-  labs(fill = "Improvement",
-       subtitle = "Treated group: one square = 1%")
+  theme(legend.position = "bottom") +
+  labs(title = "Counts: 3,633 squares", fill = "Residence",
+       subtitle = "One square = one respondent")
+
+welfare_percent_plot <-
+  ggplot(welfare_married, aes(fill = Urban, values = Squares)) +
+  geom_waffle(n_rows = 10, flip = TRUE, color = "white", size = 0.8) +
+  coord_equal() +
+  scale_fill_manual(values = welfare_colors) +
+  guides(fill = guide_legend(nrow = 3)) +
+  theme_minimal() +
+  theme_enhance_waffle() +
+  theme(legend.position = "bottom") +
+  labs(title = "Percentages: 100 squares", fill = "Residence",
+       subtitle = "One square = 1% of the married group")
+
+welfare_count_plot
+welfare_percent_plot
 ```
 
-Both waffles show the improvement distribution for the same 41 participants.
-The count waffle makes the sample size visible, while the percentage waffle
-makes the proportions easier to read.
+The count waffle preserves every respondent, but the many small squares make
+it dense. The percentage waffle makes the composition easier to read, at the
+cost of rounding. For example, 430 respondents from Copenhagen suburbs and
+419 from large cities both become 12 percentage squares.
+
+## Comparing Three Groups
+
+Now show count waffles for all three marital-status groups.
+`facet_wrap(~ Status)` gives each group its own panel. With fixed scales and
+the same number of squares per full row, squares have the same size in every
+panel.
+
+```{r welfare-waffle-groups, fig.width = 9, fig.height = 6, dpi = 160}
+welfare_groups_plot <-
+  ggplot(welfare_summarized, aes(fill = Urban, values = Count)) +
+  geom_waffle(n_rows = 50, flip = TRUE, color = "white", size = 0.15) +
+  facet_wrap(~ Status, nrow = 1) +
+  coord_equal() +
+  scale_fill_manual(values = welfare_colors) +
+  guides(fill = guide_legend(nrow = 2)) +
+  theme_minimal() +
+  theme_enhance_waffle() +
+  theme(legend.position = "bottom") +
+  labs(fill = "Residence", subtitle = "One square = one respondent")
+
+welfare_groups_plot
+```
+
+The interpretation issues remain. The married group has a larger waffle
+because it has more respondents, and its 288 Copenhagen squares still
+correspond to a smaller share than the 116 Copenhagen squares in the widowed
+group. The other colored regions begin at different positions, making their
+sizes harder to compare. Percentage waffles would adjust for group size,
+but grouped proportional bars also give every category a common baseline.
 
 # Source Code
 

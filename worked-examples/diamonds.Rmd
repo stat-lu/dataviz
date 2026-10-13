@@ -1,0 +1,144 @@
+---
+title: "Worked Example: Diamonds"
+author:
+- "Jonas Wallin"
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    highlight: pygments
+    global_numbering: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.width = 8.4,
+  fig.height = 5.4,
+  dev = "png"
+)
+options(scipen = 999)
+```
+
+# Diamonds
+
+In this worked example, we'll use a **beeswarm plot** to compare diamond prices
+across cut grades. The `diamonds` dataset comes with ggplot2 and contains 53,940
+diamonds. It is also used in the course book, [*ggplot2: Elegant Graphics for
+Data Analysis*](https://ggplot2-book.org/statistical-summaries.html#diamonds-data)
+by Hadley Wickham, Danielle Navarro, and Thomas Lin Pedersen. See the book's
+"Diamonds data" section for an introduction to the dataset.
+
+Let's load the data and the [ggbeeswarm](https://github.com/eclarke/ggbeeswarm)
+package, which supplies the beeswarm layer.
+
+```{r}
+library(tidyverse)
+# install.packages("ggbeeswarm") # if you haven't installed it yet
+library(ggbeeswarm)
+
+glimpse(diamonds)
+```
+
+We will focus on three variables:
+
+* `carat`: the diamond's weight in carats.
+* `cut`: an ordered cut grade, from `Fair` to `Ideal`.
+* `price`: the price in US dollars.
+
+## Comparing Diamonds of the Same Weight
+
+Large diamonds tend to cost more than small diamonds. To make our comparison
+more useful, let's keep only diamonds whose **recorded weight is exactly one
+carat**. We include every diamond meeting this condition.
+
+```{r}
+one_carat_diamonds <-
+  diamonds %>%
+  filter(carat == 1)
+
+nrow(one_carat_diamonds)
+
+cut_counts <- count(one_carat_diamonds, cut)
+cut_counts
+```
+
+This leaves 1,558 diamonds, with between 166 and 462 observations per cut grade.
+Our question is: **How much does price vary among diamonds of the same recorded
+weight, and how does this differ between cut grades?**
+
+# Beeswarm Plots
+
+In a beeswarm plot, **each dot represents one observation**. Here, the cut grade
+determines the group on the horizontal axis, and the dot's height gives the
+diamond's price. Dots are moved sideways to separate observations with similar
+prices. These horizontal offsets have no numerical meaning, and the prices
+remain unchanged.
+
+The swarm becomes wider where many observations have similar prices. Its width
+also depends on the number of observations and the spacing settings, so we
+include the group counts in the axis labels. `size` controls the size of the
+dots, while `cex` controls the spacing used to arrange them.
+
+Let's also mark each group's median using `stat_summary()`. With `fun = median`,
+this layer calculates one median per cut grade. `shape = 23` gives us a diamond
+marker, whose interior we make white with `fill = "white"`.
+
+```{r, fig.cap = "A beeswarm of prices for diamonds recorded at one carat. Each dot represents one diamond, and white markers show group medians."}
+cut_labels <- paste0(cut_counts$cut, "\n(n = ", cut_counts$n, ")")
+
+ggplot(one_carat_diamonds, aes(cut, price, colour = cut)) +
+  geom_beeswarm(size = 1.2, cex = 0.7, alpha = 0.8) +
+  stat_summary(
+    fun = median, geom = "point", shape = 23,
+    size = 3, fill = "white", colour = "grey20"
+  ) +
+  scale_colour_manual(
+    values = c("#65549B", "#477AB4", "#209895", "#79AD67", "#DBAF43"),
+    guide = "none"
+  ) +
+  scale_x_discrete(labels = cut_labels) +
+  scale_y_continuous(labels = scales::label_dollar(accuracy = 1)) +
+  labs(
+    title = "What does a one-carat diamond cost?",
+    subtitle = "1,558 diamonds recorded at one carat; every dot is one diamond",
+    x = "Cut grade", y = "Price (US dollars)",
+    caption = "White diamonds mark group medians."
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank()
+  )
+```
+
+The plot shows substantial price variation within each grade, including a few
+diamonds costing more than $15,000. The median price is lowest in the `Fair`
+group, but the medians do not increase at every step from `Fair` to `Ideal`.
+Even with recorded weight held fixed, diamond colour and clarity still vary.
+This comparison therefore describes the observed price distributions; it does
+not isolate the effect of cut grade on price.
+
+## Try It Yourself
+
+1. Remove the `stat_summary()` layer. Which comparisons become harder without
+   the median markers?
+2. Replace `geom_beeswarm(size = 1.2, cex = 0.7, alpha = 0.8)` with
+   `geom_violin()`. What does the violin summarize, and what information about
+   individual diamonds becomes harder to see?
+3. Return to the beeswarm and try different values of `size` and `cex`. How do
+   these choices affect your ability to see individual diamonds and the overall
+   distribution?
+
+```{r, eval=FALSE}
+# Copy the plot above here and try your modifications.
+```
+
+# Source Code
+
+The source code for this document is available at
+<https://github.com/stat-lu/dataviz/blob/main/worked-examples/diamonds.Rmd>.

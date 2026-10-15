@@ -1,0 +1,539 @@
+---
+title: "Presenting the Arthritis Results with R Markdown"
+subtitle: "R Markdown: Beyond the Basics"
+author: "Jonas Wallin"
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    highlight: pygments
+    code_folding: show
+    code_download: true
+params:
+  treatment:
+    label: "Treatment group for the final waffle plot"
+    value: "Treated"
+    input: select
+    choices: ["Treated", "Placebo"]
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  fig.align = "center",
+  fig.width = 6,
+  fig.height = 4,
+  dev = "png"
+)
+```
+
+# From Plots to a Report
+
+In the [Arthritis worked example](arthritis.html), we used bar charts, mosaic
+plots, and waffle plots to display the results of a treatment trial. Here, we
+will reuse those plots in a guided walkthrough of more advanced R Markdown
+features. We will build a figure with aligned panels and a shared legend,
+reuse chunk settings, organize results in tabs, generate text from calculated
+results, and render several versions of the report from one source file.
+Each section contains complete code and explains the output it produces.
+
+This example follows the [Introduction to R Markdown](../pages/introduction-to-rmarkdown.html).
+Open this `.Rmd` file in RStudio and click **Knit** to produce the HTML report.
+You can also download the source from the **Code** menu at the top of this page.
+The document contains its own data preparation, so you can knit it without
+running the original Arthritis example first. We use the same packages as
+that example, plus **patchwork** for combining plots. Install any missing
+packages before knitting.
+
+Tabs and code folding are features of the HTML output used here. We will
+introduce the treatment parameter in the YAML header in the final sections.
+Until then, both treatment groups remain in the comparison plots.
+
+# Prepare the Data and Save the Plots
+
+The `Arthritis` data contain one row per participant. `Treatment` identifies
+the treatment arm, and `Improved` records no, some, or marked improvement.
+We first count the participants in each category and calculate proportions
+within each treatment arm.
+
+```{r prepare-data}
+library(tidyverse)
+library(vcd)
+library(ggmosaic2)
+library(waffle)
+
+arthritis_summary <-
+  Arthritis %>%
+  count(Treatment, Improved, name = "Count") %>%
+  group_by(Treatment) %>%
+  mutate(Proportion = Count / sum(Count)) %>%
+  ungroup()
+
+arthritis_summary
+```
+
+We use the same named colors for improvement categories in every plot.
+This makes it easier to recognize the categories when switching between
+different charts.
+
+```{r plot-colors}
+improvement_colors <- c("None" = "lightgrey",
+                        "Some" = "skyblue",
+                        "Marked" = "steelblue")
+```
+
+## Save the Bar Charts
+
+Previously, we printed plots as soon as we created them. This time, we assign
+them to objects. The assignment saves a plot without displaying it. Typing
+its name, such as `count_plot`, in a later chunk displays it there.
+
+```{r save-bar-plots}
+count_plot <-
+  ggplot(arthritis_summary, aes(Treatment, Count, fill = Improved)) +
+  geom_col(color = "white") +
+  scale_fill_manual(values = improvement_colors) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom") +
+  labs(title = "Participants in each category",
+       x = "Treatment arm", y = "Count", fill = "Improvement")
+
+proportion_plot <-
+  ggplot(arthritis_summary, aes(Treatment, Proportion, fill = Improved)) +
+  geom_col(position = "dodge", color = "white") +
+  scale_y_continuous(labels = scales::label_percent()) +
+  scale_fill_manual(values = improvement_colors) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom") +
+  labs(title = "Improvement within each arm",
+       x = "Treatment arm", y = "Proportion", fill = "Improvement")
+```
+
+## Save the Mosaic and Waffle Plots
+
+The mosaic plot compares both treatment arms. The waffle plot shows only the
+treated participants, with one square per participant, as in the original
+example.
+
+```{r save-mosaic-plot}
+mosaic_plot <-
+  ggplot(Arthritis) +
+  geom_mosaic(aes(x = product(Improved, Treatment), fill = Improved)) +
+  scale_fill_manual(values = improvement_colors) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom") +
+  labs(x = "Treatment arm", y = "Improvement", fill = "Improvement")
+```
+
+```{r save-waffle-plot}
+treated_counts <-
+  arthritis_summary %>%
+  filter(Treatment == "Treated")
+
+waffle_plot <-
+  ggplot(treated_counts, aes(fill = Improved, values = Count)) +
+  geom_waffle(n_rows = 5, flip = TRUE, color = "white", size = 1) +
+  coord_equal() +
+  scale_fill_manual(values = improvement_colors) +
+  theme_minimal(base_size = 12) +
+  theme_enhance_waffle() +
+  theme(legend.position = "bottom") +
+  labs(title = "Treated participants", fill = "Improvement",
+       subtitle = "One square = one participant")
+```
+
+# Control Figure Size
+
+There are two different sizes to consider. `fig.width` and `fig.height` set
+the size of the drawing canvas in **inches**. They affect how much room is
+available for axes, labels, and legends. `out.width` controls how wide the
+finished image appears in the document. For example, `out.width = "70%"`
+displays the image at 70% of the available text width.
+
+These options belong to the chunk that **displays** the plot. We can therefore
+print the same saved object at different sizes without rebuilding its code.
+
+## Change the Drawing Canvas
+
+First, draw the bar chart on a 6-by-4-inch canvas and display it at 70% width.
+
+```{r large-canvas, fig.width = 6, fig.height = 4, out.width = "70%"}
+count_plot
+```
+
+Now use a 4.5-by-3-inch canvas, keeping the same displayed width and aspect
+ratio. The text occupies more of the smaller canvas, so it looks larger in
+the document. There is also less room for the labels and plotting panel.
+
+```{r smaller-canvas, fig.width = 4.5, fig.height = 3, out.width = "70%"}
+count_plot
+```
+
+## Change Only the Displayed Width
+
+Return to the 6-by-4-inch canvas, but display the image at 40% width. This
+shrinks the whole image, including its labels. Changing `out.width` does not
+rearrange the plot to fit its new displayed size.
+
+```{r smaller-display, fig.width = 6, fig.height = 4, out.width = "40%"}
+count_plot
+```
+
+The first two figures demonstrate a change in the space available for the
+plot elements. The first and third demonstrate a change in how large the
+finished image appears. When a legend is cramped, increasing the drawing
+canvas gives it more room; increasing only the displayed width magnifies the
+existing layout.
+
+# Put Two Plots Side by Side
+
+We can display the count and proportional bar charts together. Put both
+plot names in the same chunk, use `fig.show = "hold"` to collect the figures
+after the code, and give each image half of the available width.
+
+```{r bars-side-by-side, fig.show = "hold", out.width = "50%", fig.width = 5, fig.height = 4}
+count_plot
+proportion_plot
+```
+
+The left plot shows how many participants fall in each category. The right
+plot compares proportions within treatment arms and gives every bar a common
+baseline. Keep their different vertical scales in mind when reading them.
+
+# Build One Figure with Aligned Panels
+
+The previous chunk places two separate images beside one another. For more
+control, **patchwork** combines the plots into one figure. It can align their
+panels, collect matching legends, and add panel labels and a shared title.
+
+First, make versions with shorter titles. Adding labels produces new plot
+objects; the original `count_plot` and `proportion_plot` remain available.
+
+```{r prepare-comparison-panels}
+library(patchwork)
+
+count_panel <- count_plot + labs(title = "Counts")
+proportion_panel <- proportion_plot + labs(title = "Proportions")
+
+comparison_plot <-
+  (count_panel + proportion_panel +
+     plot_layout(ncol = 2, guides = "collect") +
+     plot_annotation(title = "Improvement in the Arthritis trial",
+                     tag_levels = "A")) &
+  theme(legend.position = "bottom")
+```
+
+Here, `+` combines the two plots, `guides = "collect"` removes duplicate
+legends, and `tag_levels = "A"` labels the panels A and B. The `&` operator
+applies the legend position throughout the combined figure.
+
+```{r display-comparison, fig.width = 9, fig.height = 4.5, out.width = "100%"}
+comparison_plot
+```
+
+The legend can be shared because both plots use the same category colors,
+labels, and legend appearance. In particular, both bar layers use white
+borders. Patchwork compares the rendered guides, so different legend keys
+can prevent the legends from being merged even when the category labels match.
+
+The panels retain their own vertical scales: counts in A and proportions
+in B. Combining plots does not make those quantities interchangeable.
+
+# Reuse Figure Settings across Chunks
+
+Repeated figure options can be collected into a named template. We will use
+the following settings for the individual charts in the next sections:
+
+```{r define-figure-template}
+knitr::opts_template$set(
+  report_plot = list(fig.width = 6,
+                     fig.height = 4,
+                     out.width = "85%")
+)
+```
+
+Later chunks select this template with `opts.label = "report_plot"`.
+Changing the template changes all chunks that use it. The template must be
+defined before those chunks are evaluated.
+
+The order of precedence is **global settings, then the template, then options
+on the individual chunk**. For example, a chunk with
+`opts.label = "report_plot", fig.height = 3` uses a 6-by-3-inch canvas and
+85% displayed width. This lets a report keep a consistent style while allowing
+individual figures to use a different shape.
+
+# Organize Related Plots in Tabs
+
+Tabs let readers switch between related results without scrolling past every
+plot. Add `{.tabset}` to a heading and place the tab headings one level below
+it. Here, a level-two heading contains three level-three headings:
+
+```markdown
+## Choose a Chart {.tabset}
+
+### Bar Chart
+
+### Mosaic Plot
+
+### Waffle Plot
+```
+
+Place each plot chunk and its interpretation under the corresponding tab
+heading. A new heading at the same level as the tabset, or a higher level,
+ends the tabbed section. The next main section in this document does that.
+
+## Choose a Chart {.tabset}
+
+### Bar Chart
+
+```{r tab-bar-chart, opts.label = "report_plot"}
+proportion_plot
+```
+
+The grouped bars share a baseline, making the improvement proportions easy
+to compare between treatment arms.
+
+### Mosaic Plot
+
+```{r tab-mosaic-plot, opts.label = "report_plot"}
+mosaic_plot
+```
+
+The widths show the relative sizes of the treatment arms. Within each arm,
+the segment heights show the improvement proportions. The areas therefore
+represent shares of all participants.
+
+### Waffle Plot
+
+```{r tab-waffle-plot, opts.label = "report_plot"}
+waffle_plot
+```
+
+Each square represents one treated participant. This plot describes the
+treated arm only; comparing treatment arms requires the information shown
+in the other tabs.
+
+# Let the Text Update with the Data
+
+A report also contains numbers in its sentences. Rather than typing those
+numbers by hand, we can insert results calculated by R. First, prepare a
+small summary. Here, **any improvement** means either `Some` or `Marked`.
+
+```{r improvement-summary}
+group_summary <-
+  arthritis_summary %>%
+  group_by(Treatment) %>%
+  summarize(Participants = sum(Count),
+            AnyImprovement = sum(Count[Improved != "None"]),
+            .groups = "drop") %>%
+  mutate(Share = AnyImprovement / Participants)
+
+treated_summary <- filter(group_summary, Treatment == "Treated")
+placebo_summary <- filter(group_summary, Treatment == "Placebo")
+
+group_summary %>%
+  mutate(Share = scales::percent(Share, accuracy = 0.1)) %>%
+  knitr::kable(col.names = c("Treatment arm", "Participants",
+                           "Any improvement", "Percentage"))
+```
+
+Inline R uses a backtick, the letter `r`, a space, and an R expression, followed
+by a closing backtick. Write this sentence in the text of the `.Rmd` file,
+outside a code chunk:
+
+```{verbatim inline-example, lang = "markdown"}
+Of the `r treated_summary$Participants` treated participants,
+`r treated_summary$AnyImprovement` showed some or marked improvement
+(`r scales::percent(treated_summary$Share, accuracy = 0.1)`).
+```
+
+When the document is knitted, it becomes:
+
+> Of the `r treated_summary$Participants` treated participants,
+> `r treated_summary$AnyImprovement` showed some or marked improvement
+> (`r scales::percent(treated_summary$Share, accuracy = 0.1)`).
+
+For comparison, `r placebo_summary$AnyImprovement` of the
+`r placebo_summary$Participants` placebo participants showed some or marked
+improvement (`r scales::percent(placebo_summary$Share, accuracy = 0.1)`).
+These are descriptive summaries of the observed outcomes.
+
+The same calculated values now feed the table and the prose. The R expressions
+must refer to objects created in an earlier chunk. RStudio's Knit button
+evaluates the document from top to bottom in a fresh R session, so objects
+that exist only in your Console are not available there.
+
+## Generate a Whole Paragraph from R
+
+Inline R works well for individual values. A longer piece of text can also
+depend on the results. Here, we calculate the difference in improvement
+proportions and choose the wording according to its sign.
+
+```{r prepare-comparison-text}
+difference_pp <- 100 * (treated_summary$Share - placebo_summary$Share)
+difference_label <- scales::number(abs(difference_pp), accuracy = 0.1)
+
+comparison_text <- if (difference_pp > 0) {
+  paste("The percentage with some or marked improvement was",
+        difference_label, "percentage points higher in the treated arm.")
+} else if (difference_pp < 0) {
+  paste("The percentage with some or marked improvement was",
+        difference_label, "percentage points lower in the treated arm.")
+} else {
+  "The percentage with some or marked improvement was equal in both arms."
+}
+```
+
+We can now emit Markdown from a code chunk. `results = "asis"` tells knitr to
+pass the text to the document as Markdown, so the asterisks produce bold text
+and the blank line ends the paragraph. Without that option, the text would
+appear as ordinary console output.
+
+```{r write-comparison-text, results = "asis"}
+cat("**Observed comparison.** ", comparison_text, "\n\n", sep = "")
+```
+
+The difference is in **percentage points**: we subtract two percentages.
+It is a descriptive comparison, without an uncertainty interval. The wording
+updates when the calculated difference changes, including when its sign
+changes.
+
+# Let the Reader Show or Hide the Code
+
+The YAML header of this document includes the following output settings:
+
+```yaml
+output:
+  bookdown::html_document2:
+    code_folding: show
+    code_download: true
+```
+
+With `code_folding: show`, code is visible initially and the reader can hide
+individual code blocks or use the **Code** menu to hide them all. Change the
+setting to `code_folding: hide` if you want the document to open with its code
+collapsed. The plots and tables remain visible in either case.
+
+Keep `echo = TRUE` for code you want readers to be able to reveal.
+`echo = FALSE` runs the chunk but leaves its source out of the displayed page,
+so a folding button cannot reveal it. `include = FALSE`, used for the setup
+chunk, runs the code while hiding both the code and its output.
+
+`code_download: true` adds a download of the complete `.Rmd` source to the
+**Code** menu, including chunks hidden from the page. This is useful when
+sharing a worked example that readers should be able to reproduce.
+
+## Collapse One Chunk Initially
+
+A report may show most code while initially hiding a long plotting chunk.
+With `code_folding: show`, the chunk option `class.source = "fold-hide"`
+collapses just that chunk. Its plot is still displayed, and the reader can
+reveal the code with the button above it.
+
+The parameterized waffle chunk below uses this option. It keeps `echo = TRUE`,
+so the source is still present in the HTML. The **Show All Code** command can
+also reveal it.
+
+# Select a Treatment Group with a Parameter
+
+A parameter lets us reuse the document with a different input. The YAML
+header already defines one called `treatment`, with two possible choices:
+
+```yaml
+params:
+  treatment:
+    label: "Treatment group for the final waffle plot"
+    value: "Treated"
+    input: select
+    choices: ["Treated", "Placebo"]
+```
+
+Inside an R chunk, its value is available as `params$treatment`. We use it
+below to select the participants for a new waffle plot and calculate the
+numbers for its accompanying text.
+
+```{r select-treatment}
+selected_counts <-
+  arthritis_summary %>%
+  filter(Treatment == params$treatment)
+
+selected_summary <-
+  group_summary %>%
+  filter(Treatment == params$treatment)
+```
+
+The selected arm is **`r params$treatment`**, containing
+**`r selected_summary$Participants` participants**. Of these,
+`r selected_summary$AnyImprovement` showed some or marked improvement
+(`r scales::percent(selected_summary$Share, accuracy = 0.1)`).
+
+```{r selected-waffle, opts.label = "report_plot", class.source = "fold-hide"}
+ggplot(selected_counts, aes(fill = Improved, values = Count)) +
+  geom_waffle(n_rows = 5, flip = TRUE, color = "white", size = 1) +
+  coord_equal() +
+  scale_fill_manual(values = improvement_colors) +
+  theme_minimal(base_size = 12) +
+  theme_enhance_waffle() +
+  theme(legend.position = "bottom") +
+  labs(title = paste("Treatment arm:", params$treatment),
+       subtitle = "One square = one participant", fill = "Improvement")
+```
+
+In RStudio, **Knit with Parameters**, available from the arrow beside
+**Knit**, opens a selection dialog. Choosing `Placebo` and knitting updates
+the selected group's text and final waffle plot together. Ordinary **Knit**
+uses the default value in the YAML header. The earlier comparison plots
+continue to show both arms, and the earlier treated-only waffle continues to
+show the treated arm.
+
+The parameter is chosen **before rendering**. It is not an interactive
+selector inside the finished HTML report.
+
+# Generate Both Report Versions Automatically
+
+A short loop can render the document once for each treatment arm. The code
+below is run from the **Console**, with the project's root directory as the
+working directory. Its chunk has `eval = FALSE` because rendering this file
+from inside itself would start another render recursively.
+
+```{r render-report-versions, eval = FALSE}
+for (treatment in c("Treated", "Placebo")) {
+  rmarkdown::render(
+    "worked-examples/arthritis-rmarkdown.Rmd",
+    params = list(treatment = treatment),
+    output_file = paste0("arthritis-rmarkdown-", tolower(treatment), ".html"),
+    envir = new.env()
+  )
+}
+```
+
+Each call receives its own evaluation environment and a distinct output
+filename. The files are written beside the source file, keeping the default
+`arthritis-rmarkdown.html` preview available.
+
+The final section of the two versions contains the following results, taken
+from the same summaries used throughout the report:
+
+```{r report-version-summary}
+group_summary %>%
+  mutate(File = paste0("arthritis-rmarkdown-",
+                       tolower(as.character(Treatment)), ".html")) %>%
+  select(File, Participants, AnyImprovement) %>%
+  knitr::kable(col.names = c("Output file", "Squares in final waffle",
+                           "Participants with any improvement"))
+```
+
+The final waffle contains 41 squares in the treated version and 43 in the
+placebo version. The selected-group prose, title, and plot update from the
+same parameter. The earlier two-arm comparisons are shared by both reports.
+
+# Further Reading
+
+The R Markdown Cookbook explains [figure sizes](https://bookdown.org/yihui/rmarkdown-cookbook/figure-size.html),
+[side-by-side plots](https://bookdown.org/yihui/rmarkdown-cookbook/figures-side.html),
+and [HTML tabs](https://bookdown.org/yihui/rmarkdown-cookbook/html-tabs.html).
+The R Markdown guide also describes [knitting with parameters](https://bookdown.org/yihui/rmarkdown/params-knit.html).

@@ -1,0 +1,954 @@
+---
+title: "Worked Example: Air Quality"
+subtitle: "The same plotting tasks in R and Python"
+author:
+  - Johan Larsson
+  - Behnaz Pirzamanbein
+  - Jonas Wallin
+lang: en
+engine: knitr
+format:
+  html:
+    theme: cosmo
+    css: r-python.css
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    embed-resources: true
+    smooth-scroll: true
+execute:
+  echo: true
+  message: false
+  warning: false
+  error: false
+  cache: false
+  fig-align: center
+  fig-width: 5
+  fig-height: 4
+---
+
+```{r}
+#| include: false
+options(scipen = 999)
+```
+
+We explore air-quality measurements from New York between May and September
+1973, first as pairs of variables and then over time. We use **ggplot2** in R
+and **seaborn/matplotlib** in Python. Choose a language in any tab to switch
+all the tabs, and run the examples in order so that earlier objects are
+available.
+
+Keep the `data` folder beside this file. See
+[First Steps with ggplot2](first-steps-with-ggplot2.html) for the building
+blocks of a plot in both languages.
+
+## Getting started
+
+Install packages once, then load or import them in each new session. Python
+uses pandas for tables, statsmodels for linear regression, and scikit-misc
+for LOESS and its confidence intervals.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+If needed, run this once:
+
+```{r}
+#| eval: false
+install.packages(c("tidyverse", "lubridate", "patchwork"))
+```
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(patchwork)
+```
+
+### Python {.unlisted}
+
+If needed, run this once in a terminal:
+
+```bash
+python -m pip install numpy pandas matplotlib seaborn statsmodels scikit-misc
+```
+
+```{python}
+from pathlib import Path
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import seaborn as sns
+import statsmodels.api as sm
+from skmisc.loess import loess
+
+DATA_DIR = Path("data")
+sns.set_theme(style="whitegrid", context="notebook")
+```
+:::
+
+::: {.callout-note collapse="true" title="Rendering the Quarto source"}
+You can read the HTML page and copy examples without rendering it yourself.
+To render `airquality.qmd`, install Quarto, the R packages above, `knitr`,
+`rmarkdown`, and `reticulate`, and the Python packages listed above. Both
+languages run when the document is rendered.
+
+Quarto uses [knitr and reticulate to run R and Python together](https://quarto.org/docs/computations/execution-options.html#engine-binding).
+Select a Python environment containing these packages; see
+[Python version configuration](https://rstudio.github.io/reticulate/articles/versions.html).
+
+Open this file in RStudio and click **Render**, or run this command from the
+folder containing the file:
+
+```bash
+quarto render airquality.qmd
+```
+:::
+
+## Air quality in New York
+
+When studying two numeric variables, a scatter plot is a useful starting
+point. The `airquality` dataset contains daily measurements from New York
+between May and September 1973.
+
+The variables are:
+
+- `Ozone`: mean ozone in parts per billion (ppb), measured from 1300 to 1500
+  hours at Roosevelt Island.
+- `Solar.R`: solar radiation in Langleys, in the frequency band 4000–7700
+  Angstroms, measured from 0800 to 1200 hours at Central Park.
+- `Wind`: average wind speed in miles per hour (mph), measured at 0700 and
+  1000 hours at LaGuardia Airport.
+- `Temp`: maximum daily temperature in degrees Fahrenheit at LaGuardia Airport.
+- `Month`, `Day`: the month and day of the measurement.
+
+The dataset is built into R. Python reads a CSV copy of the same data,
+including its missing measurements. Here are the first few rows.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+head(airquality)
+```
+
+### Python {.unlisted}
+
+```{python}
+airquality = pd.read_csv(DATA_DIR / "airquality.csv")
+airquality.head()
+```
+:::
+
+Let's begin with wind and ozone. If we are interested in how ozone varies
+with wind speed, a natural mapping places wind speed on the x axis and ozone
+on the y axis.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ggplot(airquality, aes(x = Wind, y = Ozone)) +
+  geom_point() +
+  labs(x = "Wind speed (mph)", y = "Ozone (ppb)")
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+sns.scatterplot(data=airquality, x="Wind", y="Ozone", ax=ax)
+ax.set(xlabel="Wind speed (mph)", ylabel="Ozone (ppb)")
+fig.tight_layout()
+plt.show()
+```
+:::
+
+Ozone tends to decrease as wind speed increases, but the downward curvature
+suggests that a straight line may be too restrictive. An inverse relationship,
+such as
+
+$$
+\text{ozone} = \frac{c}{\text{wind speed}}
+$$
+
+for some constant $c$, is one possible model. The scatter plot alone does not
+establish this particular form.
+
+## Linear regression and LOESS
+
+Scatter plots show the variation between individual days. Adding a fitted
+line helps us see the average trend. We will compare two choices:
+
+- Linear regression fits a straight line by least squares.
+- LOESS fits local regressions, allowing the curve to bend.
+
+### Adding the fits
+
+Let's begin with the wind–ozone scatter plot. Slightly transparent points
+make overlapping observations easier to see.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+ozone_wind <-
+  ggplot(airquality, aes(x = Wind, y = Ozone)) +
+  geom_point(alpha = 0.5) +
+  labs(x = "Wind speed (mph)", y = "Ozone (ppb)")
+
+ozone_wind
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+sns.scatterplot(data=airquality, x="Wind", y="Ozone", alpha=0.5, ax=ax)
+ax.set(xlabel="Wind speed (mph)", ylabel="Ozone (ppb)")
+fig.tight_layout()
+plt.show()
+```
+:::
+
+We will use a dashed blue line for linear regression and a solid orange curve
+for LOESS. In R, a fitted layer can be saved and reused. In Python, we define
+a helper that fits both models and draws their predictions on the supplied
+axes. It also returns the fitted models for the confidence-band example later.
+
+Each fit uses the observations with both plotted variables available. Both
+LOESS implementations use local quadratic fits with a span of `0.75`.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+#| fig-width: 5.5
+linear_fit <- geom_smooth(
+  method = "lm", formula = y ~ x, se = FALSE,
+  colour = "steelblue", linetype = "dashed"
+)
+
+loess_fit <- geom_smooth(
+  method = "loess", formula = y ~ x, span = 0.75, se = FALSE,
+  colour = "darkorange"
+)
+
+ozone_wind + linear_fit + loess_fit
+```
+
+Here, `x` and `y` in `y ~ x` refer to the variables mapped to the axes.
+`se = FALSE` hides the confidence bands while we compare the fitted trends.
+
+### Python {.unlisted}
+
+```{python}
+def add_trends(x, y, data, ax, span=0.75):
+    pair = data[[x, y]].dropna()
+    x_grid = np.linspace(pair[x].min(), pair[x].max(), 80)
+
+    linear_fit = sm.OLS(pair[y], sm.add_constant(pair[x])).fit()
+    loess_fit = loess(
+        pair[x].to_numpy(), pair[y].to_numpy(), span=span, degree=2
+    )
+    loess_fit.fit()
+
+    ax.plot(
+        x_grid, linear_fit.predict(sm.add_constant(x_grid)),
+        color="steelblue", linestyle="--"
+    )
+    ax.plot(x_grid, loess_fit.predict(x_grid).values, color="darkorange")
+    return x_grid, linear_fit, loess_fit
+
+
+fig, ax = plt.subplots(figsize=(5.5, 4))
+sns.scatterplot(data=airquality, x="Wind", y="Ozone", alpha=0.5, ax=ax)
+fitted_trends = add_trends("Wind", "Ozone", data=airquality, ax=ax)
+ax.set(xlabel="Wind speed (mph)", ylabel="Ozone (ppb)")
+fig.tight_layout()
+plt.show()
+```
+
+`sm.add_constant()` adds the intercept to the linear model. The LOESS
+prediction gives the fitted mean at each value in `x_grid`.
+:::
+
+A LOESS span of `0.75` uses roughly three quarters of the observations for
+each local fit. Smaller values give more flexible curves, while larger
+values give smoother curves. See the documentation for
+[ggplot2 smoothing](https://ggplot2.tidyverse.org/reference/geom_smooth.html)
+and [scikit-misc LOESS](https://has2k1.github.io/scikit-misc/stable/generated/skmisc.loess.loess.html).
+
+## Comparing all six relationships
+
+Take some time to plot the associations between `Ozone`, `Solar.R`, `Wind`,
+and `Temp` and try to identify any patterns you observe.
+
+There are six distinct pairs among these four variables. We can put the
+pairs in a table and define each axis label once. This section uses functions
+and iteration to avoid repeating the plotting code.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+variable_labels <- c(
+  Ozone = "Ozone (ppb)",
+  Solar.R = "Solar radiation\n(Langleys)",
+  Wind = "Wind speed (mph)",
+  Temp = "Temperature (F)"
+)
+
+plot_pairs <- tribble(
+  ~x,        ~y,
+  "Wind",    "Ozone",
+  "Temp",    "Ozone",
+  "Solar.R", "Ozone",
+  "Wind",    "Temp",
+  "Solar.R", "Temp",
+  "Solar.R", "Wind"
+)
+
+scatter_plot <- function(x, y, data, labels) {
+  ggplot(data, aes(x = .data[[x]], y = .data[[y]])) +
+    geom_point(alpha = 0.5) +
+    labs(x = labels[[x]], y = labels[[y]])
+}
+
+plot_pairs <- plot_pairs %>%
+  mutate(scatter = map2(
+    x, y, scatter_plot, data = airquality, labels = variable_labels
+  ))
+
+head(plot_pairs)
+```
+
+The entries in `x` and `y` are column names stored as strings.
+`.data[[x]]` tells ggplot to look up the column whose name is stored in `x`;
+`aes()` records this lookup and evaluates it when the plot is built.
+`map2()` calls `scatter_plot()` for each pair, passing the same data and
+labels each time. The resulting `scatter` column is a list of plots.
+
+### Python {.unlisted}
+
+```{python}
+variable_labels = {
+    "Ozone": "Ozone (ppb)",
+    "Solar.R": "Solar radiation\n(Langleys)",
+    "Wind": "Wind speed (mph)",
+    "Temp": "Temperature (F)",
+}
+
+plot_pairs = pd.DataFrame({
+    "x": ["Wind", "Temp", "Solar.R", "Wind", "Solar.R", "Solar.R"],
+    "y": ["Ozone", "Ozone", "Ozone", "Temp", "Temp", "Wind"],
+})
+
+
+def scatter_plot(x, y, data, labels, ax):
+    sns.scatterplot(data=data, x=x, y=y, alpha=0.5, ax=ax)
+    ax.set(xlabel=labels[x], ylabel=labels[y])
+
+
+plot_pairs.head()
+```
+
+Seaborn accepts column names as strings directly. Our helper draws each pair
+on the supplied axes, using the same data and label dictionary each time.
+:::
+
+We can now arrange all six scatter plots together. R uses **patchwork** to
+arrange its list of plots. Python creates six axes and loops over the rows
+of the pair table.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+#| fig-width: 8
+#| fig-height: 6
+wrap_plots(plot_pairs$scatter, ncol = 3)
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, axes = plt.subplots(2, 3, figsize=(10, 7))
+for ax, (x, y) in zip(axes.flat, plot_pairs.itertuples(index=False, name=None)):
+    scatter_plot(x, y, data=airquality, labels=variable_labels, ax=ax)
+fig.tight_layout()
+plt.show()
+```
+:::
+
+Which relationships look roughly linear, and which suggest curvature?
+
+### Adding fits to all six relationships
+
+We can extend `scatter_plot()` with the fitted trends and reuse the same
+pair table to compare all six relationships.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+trend_plot <- function(x, y, data, labels) {
+  scatter_plot(x, y, data, labels) +
+    linear_fit +
+    loess_fit
+}
+
+plot_pairs <- plot_pairs %>%
+  mutate(plot = map2(
+    x, y, trend_plot, data = airquality, labels = variable_labels
+  ))
+```
+
+```{r}
+#| fig-width: 8
+#| fig-height: 6
+wrap_plots(plot_pairs$plot, ncol = 3)
+```
+
+### Python {.unlisted}
+
+```{python}
+def trend_plot(x, y, data, labels, ax, span=0.75):
+    scatter_plot(x, y, data=data, labels=labels, ax=ax)
+    return add_trends(x, y, data=data, ax=ax, span=span)
+
+
+fig, axes = plt.subplots(2, 3, figsize=(10, 7))
+for ax, (x, y) in zip(axes.flat, plot_pairs.itertuples(index=False, name=None)):
+    trend_plot(x, y, data=airquality, labels=variable_labels, ax=ax)
+fig.tight_layout()
+plt.show()
+```
+:::
+
+Where does a straight line capture the main trend, and where does LOESS reveal
+curvature? Which relationships still show considerable scatter? Try changing
+the LOESS span to `0.5` or `1` and see which features remain visible. In R,
+update `loess_fit` and rebuild the plots; in Python, pass `span=0.5` or
+`span=1` to `trend_plot()`.
+
+### Adding confidence bands
+
+Now draw all six relationships again with confidence bands. The shading
+shows 95% confidence intervals for the estimated mean trend at each x value;
+the LOESS intervals are approximate. Individual days can vary much more than
+the width of these bands.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+Replace the fitted layers with versions using `se = TRUE`, then reuse
+`trend_plot()`. `level = 0.95` sets the confidence level.
+
+```{r}
+#| fig-width: 8
+#| fig-height: 6
+linear_fit <- geom_smooth(
+  method = "lm", formula = y ~ x, se = TRUE, level = 0.95,
+  colour = "steelblue", fill = "steelblue", alpha = 0.15,
+  linetype = "dashed"
+)
+
+loess_fit <- geom_smooth(
+  method = "loess", formula = y ~ x, span = 0.75, se = TRUE, level = 0.95,
+  colour = "darkorange", fill = "darkorange", alpha = 0.15
+)
+
+plot_pairs <- plot_pairs %>%
+  mutate(plot_with_bands = map2(
+    x, y, trend_plot, data = airquality, labels = variable_labels
+  ))
+
+wrap_plots(plot_pairs$plot_with_bands, ncol = 3)
+```
+
+### Python {.unlisted}
+
+Use the fitted models returned by `trend_plot()` to obtain intervals, then
+draw the shading with `fill_between()`. The `mean_ci_lower` and
+`mean_ci_upper` columns contain intervals for the mean. An `alpha` of `0.05`
+gives 95% confidence intervals; the plotting `alpha=0.15` controls transparency.
+
+```{python}
+fig, axes = plt.subplots(2, 3, figsize=(10, 7))
+for ax, (x, y) in zip(axes.flat, plot_pairs.itertuples(index=False, name=None)):
+    x_grid, linear_fit, loess_fit = trend_plot(
+        x, y, data=airquality, labels=variable_labels, ax=ax
+    )
+    linear_bands = linear_fit.get_prediction(
+        sm.add_constant(x_grid)
+    ).summary_frame(alpha=0.05)
+    loess_bands = loess_fit.predict(
+        x_grid, stderror=True
+    ).confidence(alpha=0.05)
+
+    ax.fill_between(
+        x_grid, linear_bands["mean_ci_lower"], linear_bands["mean_ci_upper"],
+        color="steelblue", alpha=0.15
+    )
+    ax.fill_between(
+        x_grid, loess_bands.lower, loess_bands.upper,
+        color="darkorange", alpha=0.15
+    )
+fig.tight_layout()
+plt.show()
+```
+:::
+
+See [statsmodels prediction intervals](https://www.statsmodels.org/stable/generated/statsmodels.regression.linear_model.OLSResults.get_prediction.html)
+and [scikit-misc pointwise confidence intervals](https://has2k1.github.io/scikit-misc/stable/generated/skmisc.loess.loess_prediction.html)
+for the Python methods used here.
+
+## Longitudinal data
+
+These data are longitudinal: measurements follow the same setting over time.
+Combine the day and month into a date to examine how ozone varies through
+the five months.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+airquality_formatted <-
+  airquality %>%
+  as_tibble() %>%
+  mutate(Date = make_date(1973, Month, Day))
+
+head(airquality_formatted)
+```
+
+### Python {.unlisted}
+
+```{python}
+airquality_formatted = airquality.copy()
+airquality_formatted["Date"] = pd.to_datetime({
+    "year": 1973,
+    "month": airquality["Month"],
+    "day": airquality["Day"],
+})
+airquality_formatted.head()
+```
+:::
+
+Here is our first attempt, using a line to show ozone over time.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+#| fig-width: 5.5
+#| fig-height: 1.8
+p1 <-
+  ggplot(airquality_formatted, aes(Date, Ozone)) +
+  geom_line() +
+  labs(y = "Ozone (ppb)")
+
+p1
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(9, 3))
+ax.plot(airquality_formatted["Date"], airquality_formatted["Ozone"])
+ax.set(xlabel="Date", ylabel="Ozone (ppb)")
+fig.tight_layout()
+plt.show()
+```
+:::
+
+Why are there holes in the plot? Missing ozone values break the line. An
+observed value surrounded by missing values has no line segment, so it is
+invisible without a point layer.
+
+Dropping the missing values allows the remaining observations to connect,
+even when there are missing days between them.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+#| fig-width: 5.5
+#| fig-height: 1.8
+airquality_nona <- drop_na(airquality_formatted, Ozone)
+
+p2 <-
+  ggplot(airquality_nona, aes(Date, Ozone)) +
+  geom_line() +
+  labs(y = "Ozone (ppb)")
+
+p2
+```
+
+### Python {.unlisted}
+
+```{python}
+airquality_nona = airquality_formatted.dropna(subset=["Ozone"]).copy()
+
+fig, ax = plt.subplots(figsize=(9, 3))
+ax.plot(airquality_nona["Date"], airquality_nona["Ozone"])
+ax.set(xlabel="Date", ylabel="Ozone (ppb)")
+fig.tight_layout()
+plt.show()
+```
+:::
+
+Adding points shows which dates have observed measurements, although the
+lines still connect across missing days.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+#| fig-width: 5.5
+#| fig-height: 1.8
+p3 <- p2 + geom_point()
+p3
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(9, 3))
+ax.plot(
+    airquality_nona["Date"], airquality_nona["Ozone"],
+    marker="o", markersize=3
+)
+ax.set(xlabel="Date", ylabel="Ozone (ppb)")
+fig.tight_layout()
+plt.show()
+```
+:::
+
+### Keeping gaps for missing observations
+
+To leave gaps where measurements are missing, keep the original rows and add
+points. The line breaks at missing measurements, while the points show all
+observed values. In R, `na.rm = TRUE` silently omits missing points; it does
+not change the data used by the line layer. Matplotlib also leaves gaps at
+missing values when drawing the line.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+#| fig-width: 5.5
+#| fig-height: 1.8
+p_gaps <- p1 + geom_point(na.rm = TRUE)
+p_gaps
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(9, 3))
+ax.plot(
+    airquality_formatted["Date"], airquality_formatted["Ozone"],
+    marker="o", markersize=3
+)
+ax.set(xlabel="Date", ylabel="Ozone (ppb)")
+fig.tight_layout()
+plt.show()
+```
+:::
+
+Compare this with the previous plot: where did dropping missing values join
+observations across missing days?
+
+### Air pollution across the week
+
+We might wonder whether ozone differs between weekdays and weekends. Weekly
+grid lines can help us look for a repeating pattern in the time plot. They
+mark weekly intervals, rather than identifying both weekend days separately.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+#| fig-width: 5.5
+#| fig-height: 1.8
+p4 <- p3 + scale_x_date(minor_breaks = "weeks")
+p4
+```
+
+### Python {.unlisted}
+
+```{python}
+fig, ax = plt.subplots(figsize=(9, 3))
+ax.plot(
+    airquality_nona["Date"], airquality_nona["Ozone"],
+    marker="o", markersize=3
+)
+ax.xaxis.set_major_locator(mdates.MonthLocator())
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
+ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=mdates.SU))
+ax.grid(which="minor", axis="x", alpha=0.3)
+ax.set(xlabel="Date in 1973", ylabel="Ozone (ppb)")
+fig.tight_layout()
+plt.show()
+```
+:::
+
+It is hard to see a clear weekly pattern because ozone varies substantially
+from day to day. Let's instead create a variable representing the day of
+the week.
+
+The default R `wday()` numbering is **1 for Sunday through 7 for Saturday**.
+Pandas starts at **0 for Monday through 6 for Sunday**, so we convert its
+numbers to match the R example.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+airquality_1973 <-
+  airquality_nona %>%
+  mutate(Weekday = wday(Date))
+
+head(airquality_1973)
+
+ggplot(airquality_1973, aes(Weekday, Ozone)) +
+  geom_point() +
+  labs(y = "Ozone (ppb)")
+```
+
+### Python {.unlisted}
+
+```{python}
+airquality_1973 = airquality_nona.copy()
+airquality_1973["Weekday"] = (airquality_1973["Date"].dt.dayofweek + 1) % 7 + 1
+airquality_1973.head()
+```
+
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+sns.scatterplot(data=airquality_1973, x="Weekday", y="Ozone", ax=ax)
+ax.set(ylabel="Ozone (ppb)", xticks=range(1, 8))
+fig.tight_layout()
+plt.show()
+```
+:::
+
+Box plots make the distributions easier to compare. In R, converting the
+weekday numbers to a factor creates separate groups for the boxes.
+`as.ordered()` uses the existing numeric order; it does not discover the
+calendar order. A regular factor would also create separate groups.
+Python uses an ordered categorical column to make the group order explicit.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+#| fig-width: 5.5
+ggplot(airquality_1973, aes(as.ordered(Weekday), Ozone)) +
+  geom_boxplot() +
+  labs(x = "Weekday", y = "Ozone (ppb)")
+```
+
+### Python {.unlisted}
+
+```{python}
+airquality_1973["Weekday"] = pd.Categorical(
+    airquality_1973["Weekday"], categories=range(1, 8), ordered=True
+)
+
+fig, ax = plt.subplots(figsize=(5.5, 4))
+sns.boxplot(data=airquality_1973, x="Weekday", y="Ozone", color="lightgray", ax=ax)
+ax.set(xlabel="Weekday", ylabel="Ozone (ppb)")
+fig.tight_layout()
+plt.show()
+```
+:::
+
+There is no clear pattern across the days of the week. Do the box plots
+suggest any consistent difference between weekends and other days?
+
+Additionally, take some time to visualize the relationships between time
+and the other variables in the dataset.
+
+### Using day names on the axis
+
+Day names make it easier to identify weekdays and weekends. We keep Sunday
+first to match the numbered plots. R's `wday(label = TRUE)` creates an ordered
+factor directly; Python uses a categorical column with an explicit order.
+The `"C"` locale gives English day names in both examples.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+#| fig-width: 5.5
+airquality_1973_named <-
+  airquality_nona %>%
+  mutate(Weekday = wday(Date, label = TRUE, week_start = 7, locale = "C"))
+
+ggplot(airquality_1973_named, aes(Weekday, Ozone)) +
+  geom_boxplot() +
+  labs(x = "Day of the week", y = "Ozone (ppb)")
+```
+
+### Python {.unlisted}
+
+```{python}
+weekday_order = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+airquality_1973_named = airquality_nona.copy()
+airquality_1973_named["Weekday"] = pd.Categorical(
+    airquality_1973_named["Date"].dt.day_name(locale="C").str[:3],
+    categories=weekday_order, ordered=True
+)
+
+fig, ax = plt.subplots(figsize=(5.5, 4))
+sns.boxplot(
+    data=airquality_1973_named, x="Weekday", y="Ozone", color="lightgray", ax=ax
+)
+ax.set(xlabel="Day of the week", ylabel="Ozone (ppb)")
+fig.tight_layout()
+plt.show()
+```
+:::
+
+To display Monday first, set `week_start = 1` in R or move `"Sun"` to the
+end of `weekday_order` in Python and recreate the categorical column. Have
+the observations or box-plot summaries changed, or only the labels and order?
+
+### Weekend and non-weekend summary
+
+Let's compare weekends (Saturday and Sunday) with other days, using the
+observed ozone measurements. The mean and median are in ppb.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+weekend_summary <-
+  airquality_1973_named %>%
+  mutate(DayType = if_else(Weekday %in% c("Sat", "Sun"), "Weekend", "Non-weekend")) %>%
+  group_by(DayType) %>%
+  summarise(
+    Observations = n(),
+    Mean_Ozone = round(mean(Ozone), 1),
+    Median_Ozone = median(Ozone),
+    .groups = "drop"
+  )
+
+weekend_summary
+```
+
+### Python {.unlisted}
+
+```{python}
+airquality_day_type = airquality_1973_named.assign(
+    DayType=np.where(
+        airquality_1973_named["Weekday"].isin(["Sat", "Sun"]),
+        "Weekend", "Non-weekend"
+    )
+)
+weekend_summary = (
+    airquality_day_type.groupby("DayType", as_index=False)
+    .agg(
+        Observations=("Ozone", "size"),
+        Mean_Ozone=("Ozone", "mean"),
+        Median_Ozone=("Ozone", "median"),
+    )
+    .round({"Mean_Ozone": 1})
+)
+weekend_summary
+```
+:::
+
+What do the means and medians support? These summaries describe the observed
+days and do not adjust for weather or month.
+
+### Comparing months
+
+The time-series plots suggest higher ozone levels in the summer. Let's
+compare monthly distributions using box plots, keeping May to September
+in calendar order.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+#| fig-width: 5.5
+airquality_month_named <-
+  airquality_formatted %>%
+  mutate(Month = factor(Month, levels = 5:9, labels = month.name[5:9]))
+
+ggplot(airquality_month_named, aes(Month, Ozone)) +
+  geom_boxplot(na.rm = TRUE) +
+  labs(x = "Month", y = "Ozone (ppb)")
+```
+
+### Python {.unlisted}
+
+```{python}
+month_order = ["May", "June", "July", "August", "September"]
+airquality_month_named = airquality_formatted.copy()
+airquality_month_named["Month"] = pd.Categorical(
+    airquality_month_named["Date"].dt.month_name(locale="C"),
+    categories=month_order, ordered=True
+)
+
+fig, ax = plt.subplots(figsize=(6, 4))
+sns.boxplot(
+    data=airquality_month_named, x="Month", y="Ozone", color="lightgray", ax=ax
+)
+ax.set(xlabel="Month", ylabel="Ozone (ppb)")
+fig.tight_layout()
+plt.show()
+```
+:::
+
+We can also count observed and missing ozone measurements in each month.
+The mean and median use only observed values and are in ppb.
+
+::: {.panel-tabset group="language"}
+### R {.unlisted}
+
+```{r}
+monthly_summary <-
+  airquality_month_named %>%
+  group_by(Month) %>%
+  summarise(
+    Observations = sum(!is.na(Ozone)),
+    Missing = sum(is.na(Ozone)),
+    Mean_Ozone = round(mean(Ozone, na.rm = TRUE), 1),
+    Median_Ozone = median(Ozone, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+monthly_summary
+```
+
+### Python {.unlisted}
+
+```{python}
+monthly_summary = (
+    airquality_month_named.groupby("Month", observed=False, as_index=False)
+    .agg(
+        Observations=("Ozone", "count"),
+        Missing=("Ozone", lambda values: values.isna().sum()),
+        Mean_Ozone=("Ozone", "mean"),
+        Median_Ozone=("Ozone", "median"),
+    )
+    .round({"Mean_Ozone": 1})
+)
+monthly_summary
+```
+:::
+
+Which months have higher ozone levels, and how much do their distributions
+overlap? Notice that June has only nine observed values; its summary is
+based on much less data.
+
+## Source code
+
+This paired handout follows the [R Air Quality worked example](../airquality.html).
+The R dataset and Python CSV contain the same measurements, so comparisons
+use the same observed days in both languages.

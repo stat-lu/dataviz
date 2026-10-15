@@ -61,7 +61,7 @@ to place wind speed on the x axis and ozone on the y axis.
 library(tidyverse)
 
 airquality %>%
-  ggplot(aes(Wind, Ozone)) +
+  ggplot(aes(x=Wind,y= Ozone)) +
   geom_point() +
   labs(x = "Wind Speed (mph)", y = "Ozone (ppb)")
 ```
@@ -152,13 +152,14 @@ plot_pairs <- tribble(
 )
 
 scatter_plot <- function(x, y) {
-  ggplot(airquality, aes(x = .data[[x]], y = .data[[y]])) +
+  ggplot(data =airquality, aes(x = .data[[x]], y = .data[[y]])) +
     geom_point(alpha = 0.5) +
     labs(x = variable_labels[[x]], y = variable_labels[[y]])
 }
 
 plot_pairs <- plot_pairs %>%
   mutate(scatter = map2(x, y, scatter_plot))
+head(plot_pairs)
 ```
 
 The entries in `x` and `y` are column names stored as strings; `.data[[x]]`
@@ -250,7 +251,7 @@ for visualizing this type of data.
 ```{r, fig.width = 5.5, fig.height = 1.8}
 p1 <-
   airquality_formatted %>%
-  ggplot(aes(Date, Ozone)) +
+  ggplot(aes(x=Date,y= Ozone)) +
   geom_line() +
   labs(y = "Ozone (ppb)")
 
@@ -321,11 +322,12 @@ data set, representing the day of the week. For this purpose, we use the `wday()
 airquality_1973 <-
   airquality_nona %>%
   mutate(Weekday = wday(Date))
-
+head(airquality_1973)
 airquality_1973 %>%
-  ggplot(aes(Weekday, Ozone)) +
+  ggplot(aes(x=Weekday,y= Ozone)) +
   geom_point() + 
   labs(y = "Ozone (ppb)")
+
 ```
 
 Great, but now the point geom is probably not the best candidate for this job,

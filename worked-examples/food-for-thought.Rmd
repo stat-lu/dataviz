@@ -3,6 +3,7 @@ title: "Worked Example: Food for Thought"
 author: 
 - "Johan Larsson"
 - "Behnaz Pirzamanbein"
+- "Jonas Wallin"
 output:
   bookdown::html_document2:
     toc: true
@@ -28,16 +29,18 @@ options(scipen = 999)
 # Budget Share of Food for Spanish Households
 
 In this worked example, we will make use of our newfound tools to handle
-a big data set. We will examine a data set consisting of house
-expenditures on food from Spanish households in 1980. Our study's objective is to explore how food expenditure relates to the various other variables in the data set.
+a big data set. We will examine household expenditure data from Spanish
+households in 1980. Our study's objective is to explore how the share of the
+household budget spent on food relates to total expenditure and household size.
 
 The data set is available in the
-[Ecdat](https://CRAN.R-project.org/package=Ecdat) package. Start by installing
-it (if you haven't already).
+[Ecdat](https://CRAN.R-project.org/package=Ecdat) package. We also need the
+**hexbin** package for the hexbin plots. Start by installing these packages
+(if you haven't already).
 
 ```{r, eval = FALSE}
-# install the Ecdat package
-install.packages("Ecdat")
+# install the data and hexagonal binning packages
+install.packages(c("Ecdat", "hexbin"))
 ```
 
 Then load the data set directly into your workspace by calling the `data()`
@@ -49,7 +52,8 @@ data("BudgetFood", package = "Ecdat")
 
 There are 23,972 observations and six variables in this dataset:
 
-- `wfood`: Percentage of total expenditure which the household has spend on food
+- `wfood`: Share of total household expenditure spent on food, recorded as a
+  proportion between 0 and 1. For example, `0.4` means 40% of total expenditure.
 
 - `totexp`: Total expenditure of the household
 
@@ -70,6 +74,7 @@ be formatted as integers.
 
 ```{r}
 library(tidyverse)
+library(hexbin)
 
 budget_food <- 
   BudgetFood %>%
@@ -80,23 +85,27 @@ budget_food <-
   )
 ```
 
-# Food and Total Expenditure
+# Food Budget Share and Total Expenditure
 
-Let's start naively, trying out a simple scatter plot of food expenditure
-versus total expenditure.
+Let's start naively, trying out a simple scatter plot of the food budget share
+versus total expenditure. A smaller budget share does not necessarily mean a
+smaller amount spent on food: the share can fall while total expenditure rises.
+We keep `wfood` as a proportion in the data and format the y-axis labels as
+percentages.
 
-```{r foodexp-naive, fig.cap = "A scatter plot of total expenditure versus expenditure on food as a fraction of total expenditure"}
+```{r foodexp-naive, fig.cap = "Food budget share versus total household expenditure"}
 ggplot(budget_food, aes(totexp, wfood)) +
   geom_point() +
-  labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(x = "Total Expenditure (Pesetas)", y = "Food Budget Share")
 ```
 
 Despite the large amount of overlap, we can still glean a few insights. First
-off, food expenditure as a proportion of total expenditure decreases with total
+off, the food budget share decreases with total
 expenditure. This speaks to our intuition. Second, there is a number of
-observations that report no food expenditure whatsoever. These observations are
-likely outliers, perhaps people living in elderly care centers or something
-similar. Let's remove these observations from the data set.
+observations that report no food expenditure whatsoever. We consider zero food
+expenditure implausible and therefore treat these observations as outliers.
+Let's remove these observations from the data set.
 
 ```{r remove-outliers}
 budget_food_cleaned <- 
@@ -109,48 +118,52 @@ another trick that is sometimes overlooked is to instead try a scale
 transformation. Instead of a linear scale for total expenditure, we could use a
 logarithmic scale.
 
-```{r logplot, fig.cap = "A scatter plot of total expenditure versus expenditure on food with total expenditure on a logarithmic scale"}
+```{r logplot, fig.cap = "Food budget share versus total household expenditure, with total expenditure on a logarithmic scale"}
 ggplot(budget_food_cleaned, aes(totexp, wfood)) +
   scale_x_log10() +
   geom_point() + 
-  labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(x = "Total Expenditure (Pesetas)", y = "Food Budget Share")
 ```
 
 Since we have learned a few new tools, let's make use of them now. For this purpose, we are going to try a hexbin plot.
 
-```{r hexplot, fig.cap = "A hexbin plot of total expenditure versus expenditure on food as a fraction of total expenditure"}
+```{r hexplot, fig.cap = "A hexbin plot of food budget share versus total household expenditure"}
 ggplot(budget_food_cleaned, aes(totexp, wfood)) +
   geom_hex() + 
-  labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(x = "Total Expenditure (Pesetas)", y = "Food Budget Share")
 ```
 
 This plot definitely works better, showing the relationship in a clear fashion.
 
 # Household Size
 
-Now that we have managed to create a plot of food and total expenditure, let's see if we can also find a relationship with the size of the household.
+Now that we have managed to create a plot of food budget share and total expenditure, let's see if we can also find a relationship with the size of the household.
 Before we look at the complete picture, it is a good idea to first
-check what the overall relationship between household size and food expenditure
+check what the overall relationship between household size and food budget share
 is. To do so, we first construct a boxplot.
 
-```{r boxplot, fig.cap = "A boxplot of food expenditure as a fraction of total expenditure versus household size"}
+```{r boxplot, fig.cap = "Food budget share by household size"}
 ggplot(budget_food_cleaned, aes(as.factor(size), wfood)) +
   geom_boxplot() + 
-  labs(x = "Household Size", y = "Food Expenditure")
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(x = "Household Size", y = "Food Budget Share")
 ```
 
-In general, food expenditure tends to be higher with larger households, which
-is probably what one might expect. However, this trend does not hold for households
+In general, the food budget share tends to be higher with larger households.
+However, this trend does not hold for households
 with only one or two members. Take a minute to figure out if that makes sense to you.
 
 Let's return to our hexbin plot design, but now introduce household size
 as facets.
 
-```{r hexbin-size, fig.cap = "A hexbin plot of total expenditure versus expenditure on food across household sizes", fig.width = 8, fig.height = 6}
+```{r hexbin-size, fig.cap = "A hexbin plot of food budget share versus total household expenditure across household sizes", fig.width = 8, fig.height = 6}
 ggplot(budget_food_cleaned, aes(totexp, wfood)) +
   geom_hex() +
   facet_wrap("size", labeller = labeller(size = label_both)) + 
-  labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(x = "Total Expenditure (Pesetas)", y = "Food Budget Share")
 ```
 
 This plot looks promising but is crippled by the fact that some of the groups
@@ -161,7 +174,7 @@ size 6 or larger into one level, using `fct_other()`, a function from the
 **forcats** package. We specify the levels we want to *keep* using the
 `keep` argument, and all of the others are lumped together.
 
-```{r hexbin-binned, fig.cap = "A hexbin plot of total expenditure versus expenditure on food across household sizes. The 6+ category represents household sizes of 6 or more people.", fig.width=8, fig.height = 5}
+```{r hexbin-binned, fig.cap = "A hexbin plot of food budget share versus total household expenditure across household sizes. The 6+ category represents household sizes of 6 or more people.", fig.width=8, fig.height = 5}
 budget_food_binned <- 
   budget_food_cleaned %>%
   mutate(
@@ -172,7 +185,8 @@ budget_food_binned <-
 ggplot(budget_food_binned, aes(totexp, wfood)) +
   geom_hex() +
   facet_wrap("size", labeller = labeller(size = label_both)) +
-  labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(x = "Total Expenditure (Pesetas)", y = "Food Budget Share")
 ```
 
 This is now starting to look quite interesting.
@@ -180,22 +194,24 @@ This is now starting to look quite interesting.
 # Smoothers
 
 As an alternative to the hexbin plots, we could instead use a smoother to look
-at the relationship between total expenditure and food expenditure. 
+at the relationship between total expenditure and food budget share.
 
-Smoothers work particularly well when you expect there to be some kind of
-causal relationship between two variables. They also help when you have a
-smaller (but still sufficiently large) number of observations in the upper and
-lower ranges of the variable on the x axis.
+Smoothers help us see how the food budget share varies with total expenditure,
+including relationships that are not straight lines. They describe associations;
+they do not establish a causal relationship. Where observations are sparse,
+the fitted curve can be unstable.
 
-Let's try a smoother using a LOESS model, which makes few assumptions about the
-data and is relatively robust to outliers.
+Let's try a LOESS smoother, which fits local polynomial regressions rather than
+one global curve. The default version uses weighted least squares. Later, we
+will compare it with a robust version.
 
-```{r smoother, fig.cap = "A scatter plot of total expenditure, expenditure on food as a fraction of total expenditure, and household size. A LOESS smoother, including approximate 95% confidence intervals, is used.", fig.width = 8, fig.height = 4.5}
+```{r smoother, fig.cap = "Food budget share versus total household expenditure, faceted by household size. A LOESS smoother, including approximate 95% confidence intervals, is used.", fig.width = 8, fig.height = 4.5}
 ggplot(budget_food_binned, aes(totexp, wfood)) +
   geom_point(alpha = 0.05) +
   geom_smooth(method = "loess") +
   facet_wrap("size", labeller = labeller(size = label_both)) +
-  labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(x = "Total Expenditure (Pesetas)", y = "Food Budget Share")
 ```
 
 The problem with this plot is that the smoothers are clearly
@@ -209,7 +225,7 @@ the 0.05 quantile and smaller than the 0.95 quantile.
 
 We then use this data in the `data` argument to `geom_smooth()` function.
 
-```{r smoother-fixed, fig.cap = "A hexbin plot of total expenditure versus expenditure on food", fig.width = 8, fig.height = 4.5}
+```{r smoother-fixed, fig.cap = "Food budget share versus total household expenditure, with LOESS smoothers fitted to the central 90% of total expenditure within each household-size group", fig.width = 8, fig.height = 4.5}
 budget_food_smoother_data <-
   budget_food_binned %>%
   group_by(size) %>%
@@ -219,12 +235,102 @@ ggplot(budget_food_binned, aes(totexp, wfood)) +
   geom_point(alpha = 0.1) +
   geom_smooth(method = "loess", data = budget_food_smoother_data) +
   facet_wrap("size", labeller = labeller(size = label_both)) +
-  labs(x = "Total Expenditure (Pesetas)", y = "Food Expenditure")
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(x = "Total Expenditure (Pesetas)", y = "Food Budget Share")
 ```
 
 Go ahead and see if you can figure out ways to further improve this plot.
 Consider using the scale transformation we touch on earlier, and explore how
 it works together with the smoothers and hex binning.
+
+# Robust LOESS and the x Scale
+
+The previous example refits each smoother using only the central 90% of total
+expenditure within its household-size group. The percentile cutoffs are an
+illustrative choice, and they differ between groups. Can we improve the curves
+without this additional filtering? We will continue using `budget_food_binned`,
+so the zero food shares removed earlier are still excluded.
+
+Ordinary LOESS gives greater weight to observations close to the current
+x-position. A robust version also downweights observations with large residuals,
+using `family = "symmetric"`. This can reduce the influence of unusual food
+shares, but does not by itself solve problems caused by sparse observations at
+high total expenditure.
+
+Let's compare ordinary and robust LOESS, fitting to either total expenditure
+or its logarithm. We use one-person households to make the differences easier
+to see, and omit confidence bands to focus on the fitted curves.
+
+First, define a helper that adds one LOESS curve. Its `formula` selects the
+original or logarithmic predictor, and `family = "symmetric"` selects robust
+fitting. The shared settings keep the same span and prediction grid for all
+four curves.
+
+```{r loess-curve-helper}
+loess_curve <- function(label, formula, family = "gaussian") {
+  geom_smooth(
+    aes(colour = label, linetype = label),
+    method = "loess",
+    formula = formula,
+    method.args = list(family = family),
+    span = 0.75,
+    n = 300,
+    se = FALSE,
+    linewidth = 0.9
+  )
+}
+
+loess_colours <- c(
+  "Ordinary: original x" = "orange",
+  "Robust: original x" = "purple",
+  "Ordinary: log10(x)" = "blue",
+  "Robust: log10(x)" = "darkgreen"
+)
+```
+
+We can now add the four curves directly to the plot. The formulas determine
+how each model is fitted; `coord_transform()` makes their display axes
+logarithmic after fitting. Thus, the models using `y ~ log10(x)` determine local
+neighbourhoods in log expenditure, while those using `y ~ x` use the original
+expenditure scale.
+
+In R, `log(x)` is the natural logarithm (base e), while `log10(x)` uses base 10.
+We use `log10()` to match the display axis: each tenfold increase is one log
+unit. Changing the base only rescales the log predictor by a constant factor,
+so using `log()` instead gives the same LOESS curves up to numerical rounding
+in this example.
+
+```{r loess-alternatives, fig.width = 9, fig.height = 5.5}
+food_one_person <- filter(budget_food_binned, size == "1")
+
+ggplot(food_one_person, aes(totexp, wfood)) +
+  geom_point(alpha = 0.1) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "grey50") +
+  loess_curve("Ordinary: original x", y ~ x) +
+  loess_curve("Robust: original x", y ~ x, family = "symmetric") +
+  loess_curve("Ordinary: log10(x)", y ~ log10(x)) +
+  loess_curve("Robust: log10(x)", y ~ log10(x), family = "symmetric") +
+  scale_x_continuous(breaks = c(3e4, 1e5, 3e5, 1e6, 3e6),
+                     labels = c("30k", "100k", "300k", "1m", "3m")) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  scale_colour_manual(values = loess_colours, limits = names(loess_colours)) +
+  scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed"),
+                        limits = names(loess_colours)) +
+  coord_transform(x = "log10", ylim = c(-0.15, 1)) +
+  labs(x = "Total Expenditure (Pesetas)", y = "Food Budget Share",
+       colour = "Smoother", linetype = "Smoother") +
+  guides(colour = guide_legend(nrow = 2), linetype = guide_legend(nrow = 2)) +
+  theme(legend.position = "bottom")
+```
+
+On the original x-scale, both ordinary and robust LOESS give negative fitted
+food shares in the upper expenditure range. Fitting to log expenditure helps
+much more in this example than changing to robust LOESS alone. This does not
+guarantee reliable behaviour in sparse regions, and neither version of LOESS
+is constrained to stay between 0 and 1.
+
+For details, see the documentation for
+[`loess()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/loess.html).
 
 # Source Code
 

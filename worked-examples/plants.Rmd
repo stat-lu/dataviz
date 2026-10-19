@@ -3,6 +3,7 @@ title: "Worked Example: Plants"
 author: 
 - "Johan Larsson"
 - "Behnaz Pirzamanbein"
+- "Jonas Wallin"
 output:
   bookdown::html_document2:
     toc: true
@@ -32,9 +33,9 @@ In this example, we'll take a look at an experiment on cold tolerance of the
 grass species [Echinochloa
 crus-galli](https://en.wikipedia.org/wiki/Echinochloa_crus-galli).
 
-```{r, echo = FALSE, fig.cap = "A specimen of Echinochloa crus-galli."}
+```{r, echo = FALSE, fig.cap = "A specimen of Echinochloa crus-galli.", out.width = "220px"}
 knitr::include_graphics(
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Echinochloa_crus-galli01.jpg/220px-Echinochloa_crus-galli01.jpg"
+  "https://upload.wikimedia.org/wikipedia/commons/1/19/Echinochloa_crus-galli01.jpg"
 )
 ```
 
@@ -50,9 +51,9 @@ variables:
 
 - `Treatment`: a factor indicating if the sample was chilled or not
 
-- `conc`: a numeric vector of ambient carbon dioxide concentrations (mL/L)
+- `conc`: a numeric vector of ambient carbon dioxide concentrations (µL/L)
 
-- `uptake`: a numeric vector of carbon dioxide uptake rates (umol/m^2 sec)
+- `uptake`: a numeric vector of carbon dioxide uptake rates (µmol m⁻² s⁻¹)
 
 The goal of the experiment was to investigate how carbon dioxide uptake is
 affected based on the ambient carbon dioxide concentration (`conc`), the origin
@@ -75,7 +76,11 @@ co2 <-
   mutate(Plant = factor(Plant, ordered = FALSE))
 
 ggplot(co2, aes(Concentration, Uptake)) +
-  geom_point()
+  geom_point() +
+  labs(
+    x = expression(paste("CO"[2], " concentration (", mu, "L/L)")),
+    y = expression(paste("CO"[2], " uptake (", mu, "mol ", m^{-2}, " ", s^{-1}, ")"))
+  )
 ```
 
 ## Adding Lines
@@ -87,7 +92,11 @@ There are several ways to show this. For instance, we could use color, facets, o
 ```{r, fig.cap = "Ambient CO2 concentration and uptake for 12 plants in different conditions and from different origins."}
 ggplot(co2, aes(Concentration, Uptake, group = Plant)) +
   geom_point() +
-  geom_line()
+  geom_line() +
+  labs(
+    x = expression(paste("CO"[2], " concentration (", mu, "L/L)")),
+    y = expression(paste("CO"[2], " uptake (", mu, "mol ", m^{-2}, " ", s^{-1}, ")"))
+  )
 ```
 
 Higher concentrations of CO2 evidently result in increased uptake of the same, which
@@ -101,7 +110,11 @@ Until now, we haven't included the other aspects of the experiment in our visual
 ggplot(co2, aes(Concentration, Uptake, group = Plant, color = Treatment)) +
   geom_point() +
   geom_line() +
-  scale_color_manual(values = c("dark orange", "steel blue"))
+  scale_color_manual(values = c("dark orange", "steel blue")) +
+  labs(
+    x = expression(paste("CO"[2], " concentration (", mu, "L/L)")),
+    y = expression(paste("CO"[2], " uptake (", mu, "mol ", m^{-2}, " ", s^{-1}, ")"))
+  )
 ```
 
 ## Plant Origin
@@ -115,13 +128,102 @@ ggplot(co2, aes(Concentration, Uptake, group = Plant, color = Treatment)) +
   geom_point() +
   geom_line() +
   facet_wrap("Origin") + # or vars(Origin) or ~ Origin
-  scale_color_manual(values = c("dark orange", "steel blue"))
+  scale_color_manual(values = c("dark orange", "steel blue")) +
+  labs(
+    x = expression(paste("CO"[2], " concentration (", mu, "L/L)")),
+    y = expression(paste("CO"[2], " uptake (", mu, "mol ", m^{-2}, " ", s^{-1}, ")"))
+  )
 ```
 
 Yes, indeed, it appears that the origin of the plants explains this precisely.
 As we know, Mississippi is a much warmer state than Quebec, so it makes sense that we observe this adaptation in the plants in Quebec.
 
 This example demonstrates the importance of exploring multivariate relationships by effectively *conditioning* your visualizations on certain variables.
+
+## Comparing Groups with a Linear Model
+
+Can we make the same comparisons between origins and treatments using numbers
+rather than figures? Let's use `lm()` to fit a simple model for a two-factor
+experiment.
+
+Each plant was measured at seven concentrations. To keep the analysis simple,
+we will use only the measurements at **1000 µL/L**. Each plant then contributes
+one observation: there are 12 plants, with three plants in each combination of
+the two origins and two treatments. This compares uptake at one concentration;
+it does not model the full concentration-response curves. Using all 84 rows in
+an ordinary `lm()` as independent observations would ignore the repeated
+measurements on each plant.
+
+First, select this concentration and calculate the four group means. Uptake is
+still measured in µmol m⁻² s⁻¹.
+
+```{r}
+co2_1000 <-
+  co2 %>%
+  filter(Concentration == 1000)
+
+co2_1000 %>%
+  group_by(Origin, Treatment) %>%
+  summarise(Plants = n(), Mean_uptake = mean(Uptake), .groups = "drop") %>%
+  knitr::kable(digits = 2)
+```
+
+Now fit a model with both factors and their **interaction**. The formula
+`Origin * Treatment` expands to `Origin + Treatment + Origin:Treatment`. The
+interaction lets the difference between chilled and nonchilled plants depend
+on their origin. A linear model can compare group means like this; it does not
+require a numeric explanatory variable.
+
+```{r}
+plant_model <- lm(Uptake ~ Origin * Treatment, data = co2_1000)
+summary(plant_model)
+```
+
+The reference group is **nonchilled plants from Quebec**. Read the coefficient
+table relative to this group. We use a 5% significance level and report
+individual p-values without adjustment for multiple comparisons.
+
+- `(Intercept)` is the mean uptake for nonchilled Quebec plants: **43.17**.
+  Its p-value tests whether this mean is zero, which is not our question here.
+- `OriginMississippi` is the difference between Mississippi and Quebec
+  **among nonchilled plants**: **−11.57**, with p = **0.0025**. This difference
+  is statistically significant.
+- `Treatmentchilled` is the chilled-minus-nonchilled difference **in Quebec**:
+  **−2.33**, with p = **0.409**. This difference is not statistically
+  significant; that does not establish that chilling has no effect.
+- `OriginMississippi:Treatmentchilled` is the difference between the two
+  origins' chilling effects: **−10.53**, with p = **0.0238**. This significant
+  interaction indicates a larger reduction associated with chilling in
+  Mississippi than in Quebec.
+
+What is the chilling difference in Mississippi itself? Adding the Quebec
+chilling coefficient and the interaction coefficient gives **−12.87**.
+To obtain its standard error and p-value directly,
+change the reference origin and fit the same model again.
+
+```{r}
+co2_1000_mississippi <-
+  co2_1000 %>%
+  mutate(Origin = relevel(Origin, ref = "Mississippi"))
+
+mississippi_model <-
+  lm(Uptake ~ Origin * Treatment, data = co2_1000_mississippi)
+
+summary(mississippi_model)
+```
+
+The Mississippi chilling difference is **−12.87**, with p = **0.0013**, so it is
+statistically significant. Changing the reference group changes the meaning
+of the coefficients, but leaves the fitted group means unchanged. Notice that
+the interaction test directly compares the two chilling effects: finding a
+significant effect in one origin and a nonsignificant effect in the other
+would not, by itself, establish a difference between them.
+
+These tests assume independent plants and normally distributed errors with a
+common variance across the four groups. With only three plants per group,
+the conclusions depend on these assumptions. At this concentration, the
+numerical analysis supports the pattern in the faceted figure: chilling is
+associated with a much larger reduction in uptake for Mississippi plants.
 
 # Source Code
 

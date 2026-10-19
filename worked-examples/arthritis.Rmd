@@ -151,7 +151,7 @@ welfare_prop <-
   group_by(Status) %>%
   mutate(prop = Count / sum(Count))
 
-# Keep the same residence colors in the bar charts and waffles.
+# Keep the same residence colors in the bar charts, mosaic, and waffles.
 welfare_colors <- c("Copenhagen" = "darkorange",
                     "Copenhagen suburbs" = "skyblue",
                     "Large cities" = "goldenrod",
@@ -234,6 +234,30 @@ To communicate the actual sample sizes, also provide the counts in the text.]
 Try switching the order to `product(Treatment, Improved)`. Which variable now
 determines the widths? What proportions do the vertical subdivisions show?
 Which ordering makes it easier to compare improvement between treatment arms?
+
+## A Mosaic Plot for the Danish Welfare Data
+
+The unequal group sizes in `DanishWelfare` are more visible in a mosaic plot.
+We reuse `welfare_summarized` and its residence colors. Since each row contains
+an aggregated count, `weight = Count` makes the rectangles represent
+respondents rather than rows in the summary table.
+
+```{r welfare-mosaic, fig.width = 7, fig.height = 4.5}
+ggplot(welfare_summarized) +
+  geom_mosaic(aes(x = product(Urban, Status), fill = Urban, weight = Count)) +
+  scale_fill_manual(values = welfare_colors) +
+  guides(fill = guide_legend(nrow = 2)) +
+  theme(legend.position = "bottom") +
+  labs(x = "Marital status", y = "Residence", fill = "Residence")
+```
+
+The widths represent the marital-status group sizes, while the segment heights
+represent residence proportions within each group. For example, the married
+group is much wider, but its Copenhagen segment is shorter than that of the
+widowed group (7.9% versus 20%). Its Copenhagen rectangle still has a larger
+area because it represents more respondents (288 versus 116). The mosaic
+therefore displays both group size and composition, although the interior
+segments still lack a common baseline for comparing their heights.
 
 # Waffle Plots
 

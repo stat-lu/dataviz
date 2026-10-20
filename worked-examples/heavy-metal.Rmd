@@ -3,6 +3,7 @@ title: "Worked Example: Heavy Metal"
 author: 
 - "Johan Larsson"
 - "Behnaz Pirzamanbein"
+- "Jonas Wallin"
 output:
   bookdown::html_document2:
     toc: true
@@ -32,30 +33,44 @@ from the [sp](https://CRAN.R-project.org/package=sp) package^[The `sp` package
 is a full-featured solution for visualization data and can be used in its
 own right to create maps in R.]. 
 
-You will need to download and install the package first if it's not already instaled. Then, you can make the data set available using `data(meuse)`.
+The data contain measurements from 155 topsoil sampling locations on the
+floodplain of the river Meuse near Stein in the Netherlands. Each row represents
+one sampling location. The `cadmium`, `copper`, `lead`, and `zinc` columns give
+concentrations in **mg/kg soil**: milligrams of each metal per kilogram of soil.
+
+You will need to download and install the package first if it's not already installed. Then, you can make the data set available using `data(meuse)`.
 
 ```{r}
 library(sp)
 data(meuse)
 ```
 
-This map data is currently in the form of  a simple `data.frame`.HOwever, since we will be working with simple features, we need to convert this data set accordingly. First, however, it's important to note that if you examine the `x` and `y` values in this data set, it becomes clear that they do not represent longitude and latitude measurements.
-By looking at the documentation for `meuse`, we find that the coordinates are actually Rijksdriehoek (RDH) coordinates, used in the Netherlands' topographical mapping. To ensure everything works out correctly later on, it's essential to make
-sure that our simple features data correctly interprets this information.
+The data are currently stored in a `data.frame`. The `x` and `y` columns contain
+Rijksdriehoek (RDH) coordinates, used in the Netherlands' topographical mapping.
+These coordinates are measured in metres, rather than longitude and latitude
+in degrees.
 
-To convert the data into a simple features object, we use the
-`st_as_sf()` function, using the `coords` argument to specify which
-variables represent our x and y coordinates, and then we use the `crs`
-argument to denote which projection system they are measured in.
-RDH coordinates have the EPSG code 28992. So we use that as input.
+A coordinate reference system (CRS) tells R how to interpret coordinate values.
+Coordinate systems are identified by EPSG codes; the code for RDH is 28992.
+We use `st_as_sf()` to create a simple features object, with `coords` specifying
+the coordinate columns and `crs = 28992` identifying their existing system.
+This assigns the coordinate system without changing the coordinate values.
 
 ```{r}
+library(tidyverse)
 library(sf)
 
 meuse_sf <-
   meuse %>%
-  st_as_sf(coords = c("x", "y"), crs = 28992) %>%
-  st_transform(crs = 4326)
+  st_as_sf(coords = c("x", "y"), crs = 28992)
+```
+
+To convert the coordinates to longitude and latitude, we use `st_transform()`
+with EPSG:4326. This changes the coordinate values to degrees. The sampling
+locations stay the same; only the numbers describing their positions change.
+
+```{r}
+meuse_sf <- st_transform(meuse_sf, crs = 4326)
 ```
 
 Before we start analyzing this data set, let's first set up the ggplot2 theme for mapping.
@@ -63,18 +78,18 @@ This time, we will use the `theme_map()` from the  [ggthemes](https://CRAN.R-pro
 package, instead of `theme_void()`, which we used previously.
 
 ```{r}
-library(tidyverse)
 library(ggthemes)
 
 theme_set(theme_map(base_size = 11))
 ```
 
 Let's start with a simple plot, looking at lead, creating a bubble plot by
-mapping the presence of lead to size of the points.
+mapping the lead concentration to the size of the points.
 
 ```{r, fig.cap = "Concentration of lead around the river Meuse.", fig.width = 4, fig.height = 5}
 ggplot(meuse_sf) +
   geom_sf(aes(size = lead)) +
+  labs(size = "Lead (mg/kg)") +
   theme(legend.position = "right")
 ```
 
@@ -83,7 +98,7 @@ ggplot(meuse_sf) +
 The `meuse` data set is is named after its association with pollution data
 around the river Meuse. Therefore, it would be logical to include the location of this river in our plot as well.
 
-To achieve this, we need some map data representing the rier Meuse. Our trusty
+To achieve this, we need some map data representing the rier Meuse. The
 **rnaturalearth** package can assist us once more. However, this
 time, the necessary data is not included directly in the package. Instead, it must be downloaded using the `ne_download()` function.
 
@@ -123,70 +138,190 @@ ggplot(meuse_sf) +
     xlim = c(bbox[["xmin"]], bbox[["xmax"]]),
     ylim = c(bbox[["ymin"]], bbox[["ymax"]])
   ) +
+  labs(size = "Lead (mg/kg)") +
   theme(legend.position = "right")
 ```
 
-Unfortunately, this doesn't quite achieve our desired result. The
-resolution of this vector raster is too low, causing the river to appear merely a line. Let's try a different approach.
+The river is represented by a simplified centerline, so we cannot see its width
+or much of the surrounding landscape. Let's add a more detailed background.
 
 # Raster Charts
 
-Instead, we will plot a raster map that includes the river its surrounding
-area. To do this, we'll download the map from stamen maps, using the **ggmap** package.
+Instead, we will plot a raster map that includes the river and its surrounding
+area. A raster stores an image as a grid of pixels. The OpenStreetMap background
+is downloaded by the code below and saved as `meuse-basemap.tif` in your
+working folder. The following examples read this local copy.
 
-```{r}
-library(ggmap)
+We use **terra** to read the image and **tidyterra** to add it to a ggplot.
+Install these packages first if needed.
+
+```{r, eval = FALSE}
+#install.packages(c("terra", "tidyterra"))
 ```
 
-To download a map, we need to call `get_stadiamap()` and specify a bounding
-box. Fortunately for us, we already computed the bounding box of the points in
-the last step, so let's use that.
+```{r}
+library(terra)
+library(tidyterra)
 
-<!-- **Note: Stamen Maps have been incorporated into Stadia maps and `get_stamenmap()` is currently returning brown warning tiles occasionally and will stop working completely after October 31. So you may not see the same result here if you follow along.** -->
+basemap_url <-
+  "https://raw.githubusercontent.com/stat-lu/dataviz/main/worked-examples/notebook/data/meuse-basemap.tif"
+
+download.file(basemap_url, destfile = "meuse-basemap.tif", mode = "wb")
+
+meuse_raster <- rast("meuse-basemap.tif")
+```
+
+The background uses Web Mercator coordinates (EPSG:3857). We transform our
+sample locations from longitude and latitude to this coordinate system,
+where the coordinate values are expressed in projected metres.
 
 ```{r}
-# extend the ranges slightly
-xrng <- extendrange(c(bbox$xmin, bbox$xmax))
-yrng <- extendrange(c(bbox$ymin, bbox$ymax))
+meuse_sf <- st_transform(meuse_sf, crs = 3857)
+```
 
-meuse_raster <- get_stadiamap(
-  c(
-    left   = xrng[1],
-    bottom = yrng[1],
-    right  = xrng[2],
-    top    = yrng[2]
-  ),
-  zoom = 14,
-  maptype = "stamen_terrain"
+We have now used three coordinate systems to describe the same sampling
+locations:
+
+| Coordinate system | What the numbers represent |
+| --- | --- |
+| EPSG:28992 | Dutch national grid coordinates, in metres |
+| EPSG:4326 | Longitude and latitude, in degrees |
+| EPSG:3857 | Web Mercator coordinates, in projected metres |
+
+We now crop the background to the sample locations' bounding box with a
+little extra margin.
+
+```{r}
+bbox_map <- st_bbox(meuse_sf)
+
+xrng <- extendrange(c(bbox_map$xmin, bbox_map$xmax))
+yrng <- extendrange(c(bbox_map$ymin, bbox_map$ymax))
+
+meuse_raster <- crop(
+  meuse_raster,
+  ext(xrng[1], xrng[2], yrng[1], yrng[2])
 )
 ```
 
-To construct the map, we will use the `ggmap()` function instead of `ggplot()`.
-Now, however, we encounter a challenge: **ggmap** and **sf** unfortunately
-do not play so well together^[In this case, the issue might be hardly noticeable due to the small scale of the map. The problem arises from the bounding box of the raster being in a different projection, but it results in no noticeable distortion.]. Given the current situation, it is therefore better to use the standard map features when working with raster maps from **ggmap**. To do so, we convert our meuse coordinates from simple features back to a standard data frame.
+`geom_spatraster_rgb()` combines the image's red, green, and blue channels to
+draw the background. We save this plot as `meuse_map` so that we can reuse it
+in the following examples. The caption credits the map's contributors.
 
 ```{r}
-meuse_df <- cbind(
-  st_drop_geometry(meuse_sf),
-  st_coordinates(meuse_sf)
-)
+meuse_map <- ggplot() +
+  geom_spatraster_rgb(data = meuse_raster) +
+  coord_sf(crs = 3857, expand = FALSE) +
+  labs(caption = "© OpenStreetMap contributors")
 ```
 
-Now, we can combine the raster map with our points by simply overlaying them using the `geom_point()` function.
+Now, we add our sample locations with `geom_sf()`, just as before.
 
 ```{r, fig.cap = "Concentration of lead around Meuse.", fig.height = 6}
-ggmap(meuse_raster) +
-  geom_point(aes(X, Y, size = lead), data = meuse_df) +
+meuse_map +
+  geom_sf(aes(size = lead), data = meuse_sf) +
+  labs(size = "Lead (mg/kg)") +
   theme(legend.position = "right")
 ```
+
+## When Coordinates Go Wrong
+
+The map above uses the positions recorded in the original data set. Some
+appear in water on the background map. The river and floodplain have been
+reshaped by the [Grensmaas project](https://www.rijkswaterstaat.nl/water/waterbeheer/bescherming-tegen-het-water/maatregelen-om-overstromingen-te-voorkomen/maaswerken/grensmaas),
+so the older samples and the modern background may not line up everywhere.
+This does not establish the accuracy of each recorded location. We use the
+original positions as a reference when comparing two deliberate CRS mistakes.
+
+### A Very Wrong Coordinate System
+
+First, we convert the coordinates back to longitude and latitude, then make a
+mistake: we use `st_set_crs(3857)` to label those degree values as Web Mercator
+coordinates. Unlike `st_transform()`, `st_set_crs()` changes the coordinate
+system label without converting the values. R warns us about this replacement.
+
+```{r wrong-crs, warning = TRUE}
+meuse_lonlat <- st_transform(meuse_sf, crs = 4326)
+meuse_wrong_crs <- st_set_crs(meuse_lonlat, 3857)
+```
+
+Numbers around 5.7 and 51 are now interpreted as metres from the Web Mercator
+origin. The points end up near longitude 0°, latitude 0°, far from the
+Netherlands. On our local map, they would disappear from view. We use country
+outlines for an overview that shows both the original and incorrect locations.
+At this scale, each group of 155 samples appears as a single point.
+
+```{r wrong-crs-overview, fig.width = 5, fig.height = 6}
+countries <- ne_download(
+  scale = 110,
+  type = "admin_0_countries",
+  category = "cultural",
+  returnclass = "sf"
+)
+
+ggplot() +
+  geom_sf(data = countries, fill = "grey95", colour = "grey70", linewidth = 0.2) +
+  geom_sf(data = meuse_sf, size = 2) +
+  geom_sf(data = meuse_wrong_crs, colour = "red", size = 2) +
+  annotate("text", x = 3, y = 55, label = "Original: Netherlands", size = 3) +
+  annotate("text", x = 3, y = 4, label = "Wrong CRS", colour = "red", size = 3) +
+  coord_sf(crs = 4326, xlim = c(-15, 20), ylim = c(-5, 60), expand = FALSE) +
+  labs(
+    title = "Wrong CRS: points near (0°, 0°)",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  theme_minimal(base_size = 11)
+```
+
+### A Subtle CRS Mistake
+
+A smaller error can be harder to spot. WGS84 (EPSG:4326) and Amersfoort
+(EPSG:4289) both express longitude and latitude in degrees. However, they use
+different *datums*, which anchor their coordinates to the Earth in different
+ways. Amersfoort is the datum underlying the Dutch national grid.
+
+Here, we deliberately mislabel our WGS84 coordinates as Amersfoort coordinates
+with `st_set_crs(4289)`, then transform them to Web Mercator. The wrong source
+CRS causes a displacement of about 100 metres at these sampling locations,
+even though the coordinate values look plausible. R again warns us when we
+replace the CRS.
+
+```{r wrong-datum, warning = TRUE}
+meuse_wrong_datum <-
+  meuse_lonlat %>%
+  st_set_crs(4289) %>%
+  st_transform(crs = 3857)
+```
+
+We use the same background and map extent as before. Hollow black circles mark
+the original dataset positions; filled red circles mark the positions produced
+by the wrong CRS. Both use the same point size so that we can focus on the
+change in position.
+
+```{r wrong-datum-map, fig.width = 5, fig.height = 6}
+meuse_map +
+  geom_sf(data = meuse_sf, shape = 1, colour = "black", size = 2) +
+  geom_sf(data = meuse_wrong_datum, shape = 16, colour = "red", size = 2) +
+  labs(
+    title = "A subtle CRS mistake: about 100 m displacement",
+    subtitle = "Hollow black: original positions; red: wrong datum"
+  )
+```
+
+Using Amersfoort is not itself a mistake: transforming correctly between
+coordinate systems preserves the locations. The mistake is assigning the
+wrong CRS to existing numbers. Here, we should transform `meuse_lonlat`
+directly to EPSG:3857 with `st_transform()`, keeping its WGS84 source CRS.
+A convincing-looking map is not enough to establish that its coordinates
+are correct.
 
 # More Heavy Metal
 
 Let's make the plot slightly more interesting by including also data on other heavy metals. One approach is to use facets, but for this to effective, our data must be in a long format. This means having one column for the variable names and another for their respective values.
 
 ```{r}
-meuse_df_long <-
-  meuse_df %>%
+meuse_sf_long <-
+  meuse_sf %>%
   pivot_longer(
     cadmium:zinc,
     names_to = "metal",
@@ -197,13 +332,14 @@ meuse_df_long <-
 We construct our plot as before, faceting on the type of metal.
 
 ```{r, fig.cap = "Concentration of different heavy metals around the river Meuse in the Netherlands.", fig.width = 5, fig.height = 6}
-ggmap(meuse_raster) +
-  geom_point(
-    aes(X, Y, size = concentration),
+meuse_map +
+  geom_sf(
+    aes(size = concentration),
     alpha = 0.5,
-    data = meuse_df_long
+    data = meuse_sf_long
   ) +
   facet_wrap("metal") +
+  labs(size = "Concentration\n(mg/kg)") +
   theme(legend.position = "right")
 ```
 
@@ -213,13 +349,8 @@ Purely for instructional purposes, let's assume we are considering a cleanup of 
 
 We don't have the coordinates of the castle readily available, so we'll need to determine them through geocoding. 
 
-<!-- In the lecture, we used the facilities of **ggmap** for geocoding,
-but unfortunately the only API that is currently supported in **ggmap** is
-Google's API, which is not free. -->
-
-We use [tidygeocoder](https://CRAN.R-project.org/package=tidygeocoder), which features a host of geocoding services alternatives. A couple of these are free, for instance the [Nominatim](https://nominatim.org/) API.^[The API is free, but it is also rate-limited at one request per second and not as powerful as some of the other
-available APIs. If you have a project where you need more serious geocoding,
-you should probably get a key for one of the other APIs.]
+We use [tidygeocoder](https://CRAN.R-project.org/package=tidygeocoder) with the
+[Nominatim](https://nominatim.org/) geocoding service.
 
 Start by generating a `tibble` (or `data.frame`) with the names
 and addresses that you want to geocode.
@@ -233,41 +364,49 @@ addresses <- tribble(
 )
 ```
 
-Next, pipe these addresses on to `tidygeocoder::geocode()`.^[There is a
-namespace clash here with **ggmap**, which has its own `ggmap::geocode()`
-function, so we need to specify which function to use with `::` here.]
+Next, pipe these addresses on to `tidygeocoder::geocode()`.
 
 ```{r}
 kasteel_stein <-
   addresses %>%
   tidygeocoder::geocode(
-    address, # map to address
-    method = "osm" # for Nominatim API which is the default value
+    address,
+    method = "osm"
   )
 
 kasteel_stein
 ```
 
-To complete our map, we will enhance our previous plot by adding two layers for our newly geocoded data. These layers will display both a label and a dot to represent the castle ruins.
+The returned coordinates are longitude and latitude, so we identify them as
+EPSG:4326 when creating a simple features object. `geom_sf()` will transform
+them to the map's coordinate system when plotting.
+
+```{r}
+kasteel_stein_sf <-
+  kasteel_stein %>%
+  st_as_sf(coords = c("long", "lat"), crs = 4326)
+```
+
+To complete our map, we add a red dot and a label for the castle ruins.
 
 ```{r, fig.cap = "Concentration of different heavy metals around the river Meuse in the Netherlands.", fig.width = 6, fig.height = 7}
-ggmap(meuse_raster) +
-  geom_point(
-    aes(X, Y, size = concentration),
+meuse_map +
+  geom_sf(
+    aes(size = concentration),
     alpha = 0.5,
-    data = meuse_df_long
+    data = meuse_sf_long
   ) +
-  geom_point(
-    aes(long, lat),
+  geom_sf(
     col = "red",
-    data = kasteel_stein
+    data = kasteel_stein_sf
   ) +
-  geom_label(
-    aes(long, lat, label = name),
+  geom_sf_label(
+    aes(label = name),
     vjust = -0.5,
-    data = kasteel_stein
+    data = kasteel_stein_sf
   ) +
   facet_wrap("metal") +
+  labs(size = "Concentration\n(mg/kg)") +
   theme(legend.position = "right")
 ```
 

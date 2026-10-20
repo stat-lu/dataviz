@@ -156,12 +156,14 @@ However, this trend does not hold for households
 with only one or two members. Take a minute to figure out if that makes sense to you.
 
 Let's return to our hexbin plot design, but now introduce household size
-as facets.
+as facets. We use fewer x-axis ticks and abbreviate millions of pesetas as `m`
+to keep the labels readable in the small panels.
 
 ```{r hexbin-size, fig.cap = "A hexbin plot of food budget share versus total household expenditure across household sizes", fig.width = 8, fig.height = 6}
 ggplot(budget_food_cleaned, aes(totexp, wfood)) +
   geom_hex() +
   facet_wrap("size", labeller = labeller(size = label_both)) + 
+  scale_x_continuous(breaks = c(0, 5e6, 1e7), labels = c("0", "5m", "10m")) +
   scale_y_continuous(labels = scales::label_percent()) +
   labs(x = "Total Expenditure (Pesetas)", y = "Food Budget Share")
 ```
@@ -185,6 +187,7 @@ budget_food_binned <-
 ggplot(budget_food_binned, aes(totexp, wfood)) +
   geom_hex() +
   facet_wrap("size", labeller = labeller(size = label_both)) +
+  scale_x_continuous(breaks = c(0, 5e6, 1e7), labels = c("0", "5m", "10m")) +
   scale_y_continuous(labels = scales::label_percent()) +
   labs(x = "Total Expenditure (Pesetas)", y = "Food Budget Share")
 ```
@@ -210,6 +213,7 @@ ggplot(budget_food_binned, aes(totexp, wfood)) +
   geom_point(alpha = 0.05) +
   geom_smooth(method = "loess") +
   facet_wrap("size", labeller = labeller(size = label_both)) +
+  scale_x_continuous(breaks = c(0, 5e6, 1e7), labels = c("0", "5m", "10m")) +
   scale_y_continuous(labels = scales::label_percent()) +
   labs(x = "Total Expenditure (Pesetas)", y = "Food Budget Share")
 ```
@@ -235,6 +239,7 @@ ggplot(budget_food_binned, aes(totexp, wfood)) +
   geom_point(alpha = 0.1) +
   geom_smooth(method = "loess", data = budget_food_smoother_data) +
   facet_wrap("size", labeller = labeller(size = label_both)) +
+  scale_x_continuous(breaks = c(0, 5e6, 1e7), labels = c("0", "5m", "10m")) +
   scale_y_continuous(labels = scales::label_percent()) +
   labs(x = "Total Expenditure (Pesetas)", y = "Food Budget Share")
 ```

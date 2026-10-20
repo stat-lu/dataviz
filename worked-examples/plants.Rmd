@@ -175,7 +175,7 @@ on their origin. A linear model can compare group means like this; it does not
 require a numeric explanatory variable.
 
 ```{r}
-plant_model <- lm(Uptake ~ Origin * Treatment, data = co2_1000)
+plant_model <- lm(Uptake ~ 1 + Origin * Treatment, data = co2_1000)
 summary(plant_model)
 ```
 

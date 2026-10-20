@@ -44,7 +44,7 @@ The dataset that we'll use is available via the
 [gapminder](https://CRAN.R-project.org/package=gapminder) package. So go ahead and install that package.
 
 ```{r eval = FALSE}
-install.packages("gapminder")
+#install.packages("gapminder")
 ```
 
 This makes the dataset available in an object called `gapminder`. These are the first few rows of the dataset.
@@ -59,7 +59,7 @@ The variables are self-explanatory.
 
 Let's jump right in and create a bubble plot, faceted by year (which we have grouped), with population size mapped to the size of the bubbles, and GDP per capita and life expectancy mapped to the x and y axes, respectively.
 
-```{r fig.cap = "Life Expectancy and GDP per capita from 1950 to 2010.", fig.width = 8, fig.height = 7}
+```{r fig.cap = "Life Expectancy and GDP per capita from 1952 to 2007.", fig.width = 8, fig.height = 7}
 library(tidyverse)
 
 gapminder %>%
@@ -81,14 +81,14 @@ the [gganimate](https://CRAN.R-project.org/package=gganimate) package.
 First install the package.
 
 ```{r, eval = FALSE}
-install.packages("gganimate")
+#install.packages("gganimate")
 ```
 
 To use the `gganimate` package you also need a *renderer* to produce animated images. You can use either [gifski](https://gif.ski/) or [ImageMagick](https://imagemagick.org/). We recommend the former, as `gganimate` defaults to gifski if it is installed, but either option will work just fine. Run one of the following lines, or both, to install a renderer.
 
 ```{r, eval = FALSE}
-install.packages("gifski")
-install.packages("magick")
+#install.packages("gifski")
+#install.packages("magick")
 ```
 
 We build the plot as before, but now we make it animated by adding
@@ -118,7 +118,7 @@ facets to separate continents. Here we also make use of the
 ```{r, fig.cap = "GDP per capita and life expectancy; now with facets!", fig.width = 7, fig.height = 6}
 ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, color = country)) +
   geom_point(alpha = 0.5) +
-  scale_colour_manual(values = country_colors, guide = FALSE) +
+  scale_colour_manual(values = country_colors, guide = "none") +
   scale_size(range = c(2, 12)) +
   scale_x_log10() +
   facet_wrap(~continent) +
@@ -157,7 +157,7 @@ large_countries <- filter(gapminder, country %in% large_country_names)
 Now, we put everything together; we also adjust the *easing* of aesthetics from linear to cubic in-and-out using `ease_aes()`, to highlight that our data spans only 5-year intervals.
 We use `geom_label_repel()` from the `ggrepel` package for labeling countries, which helps prevent label overlap.^[Working with labels and animated visualizations presents a challenge. Here, I had to fine-tune the settings, particularly `nudge_x` and `nudge_y`, several times in order to get something that looks good.]
 
-```{r, fig.cap = "Life expectancy and GDP per capita with countries. The two largest countries by population at the start have been labeled.", fig.width = 8, fig.height = 7}
+```{r, fig.cap = "Life expectancy and GDP per capita with countries. The two largest countries on each continent by population in 2007 have been labeled.", fig.width = 8, fig.height = 7}
 library(ggrepel)
 library(scales)
 
@@ -167,11 +167,11 @@ ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, color = country)) +
     aes(gdpPercap, lifeExp, label = country),
     inherit.aes = FALSE,
     seed = 1, # important when animating
-    nudge_x = 6,
+    nudge_x = 0.2,
     nudge_y = -10,
     data = large_countries
   ) +
-  scale_colour_manual(values = country_colors, guide = FALSE) +
+  scale_colour_manual(values = country_colors, guide = "none") +
   scale_size(range = c(2, 12), labels = scientific) +
   scale_x_log10(labels = scientific) +
   facet_wrap(~continent) +
@@ -206,7 +206,7 @@ Now, let's redraw the plot and add an interactive slider for year selection with
 p <- ggplot(gapminder, 
             aes(gdpPercap, lifeExp, size = pop, color = country))+
   geom_point(aes(frame = year), alpha = 0.5) +
-  scale_colour_manual(values = country_colors, guide = FALSE) +
+  scale_colour_manual(values = country_colors, guide = "none") +
   scale_size(range = c(2, 12)) +
   scale_x_log10() +
   facet_wrap(~continent) +
